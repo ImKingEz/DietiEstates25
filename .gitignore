@@ -1,8 +1,19 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
 # Compiled class file
+/out/
+/target/
 *.class
+*.jar
+*.war
+*.ear
 
 # Log file
 *.log
+*.log.*
 
 # BlueJ files
 *.ctxt
