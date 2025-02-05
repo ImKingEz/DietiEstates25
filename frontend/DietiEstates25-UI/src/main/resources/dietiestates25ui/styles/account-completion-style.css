@@ -31,32 +31,6 @@ Button:pressed {
     -fx-min-height: 25;
 }
 
-.popup {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #000000;
-    -fx-background-radius: 10;
-    -fx-border-width: 1;
-    -fx-border-radius: 10;
-    -fx-pref-height: 50;
-    -fx-spacing: 5;
-}
-
-#textPopupVBox {
-    -fx-padding: 0;
-}
-
-#popupLine1Text {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-text-alignment: left;
-}
-
-/* Stile per popupLine2Text */
-#popupLine2Text {
-    -fx-font-size: 12px;
-    -fx-text-alignment: left;
-}
-
 /* Stile per le Label */
 Label {
     -fx-font-size: 14px;
