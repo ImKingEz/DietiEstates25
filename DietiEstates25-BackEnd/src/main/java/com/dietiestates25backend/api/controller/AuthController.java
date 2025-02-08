@@ -1,6 +1,8 @@
 package com.dietiestates25backend.api.controller;
 
+import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.UtenteDTO;
+import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.*;
 import com.dietiestates25backend.business.entity.Utente;
 import com.dietiestates25backend.business.service.AuthService;
@@ -64,10 +66,10 @@ public class AuthController {
             @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader
     ) {
         logger.debug("loginUser() called with email: {}", loginDTO.getEmail());
-        logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader); // Aggiungi questo log
+        logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader);
 
         try {
-            String token = authService.loginUtente(loginDTO.getEmail(), loginDTO.getPassword(), csrfTokenHeader); // Passa il token al service
+            String token = authService.loginUtente(loginDTO.getEmail(), loginDTO.getPassword(), csrfTokenHeader);
             LoginResponse loginResponse = new LoginResponse(token);
             logger.debug("loginUser() successful for user: {}", loginDTO.getEmail());
             ApiResponse<LoginResponse> response = new ApiResponse<>(true, loginResponse, null);
@@ -87,16 +89,13 @@ public class AuthController {
     public ResponseEntity<ApiResponse<UtenteDTO>> updateUtente(
             @RequestBody UpdateUtenteDTO updateUtenteDTO,
             @RequestHeader("Authorization") String authorizationHeader,
-            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader, // CSRF
-            HttpServletRequest request) {
+            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader, HttpServletRequest request) {
         logger.debug("updateUtente() called with user: {}", updateUtenteDTO);
 
-        // Verifica CSRF
         if (csrfTokenHeader == null ) {
             logger.error("updateUtente() failed, CSRF token missing");
             return new ResponseEntity<>(new ApiResponse<>(false, null, "CSRF token mancante"), HttpStatus.FORBIDDEN);
         }
-        //Estrazione dell'header
         String token = authorizationHeader.substring(7);
         try {
             UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));

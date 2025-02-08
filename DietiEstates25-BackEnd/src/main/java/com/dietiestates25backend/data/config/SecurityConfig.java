@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,10 +46,9 @@ public class SecurityConfig {
         logger.debug("Request received: {}", http);
         logger.info("Configuring security filters...");
 
-        // Abilita CSRF Protection
         http.csrf(csrf -> {
-            CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-            tokenRepository.setCookieName("XSRF-TOKEN"); // Imposta il nome del cookie
+            CookieCsrfTokenRepository tokenRepository = new CookieCsrfTokenRepository();
+            tokenRepository.setCookieName("XSRF-TOKEN");
             csrf.csrfTokenRepository(tokenRepository);
             csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
         });
@@ -82,7 +80,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8000"));//TODO: FIX ME
+        configuration.setAllowedOrigins(List.of("http://localhost:8000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-CSRF-TOKEN"));
         configuration.setExposedHeaders(Arrays.asList("X-CSRF-TOKEN"));

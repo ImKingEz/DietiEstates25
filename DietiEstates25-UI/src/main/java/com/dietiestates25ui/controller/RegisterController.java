@@ -135,7 +135,6 @@ public class RegisterController extends AbstractController implements Initializa
         }
         try {
             logger.info("Chiamata a utenteService.registraUtente()");
-            UtenteService.fetchCsrfToken();
             utenteService.registraUtente(user);
             logger.info("Registrazione effettuata con successo.");
             registratiButton.setDisable(true);

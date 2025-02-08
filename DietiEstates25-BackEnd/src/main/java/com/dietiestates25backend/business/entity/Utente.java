@@ -30,7 +30,6 @@ public class Utente {
     @Column(name = "password", nullable = false)
     private String password;
 
-    // costruttore che non comprende l'id (utile per la registrazione)
     public Utente(String nome, String cognome, String citta, String email, String password) {
         this.nome = nome;
         this.cognome = cognome;

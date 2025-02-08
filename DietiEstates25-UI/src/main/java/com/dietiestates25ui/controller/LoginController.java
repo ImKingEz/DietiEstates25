@@ -6,7 +6,6 @@ import com.dietiestates25ui.model.Utente;
 import com.dietiestates25ui.service.UtenteService;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -19,19 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Map;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.io.IOException;
-import com.dietiestates25ui.exception.GenericServiceException;
-import com.dietiestates25ui.exception.AuthenticationException;
-import com.dietiestates25ui.exception.ResourceNotFoundException;
-import com.dietiestates25ui.exception.ServiceUnavailableException;
 
 public class LoginController extends AbstractController implements Initializable {
 
@@ -125,7 +111,6 @@ public class LoginController extends AbstractController implements Initializable
         String password = passwordPasswordField.getText().trim();
         Utente user = new Utente(email, password);
         try {
-            UtenteService.fetchCsrfToken();
             String token = utenteService.loginUtente(user);
             if (token != null) {
                 showPopup("Login effettuato con successo", "Reindirizzamento alla dashboard...", SUCCESS_ICON);

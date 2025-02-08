@@ -167,7 +167,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String familyName = (String) attributes.get("family_name");
         String userName = (String) attributes.get("login");
 
-        String generatedPassword = passwordEncoder.encode(generateRandomPassword()); // Genera e codifica
+        String generatedPassword = passwordEncoder.encode(generateRandomPassword());
 
         Utente user;
         if (givenName != null && familyName != null) {

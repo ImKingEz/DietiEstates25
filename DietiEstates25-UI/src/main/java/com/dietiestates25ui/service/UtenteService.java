@@ -1,9 +1,9 @@
 package com.dietiestates25ui.service;
 
+import com.dietiestates25.dto.ApiResponse;
+import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25.dto.UtenteDTO;
-import com.dietiestates25ui.dto.ApiResponse;
 import com.dietiestates25ui.dto.CsrfResponse;
-import com.dietiestates25ui.dto.LoginResponse;
 import com.dietiestates25ui.exception.ApiClientException;
 import com.dietiestates25ui.exception.AuthenticationException;
 import com.dietiestates25ui.exception.GenericServiceException;
@@ -11,6 +11,7 @@ import com.dietiestates25ui.exception.ResourceNotFoundException;
 import com.dietiestates25ui.exception.ServiceUnavailableException;
 import com.dietiestates25ui.model.Utente;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ public class UtenteService {
     public static final String COMUNICATION_ERROR = "Errore durante la comunicazione con il server. Riprova più tardi.";
     public static final String INTERRUPT_OPERATION_ERROR = "Operazione interrotta. Riprova.";
 
-    private static String csrfTokenValue; // Store the CSRF token here
+    private static String csrfTokenValue;
     private static String csrfTokenHeaderName;
 
     private static final CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
@@ -46,11 +47,10 @@ public class UtenteService {
             .cookieHandler(cookieManager)
             .build();
 
-    // Method to fetch CSRF token
     public static void fetchCsrfToken() throws ServiceUnavailableException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/csrf")) //TODO:FIX ME
+                    .uri(URI.create("http://localhost:8080/api/csrf"))
                     .GET()
                     .build();
 
@@ -62,18 +62,19 @@ public class UtenteService {
                 CsrfResponse csrfResponse = objectMapper.readValue(response.body(), CsrfResponse.class);
                 if (csrfResponse != null && csrfResponse.getToken() != null && csrfResponse.getHeaderName() != null) {
                     csrfTokenValue = csrfResponse.getToken();
-                    csrfTokenHeaderName = csrfResponse.getHeaderName(); // Memorizza anche l'header name
-                    logger.info("CSRF token fetched successfully: " + csrfTokenValue + ", Header Name: " + csrfTokenHeaderName);
+                    csrfTokenHeaderName = csrfResponse.getHeaderName();
+                    logger.info("CSRF token fetched successfully: {}, Header Name: {}", csrfTokenValue, csrfTokenHeaderName);
                 } else {
-                    logger.error("Failed to parse CSRF token from response: " + response.body());
+                    String responseBody = response.body() != null ? response.body() : "Response body is null";
+                    logger.error("Failed to parse CSRF token from response: {}", responseBody);
                     throw new GenericServiceException("Failed to fetch CSRF token.");
                 }
             } else {
-                logger.error("Failed to fetch CSRF token. Status code: " + statusCode + ", Response: " + response.body());
+                String responseBody = response.body() != null ? response.body() : "Response body is null";
+                logger.error("Failed to fetch CSRF token. Status code: {}, Response: {}", statusCode, responseBody);
                 throw new ServiceUnavailableException("Failed to fetch CSRF token: " + statusCode);
             }
         } catch (Exception e) {
-            logger.error("Exception while fetching CSRF token: " + e.getMessage(), e);
             throw new ServiceUnavailableException("Failed to fetch CSRF token: " + e.getMessage());
         }
     }
@@ -81,11 +82,13 @@ public class UtenteService {
     private <T> ApiResponse<T> handleResponse(HttpResponse<String> response, ObjectMapper objectMapper, Class<T> dataType) throws ApiClientException {
         try {
             Type type = new ParameterizedType() {
+                @NotNull
                 @Override
                 public Type[] getActualTypeArguments() {
                     return new Type[]{dataType};
                 }
 
+                @NotNull
                 @Override
                 public Type getRawType() {
                     return ApiResponse.class;
@@ -103,8 +106,9 @@ public class UtenteService {
         }
     }
 
-    public UtenteDTO registraUtente(Utente user) throws GenericServiceException {
+    public void registraUtente(Utente user) throws GenericServiceException {
         try {
+            fetchCsrfToken();
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonBody = objectMapper.writeValueAsString(user);
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL + "/register"))
@@ -120,7 +124,7 @@ public class UtenteService {
             if (statusCode == 201) {
                 ApiResponse<UtenteDTO> apiResponse = handleResponse(response, objectMapper, UtenteDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
-                    return apiResponse.getData();
+                    return;
                 } else {
                     String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la registrazione.";
                     throw new GenericServiceException(errorMessage);
@@ -146,12 +150,13 @@ public class UtenteService {
 
     public String loginUtente(Utente user) throws GenericServiceException {
         try {
+            fetchCsrfToken();
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonBody = objectMapper.writeValueAsString(Map.of("email", user.getEmail(), "password", user.getPassword()));
 
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL + "/login"))
                     .header(CONTENT_TYPE, APPLICATION_JSON)
-                    .header(csrfTokenHeaderName, csrfTokenValue) // Usa l'header name corretto
+                    .header(csrfTokenHeaderName, csrfTokenValue)
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
 
@@ -186,8 +191,9 @@ public class UtenteService {
         }
     }
 
-    public void updateUtente(Utente user, String token) throws ServiceUnavailableException, GenericServiceException {
+    public void updateUtente(Utente user, String token) throws GenericServiceException {
         try {
+            fetchCsrfToken();
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonBody;
             if (user.getCitta() != null) {
@@ -201,7 +207,7 @@ public class UtenteService {
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL + "/update"))
                     .header(CONTENT_TYPE, APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token)
-                    .header(csrfTokenHeaderName, csrfTokenValue) // Use the CSRF Header name
+                    .header(csrfTokenHeaderName, csrfTokenValue)
                     .PUT(HttpRequest.BodyPublishers.ofString(jsonBody)).build();
 
             HttpResponse<String> response = executeRequest(request);
@@ -239,7 +245,7 @@ public class UtenteService {
         }
     }
 
-    public UtenteDTO getUtenteDetails(String token) throws ServiceUnavailableException, ApiClientException, ResourceNotFoundException, GenericServiceException {
+    public UtenteDTO getUtenteDetails(String token) throws GenericServiceException {
         try {
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(BASE_URL + "/me"))
                     .header("Authorization", "Bearer " + token).GET().build();

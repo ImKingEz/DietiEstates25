@@ -80,7 +80,6 @@ public class AccountCompletionController extends AbstractController implements I
         Utente utente = createUtente(nome, cognome, citta);
 
         try {
-            UtenteService.fetchCsrfToken();
             utenteService.updateUtente(utente, token);
             handleUtenteDetails(token);
         } catch (Exception e) {

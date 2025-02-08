@@ -10,6 +10,7 @@ module com.dietiestates25ui {
     requires org.slf4j;
     requires DietiEstates25.Shared.Library;
     requires jdk.jsobject;
+    requires annotations;
 
     opens com.dietiestates25ui.controller to javafx.fxml;
     opens com.dietiestates25ui.model to com.fasterxml.jackson.databind;

@@ -14,14 +14,14 @@ public class CsrfController {
 
     @GetMapping("/api/csrf")
     public CsrfToken getCsrfToken(HttpServletRequest request) {
-        logger.debug("CsrfController.getCsrfToken() called"); // Aggiungi questo log
+        logger.debug("CsrfController.getCsrfToken() called");
 
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 
         if (csrfToken == null) {
-            logger.warn("CSRF token not found in request"); // Aggiungi questo log
+            logger.warn("CSRF token not found in request");
         } else {
-            logger.debug("CSRF token found: " + csrfToken.getToken()); // Aggiungi questo log
+            logger.debug("CSRF token found: {}", csrfToken.getToken());
         }
 
         return csrfToken;

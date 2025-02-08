@@ -68,7 +68,6 @@ public class AuthService implements UserDetailsService {
             throw new BadCredentialsException("Login Failed");
         }
 
-        // VALIDAZIONE DEL TOKEN CSRF
         CsrfToken expectedCsrfToken = (CsrfToken) httpServletRequest.getAttribute(CsrfToken.class.getName());
         if (expectedCsrfToken == null || !expectedCsrfToken.getToken().equals(csrfToken)) {
             logger.error("Login failed: Invalid CSRF token for user: {}", email);

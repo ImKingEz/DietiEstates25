@@ -1,4 +1,4 @@
-package com.dietiestates25backend.api.dto;
+package com.dietiestates25.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
