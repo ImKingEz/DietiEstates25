@@ -1,6 +1,6 @@
 package com.dietiestates25ui.controller;
 
-import com.dietiestates25ui.dto.UtenteDTO;
+import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.model.Utente;
 import com.dietiestates25ui.service.UtenteService;
 import javafx.animation.PauseTransition;
@@ -80,6 +80,7 @@ public class AccountCompletionController extends AbstractController implements I
         Utente utente = createUtente(nome, cognome, citta);
 
         try {
+            UtenteService.fetchCsrfToken();
             utenteService.updateUtente(utente, token);
             handleUtenteDetails(token);
         } catch (Exception e) {

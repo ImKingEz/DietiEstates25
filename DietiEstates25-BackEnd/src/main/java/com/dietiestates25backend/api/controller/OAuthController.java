@@ -1,8 +1,6 @@
 package com.dietiestates25backend.api.controller;
 
-import com.dietiestates25backend.business.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -16,9 +14,6 @@ import org.slf4j.LoggerFactory;
 public class OAuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuthController.class);
-    @Autowired
-    private AuthService authService;
-
 
     @GetMapping("/login/oauth2/code/facebook")
     public void facebookLogin(@AuthenticationPrincipal OAuth2User principal, HttpServletRequest request) {

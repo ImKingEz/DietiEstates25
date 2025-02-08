@@ -12,6 +12,7 @@
     <name>DietiEstates25 - Aggregator POM</name>
 
     <modules>
+        <module>DietiEstates25-Shared-Library</module>
         <module>DietiEstates25-BackEnd</module>
         <module>DietiEstates25-UI</module>
     </modules>
@@ -20,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <sonar.organization>DietiEstates25</sonar.organization>
+        <sonar.projectKey>DietiEstates25</sonar.projectKey>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.projectName>DietiEstates25</sonar.projectName>
     </properties>

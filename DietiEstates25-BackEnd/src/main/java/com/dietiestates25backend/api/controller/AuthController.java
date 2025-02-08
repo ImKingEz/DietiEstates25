@@ -1,13 +1,11 @@
 package com.dietiestates25backend.api.controller;
 
-import com.dietiestates25backend.api.dto.LoginDTO;
-import com.dietiestates25backend.api.dto.RegisterDTO;
-import com.dietiestates25backend.api.dto.UtenteDTO;
-import com.dietiestates25backend.api.dto.LoginResponse;
+import com.dietiestates25.dto.UtenteDTO;
+import com.dietiestates25backend.api.dto.*;
 import com.dietiestates25backend.business.entity.Utente;
 import com.dietiestates25backend.business.service.AuthService;
 import com.dietiestates25backend.business.service.JwtService;
-import com.dietiestates25backend.data.repository.UtenteRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,23 +17,22 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/users")
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-    @Autowired
-    private AuthService authService;
+
+    private final AuthService authService;
+    private final JwtService jwtService;
 
     @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private UtenteRepository utenteRepository;
+    public AuthController(AuthService authService, JwtService jwtService) {
+        this.authService = authService;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
+    public ResponseEntity<ApiResponse<UtenteDTO>> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
         logger.debug("registerUser() called with registerDTO: {}", registerDTO.getEmail());
         Utente utente = new Utente(
                 registerDTO.getNome(),
@@ -48,71 +45,99 @@ public class AuthController {
         try {
             UtenteDTO utenteDTO = authService.registraUtente(utente);
             logger.debug("registerUser() successful with user: {}", utenteDTO.getEmail());
-            return ResponseEntity.status(HttpStatus.CREATED).body(utenteDTO);
+            ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (DataIntegrityViolationException ex) {
             logger.error("registerUser() failed, email already registered: {}", registerDTO.getEmail());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email già in uso");
+            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Email già in uso");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         } catch (Exception ex) {
             logger.error("registerUser() failed with error: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore durante la registrazione : "+ ex.getMessage());
+            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore durante la registrazione : " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginDTO loginDTO) {
+    public ResponseEntity<ApiResponse<LoginResponse>> loginUser(
+            @RequestBody @Valid LoginDTO loginDTO,
+            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader
+    ) {
         logger.debug("loginUser() called with email: {}", loginDTO.getEmail());
+        logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader); // Aggiungi questo log
+
         try {
-            String token = authService.loginUtente(loginDTO.getEmail(), loginDTO.getPassword());
+            String token = authService.loginUtente(loginDTO.getEmail(), loginDTO.getPassword(), csrfTokenHeader); // Passa il token al service
             LoginResponse loginResponse = new LoginResponse(token);
             logger.debug("loginUser() successful for user: {}", loginDTO.getEmail());
-            return ResponseEntity.ok(loginResponse);
+            ApiResponse<LoginResponse> response = new ApiResponse<>(true, loginResponse, null);
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException ex) {
             logger.error("loginUser() failed, authentication error for user: {}", loginDTO.getEmail());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
+            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception ex){
             logger.error("loginUser() failed with error: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed : " + ex.getMessage());
+            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito : " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
     @PutMapping("/update")
-    public ResponseEntity<?> updateUtente(@RequestBody com.dietiestates25backend.api.dto.UpdateUtenteDTO updateUtenteDTO, @RequestHeader("Authorization") String authorizationHeader) throws Exception {
+    public ResponseEntity<ApiResponse<UtenteDTO>> updateUtente(
+            @RequestBody UpdateUtenteDTO updateUtenteDTO,
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader, // CSRF
+            HttpServletRequest request) {
         logger.debug("updateUtente() called with user: {}", updateUtenteDTO);
+
+        // Verifica CSRF
+        if (csrfTokenHeader == null ) {
+            logger.error("updateUtente() failed, CSRF token missing");
+            return new ResponseEntity<>(new ApiResponse<>(false, null, "CSRF token mancante"), HttpStatus.FORBIDDEN);
+        }
+        //Estrazione dell'header
         String token = authorizationHeader.substring(7);
-        try{
+        try {
             UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));
-            if(jwtService.isTokenValid(token, userDetails)){
+            if (jwtService.isTokenValid(token, userDetails)) {
                 UtenteDTO utenteDTO = authService.updateUtente(updateUtenteDTO, userDetails.getUsername());
                 logger.debug("updateUtente() successful for user: {}", userDetails.getUsername());
-                return new ResponseEntity<>(utenteDTO, HttpStatus.OK);
-            } else{
+                ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
                 logger.error("updateUtente() failed, token not valid");
-                return new ResponseEntity<>("Token non valido", HttpStatus.UNAUTHORIZED);
+                ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Token non valido");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
-        } catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("updateUtente() failed with error: {}", ex.getMessage());
-            return new ResponseEntity<>("Errore durante l'aggiornamento dell'utente: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore durante l'aggiornamento dell'utente: " + ex.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<UtenteDTO>> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
         logger.debug("getUserDetails() called");
         String token = authorizationHeader.substring(7);
         try {
             UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));
-            if(jwtService.isTokenValid(token, userDetails)){
+            if (jwtService.isTokenValid(token, userDetails)) {
                 UtenteDTO utenteDTO = authService.getUtenteDetails(userDetails.getUsername());
                 logger.debug("getUserDetails() successful for user: {}", userDetails.getUsername());
-                return ResponseEntity.ok(utenteDTO);
+                ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
+                return ResponseEntity.ok(response);
             } else {
                 logger.error("getUserDetails() failed, token not valid");
-                return new ResponseEntity<>("Token non valido", HttpStatus.UNAUTHORIZED);
+                ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Token non valido");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.error("getUserDetails() failed with error: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore nel recupero dei dettagli dell'utente: " + ex.getMessage());
+            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore nel recupero dei dettagli dell'utente: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

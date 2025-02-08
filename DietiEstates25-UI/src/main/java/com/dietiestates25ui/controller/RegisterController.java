@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.net.http.HttpResponse;
 import java.util.ResourceBundle;
 
 public class RegisterController extends AbstractController implements Initializable {
@@ -71,7 +70,7 @@ public class RegisterController extends AbstractController implements Initializa
 
         createAndPlaceBackButton();
 
-        OAuth2Handler oAuth2Handler = new OAuth2Handler(this);
+        OAuth2Handler oAuth2Handler = new OAuth2Handler(this, registratiButton);
         updateWebView(oAuth2Handler);
 
         actionButtonProvider();
@@ -136,22 +135,15 @@ public class RegisterController extends AbstractController implements Initializa
         }
         try {
             logger.info("Chiamata a utenteService.registraUtente()");
-            HttpResponse<String> response = utenteService.registraUtente(user);
-            if (response.statusCode() == 201) {
-                logger.info("Registrazione effettuata con successo.");
-                registratiButton.setDisable(true);
-                indietroButton.setDisable(true);
-                showPopup("Registrazione completata!", "Reindirizzamento al login...", SUCCESS_ICON);
-                PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
-                delay.setOnFinished(event -> openLoginPage());
-                delay.play();
-            } else if (response.statusCode() == 409) {
-                logger.warn("Errore durante la registrazione: Email già in uso.");
-                showPopup(POPUP_ERROR_TITLE, "Email già in uso.", ERROR_ICON);
-            } else {
-                logger.error("Errore durante la registrazione: {}", response.statusCode());
-                showPopup(POPUP_ERROR_TITLE, "Errore durante la registrazione (" + response.statusCode() + ").", ERROR_ICON);
-            }
+            UtenteService.fetchCsrfToken();
+            utenteService.registraUtente(user);
+            logger.info("Registrazione effettuata con successo.");
+            registratiButton.setDisable(true);
+            indietroButton.setDisable(true);
+            showPopup("Registrazione completata!", "Reindirizzamento al login...", SUCCESS_ICON);
+            PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
+            delay.setOnFinished(event -> openLoginPage());
+            delay.play();
         } catch (Exception e) {
             logger.error("Errore durante la registrazione: {}", e.getMessage());
             showPopup(POPUP_ERROR_TITLE, e.getMessage(), ERROR_ICON);

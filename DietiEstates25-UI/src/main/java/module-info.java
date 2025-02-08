@@ -8,6 +8,8 @@ module com.dietiestates25ui {
     requires javafx.web;
     requires java.net.http;
     requires org.slf4j;
+    requires DietiEstates25.Shared.Library;
+    requires jdk.jsobject;
 
     opens com.dietiestates25ui.controller to javafx.fxml;
     opens com.dietiestates25ui.model to com.fasterxml.jackson.databind;

@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -22,37 +21,41 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private static final Logger loggerJwtAuthFilter = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+    private final JwtService jwtService;
+
+    private final UserDetailsService userDetailsService;
 
     @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        logger.debug("Starting JWT authentication filter...");
+        loggerJwtAuthFilter.debug("Starting JWT authentication filter...");
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
-            logger.debug("No or invalid authorization header");
+            loggerJwtAuthFilter.debug("No or invalid authorization header");
             return;
         }
 
         jwt = authHeader.substring(7);
-        logger.debug("Extracted jwt : {}", jwt);
+        loggerJwtAuthFilter.debug("Extracted jwt : {}", jwt);
         userEmail = jwtService.extractUsername(jwt);
-        logger.debug("Extracted userEmail : {}", userEmail);
+        loggerJwtAuthFilter.debug("Extracted userEmail : {}", userEmail);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-            logger.debug("Retrieved user details : {}", userDetails);
+            loggerJwtAuthFilter.debug("Retrieved user details : {}", userDetails);
             if (jwtService.isTokenValid(jwt, userDetails)) {
-                logger.debug("Token is valid, creating authentication object");
+                loggerJwtAuthFilter.debug("Token is valid, creating authentication object");
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -60,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                logger.debug("Authentication complete for user : {}", userEmail);
+                loggerJwtAuthFilter.debug("Authentication complete for user : {}", userEmail);
             }
         }
         filterChain.doFilter(request, response);
