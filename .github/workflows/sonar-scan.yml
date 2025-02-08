@@ -1,0 +1,45 @@
+name: SonarQube Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]  # Trigger quando viene aperta, sincronizzata o riaperta una PR
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Richiesto per l'analisi SonarQube di branch e PR
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'alpine'
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: |
+            ${{ runner.os }}-sonar
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
+
+      - name: SonarQube Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Usa il secret di GitHub
+        run: |
+          mvn verify sonar:sonar \
+            -Dsonar.projectKey=DietiEstates25 \ # Sostituisci con la chiave del tuo progetto SonarQube
+            -Dsonar.host.url=http://localhost:9000 # Modifica se SonarQube non è in localhost
+            -Dsonar.login=$SONAR_TOKEN
