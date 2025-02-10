@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
@@ -23,8 +24,25 @@
                         <Image url="@../images/logo2.png" />
                      </image>
                   </ImageView>
-                  <TextField fx:id="emailTextField" prefHeight="23.0" prefWidth="221.0" promptText="Email" styleClass="loginField" />
-                  <PasswordField fx:id="passwordPasswordField" promptText="Password" styleClass="loginField" />
+                  <TextField fx:id="emailTextField" promptText="Email" styleClass="loginField" />
+                  <HBox fx:id="passwordHBox" alignment="CENTER">
+                     <children>
+                        <PasswordField fx:id="passwordPasswordField" prefWidth="300.0" promptText="Password">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </PasswordField>
+                        <Button fx:id="togglePasswordButton" mnemonicParsing="false">
+                           <graphic>
+                              <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/eye_closed.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
                   <Button fx:id="loginButton" mnemonicParsing="false" text="Login" />
                   <VBox alignment="CENTER" prefHeight="70.0" prefWidth="1280.0" spacing="8.0">
                      <children>

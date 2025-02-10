@@ -31,6 +31,13 @@ Button:pressed {
     -fx-min-height: 25;
 }
 
+#passwordHBox {
+    -fx-max-width: 300;
+    -fx-min-width: 300;
+    -fx-max-height: 25;
+    -fx-min-height: 25;
+}
+
 #textNonHaiAccount {
     -fx-font-size: 14;
 }
