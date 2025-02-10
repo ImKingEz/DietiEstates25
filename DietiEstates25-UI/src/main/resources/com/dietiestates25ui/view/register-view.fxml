@@ -64,10 +64,22 @@
                   </VBox>
                   <VBox fx:id="backgroundVBox" alignment="CENTER" prefWidth="100.0" spacing="3.0">
                      <children>
-                        <HBox alignment="CENTER" styleClass="HBoxField">
+                        <HBox fx:id="passwordHBox" alignment="CENTER">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
-                              <PasswordField fx:id="passwordPasswordField" promptText="Password" styleClass="registerField" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin></Text>
+                              <PasswordField fx:id="passwordPasswordField" prefWidth="300.0" promptText="Password" />
+                              <Button fx:id="togglePasswordButton" mnemonicParsing="false" styleClass="togglePasswordButton">
+                                 <graphic>
+                                    <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/eye_closed.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
                            </children>
                         </HBox>
                         <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox">

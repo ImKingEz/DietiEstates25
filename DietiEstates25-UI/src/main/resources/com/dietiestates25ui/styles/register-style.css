@@ -26,6 +26,13 @@ Button:pressed {
 
 .registerField {
     -fx-max-width: 300;
+    -fx-pref-width: 300;
+    -fx-max-height: 25;
+    -fx-min-height: 25;
+}
+
+#passwordHBox {
+    -fx-max-width: 300;
     -fx-min-width: 300;
     -fx-max-height: 25;
     -fx-min-height: 25;
@@ -38,6 +45,10 @@ Button:pressed {
 
 .HBoxField {
     -fx-spacing: 5;
+    -fx-max-width: 300;
+    -fx-min-width: 300;
+    -fx-max-height: 25;
+    -fx-min-height: 25;
 }
 
 .textAsterisco {
@@ -47,4 +58,11 @@ Button:pressed {
 .textSecondari {
     -fx-font-size: 10;
     -fx-fill:  #3A5F7D;
+}
+
+.togglePasswordButton {
+    -fx-max-height: 25;
+    -fx-min-height: 25;
+    -fx-max-width: 25;
+    -fx-min-width: 25;
 }

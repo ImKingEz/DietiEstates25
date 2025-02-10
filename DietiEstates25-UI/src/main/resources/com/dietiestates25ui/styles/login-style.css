@@ -38,6 +38,13 @@ Button:pressed {
     -fx-min-height: 25;
 }
 
+#togglePasswordButton {
+    -fx-max-height: 25;
+    -fx-min-height: 25;
+    -fx-max-width: 25;
+    -fx-min-width: 25;
+}
+
 #textNonHaiAccount {
     -fx-font-size: 14;
 }
