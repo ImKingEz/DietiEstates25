@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.InserimentoInserzioneController">
+        <VBox alignment="CENTER" layoutX="166.0" layoutY="15.0" prefHeight="366.0" prefWidth="282.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <VBox alignment="TOP_CENTER" prefHeight="591.0" prefWidth="1280.0" spacing="20.0" styleClass="secondaryBackground">
+                        <ImageView fx:id="logo" fitHeight="120.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/logo2.png" />
+                                <VBox.margin>
+                                        <Insets top="10.0" />
+                                </VBox.margin>
+                        </ImageView>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" text="Nuova Inserzione" textAlignment="CENTER">
+                                <font>
+                                        <Font name="Verdana" size="20.0" />
+                                </font>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 16;" text="Dettagli immobile" textAlignment="CENTER" />
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+                                <children>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="15.0">
+                                                <children>
+
+                                                        <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                <TextField fx:id="titoloTextField" promptText="Titolo" styleClass="registerField" />
+                                                        </HBox>
+
+                                                        <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Tipo inserzione" />
+                                                                <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                        <ChoiceBox fx:id="tipologiaChoiceBox" prefWidth="300.0" styleClass="registerField" />
+                                                                </HBox>
+                                                        </VBox>
+
+                                                        <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                <TextField fx:id="cittaIndirizzoTextField" promptText="Città, Indirizzo" styleClass="registerField" />
+                                                        </HBox>
+
+                                                        <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                <TextField fx:id="prezzoTextField" promptText="Prezzo" styleClass="registerField" />
+                                                        </HBox>
+
+                                                        <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                <TextArea fx:id="descrizioneTextArea" prefHeight="80.0" promptText="Descrizione" styleClass="registerField" wrapText="true" />
+                                                        </HBox>
+
+                                                        <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
+                                                                <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                        <TextField fx:id="immaginiTextField" promptText="Seleziona file" styleClass="registerField" />
+                                                                </HBox>
+                                                                <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox">
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Max 10 immagini" />
+                                                                </VBox>
+                                                        </VBox>
+                                                </children>
+                                        </VBox>
+                                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="9.0">
+                                                <children>
+
+                                                        <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                <TextField fx:id="superficieTextField" promptText="Superficie (mq)" styleClass="registerField" />
+                                                        </HBox>
+
+                                                        <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                <TextField fx:id="classeEnergeticaTextField" promptText="Classe energetica" styleClass="registerField" />
+                                                        </HBox>
+
+                                                        <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Numero camere" />
+                                                                <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                        <Spinner fx:id="camereSpinner" prefWidth="300.0" />
+                                                                </HBox>
+                                                        </VBox>
+
+                                                        <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Numero bagni" />
+                                                                <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                                                                        <Spinner fx:id="bagniSpinner" prefWidth="300.0" />
+                                                                </HBox>
+                                                        </VBox>
+
+                                                        <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Piano" />
+                                                                <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text=" " />
+                                                                        <Spinner fx:id="pianoSpinner" prefWidth="300.0" />
+                                                                </HBox>
+                                                        </VBox>
+
+                                                        <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
+                                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Ulteriori Servizi" />
+                                                                <HBox alignment="CENTER" styleClass="HBoxField">
+                                                                        <CheckBox fx:id="servizio1CheckBox" text="Ascensore" />
+                                                                        <CheckBox fx:id="servizio2CheckBox" text="Climatizzazione" />
+                                                                        <CheckBox fx:id="servizio3CheckBox" text="Portineria" />
+                                                                </HBox>
+
+                                                        </VBox>
+                                                </children>
+                                        </VBox>
+                                </children>
+                        </HBox>
+                        <Button fx:id="avantiButton" mnemonicParsing="false" text="Avanti" />
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                                <children>
+                                        <Button fx:id="indietroButton" mnemonicParsing="false" text="Indietro" />
+                                </children>
+                        </HBox>
+                        <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                        </padding>
+                </VBox>
+        </VBox>
+</AnchorPane>
