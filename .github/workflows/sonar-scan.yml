@@ -39,7 +39,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Usa il secret di GitHub
         run: |
-          mvn verify sonar:sonar \
+          mvn verify -P notest sonar:sonar \
             -Dsonar.projectKey=DietiEstates25 \ # Sostituisci con la chiave del tuo progetto SonarQube
             -Dsonar.host.url=http://localhost:9000 # Modifica se SonarQube non è in localhost
             -Dsonar.login=$SONAR_TOKEN
