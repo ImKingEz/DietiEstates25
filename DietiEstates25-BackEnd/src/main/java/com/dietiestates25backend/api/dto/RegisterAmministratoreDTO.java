@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AmministratoreRegisterDTO {
+public class RegisterAmministratoreDTO {
     @NotBlank(message = "Email non può essere vuota")
     @Email(message = "Email non valida")
     private String email;

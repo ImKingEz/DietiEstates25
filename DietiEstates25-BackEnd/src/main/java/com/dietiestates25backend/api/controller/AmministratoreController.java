@@ -3,7 +3,7 @@ package com.dietiestates25backend.api.controller;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AmministratoreDTO;
 import com.dietiestates25.dto.LoginResponse;
-import com.dietiestates25backend.api.dto.AmministratoreRegisterDTO;
+import com.dietiestates25backend.api.dto.RegisterAmministratoreDTO;
 import com.dietiestates25backend.api.dto.LoginDTO;
 import com.dietiestates25backend.business.entity.Amministratore;
 import com.dietiestates25backend.business.service.AmministratoreService;
@@ -32,7 +32,7 @@ public class AmministratoreController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AmministratoreDTO>> registerAdmin(@RequestBody @Valid AmministratoreRegisterDTO registerDTO) {
+    public ResponseEntity<ApiResponse<AmministratoreDTO>> registerAdmin(@RequestBody @Valid RegisterAmministratoreDTO registerDTO) {
         logger.debug("registerAdmin() called with registerDTO: {}", registerDTO.getEmail());
 
         Amministratore amministratore = new Amministratore(registerDTO.getEmail(), registerDTO.getPassword());

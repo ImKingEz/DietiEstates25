@@ -6,16 +6,15 @@ public class AgenziaImmobiliare {
     private String indirizzo;
     private String email;
     private String telefono;
-    private String logoUrl;
-    private String password;
+    private String logo;
 
-    public AgenziaImmobiliare(String nome, String partitaIva, String indirizzo, String email, String telefono, String logoUrl) {
+    public AgenziaImmobiliare(String nome, String partitaIva, String indirizzo, String email, String telefono, String logo) {
         this.nome = nome;
         this.partitaIva = partitaIva;
         this.indirizzo = indirizzo;
         this.email = email;
         this.telefono = telefono;
-        this.logoUrl = logoUrl;
+        this.logo = logo;
     }
 
     public String getNome() {
@@ -58,19 +57,11 @@ public class AgenziaImmobiliare {
         this.telefono = telefono;
     }
 
-    public String getLogoUrl() {
-        return logoUrl;
+    public String getLogo() {
+        return logo;
     }
 
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setLogo(String logo) {
+        this.logo = logo;
     }
 }

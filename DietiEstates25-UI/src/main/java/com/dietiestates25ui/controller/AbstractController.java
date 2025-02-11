@@ -170,15 +170,14 @@ public abstract class AbstractController {
                 scene.getStylesheets().add(getClass().getResource(stylesheetPath).toExternalForm());
             }
 
-            // Passa lo stage al configurator e usa setOnShown per eseguire la configurazione dopo che lo stage è mostrato
-            Stage finalStage = stage;  // Copia per usare nella lambda expression
-            stage.setOnShown(e -> sceneConfigurator.configure(fxmlLoader, finalStage));
+            sceneConfigurator.configure(fxmlLoader, stage);
+
             stage.setTitle(APP_TITLE);
             stage.setScene(scene);
             stage.show();
 
         } catch (IOException e) {
-            logger.error("Errore durante il caricamento della scena: {}", e.getMessage(), e); // Stampa la stack trace completa
+            logger.error("Errore durante il caricamento della scena: {}", e.getMessage(), e);
             showPopup("Errore durante il caricamento della scena", e.getMessage(), ERROR_ICON);
         }
     }

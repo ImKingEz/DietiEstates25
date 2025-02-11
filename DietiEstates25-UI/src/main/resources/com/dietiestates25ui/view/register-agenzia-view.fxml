@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.layout.FlowPane?>
 <AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.RegisterAgenziaController">
     <VBox alignment="CENTER" layoutX="166.0" layoutY="15.0" prefHeight="366.0" prefWidth="282.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
@@ -65,12 +66,22 @@
                <TextField fx:id="telefonoTextField" promptText="Numero di telefono" styleClass="registerField" />
             </children>
          </HBox>
-         <HBox alignment="CENTER" styleClass="HBoxField">
-            <children>
-               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
-               <TextField fx:id="logoTextField" promptText="Logo" styleClass="registerField" />
-            </children>
-         </HBox>
+            <VBox alignment="CENTER" prefWidth="350.0" spacing="3.0">
+                <HBox alignment="CENTER" spacing="30.0">
+                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="Immagini*" />
+                    <Button fx:id="selezionaImmaginiButton" mnemonicParsing="false" prefHeight="34.0" prefWidth="115.0" text="seleziona file" />
+                </HBox>
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Max 5 immagini">
+                    <VBox.margin>
+                        <Insets top="5.0" />
+                    </VBox.margin>
+                </Text>
+                <FlowPane fx:id="immaginiFlowPane" alignment="TOP_LEFT" hgap="5.0" prefWrapLength="280.0" vgap="5.0">
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </padding>
+                </FlowPane>
+            </VBox>
             <Button fx:id="proseguiButton" mnemonicParsing="false" text="Prosegui" />
             <HBox prefWidth="200.0">
 

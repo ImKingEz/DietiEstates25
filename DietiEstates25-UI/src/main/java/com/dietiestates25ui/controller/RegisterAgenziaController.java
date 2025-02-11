@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
 import javafx.application.Platform;
@@ -64,14 +65,31 @@ public class RegisterAgenziaController extends AbstractController implements Ini
     }
 
     private void openAgenziaCredentialsPage() {
-        AgenziaImmobiliare agenzia = new AgenziaImmobiliare(nomeTextField.getText().trim(), partitaIVATextField.getText().trim(),
-                indirizzoTextField.getText().trim(), emailTextField.getText().trim(), telefonoTextField.getText().trim(), logoTextField.getText().trim());
+        String nome = nomeTextField.getText().trim();
+        String partitaIVA = partitaIVATextField.getText().trim();
+        String indirizzo = indirizzoTextField.getText().trim();
+        String email = emailTextField.getText().trim();
+        String telefono = telefonoTextField.getText().trim();
+        String logo = logoTextField.getText().trim(); // Anche il logo!
+
+        logger.info("Nome: {}, Partita IVA: {}, Indirizzo: {}, Email: {}, Telefono: {}", nome, partitaIVA, indirizzo, email, telefono);
+
+        AgenziaImmobiliare agenzia = new AgenziaImmobiliare(nome, partitaIVA, indirizzo, email, telefono, logo);
+
         loadScene("/com/dietiestates25ui/view/agenzia-credentials-view.fxml",
                 (fxmlLoader, stage) -> {
-                    AgenziaCredentialsController controller = fxmlLoader.getController();
-                    controller.setAgenzia(agenzia);
-                    controller.setStage(stage);
-                    controller.initializeData(); // NOW initialize the data
+                    try {
+                        AgenziaCredentialsController controller = fxmlLoader.getController();
+                        if (controller != null) {
+                            controller.setAgenzia(agenzia);
+                            controller.setStage(stage);
+                            controller.initializeData();
+                        } else {
+                            logger.error("Controller is null after FXMLLoader.getController()");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Exception during controller setup: ", e);
+                    }
                 }, proseguiButton, "/com/dietiestates25ui/styles/agenzia-credentials-style.css");
     }
 
@@ -81,7 +99,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
         emailTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
         telefonoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
-        //TODO Implementare il controllo per il logo
+        logoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
 
         proseguiButton.setDisable(true);
     }
@@ -92,8 +110,9 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         String indirizzo = indirizzoTextField.getText().trim();
         String email = emailTextField.getText().trim();
         String telefono = telefonoTextField.getText().trim();
+        String logo = logoTextField.getText().trim();
         //TODO Implementare il controllo per il logo, partita iva, indirizzo e telefono.
 
-        proseguiButton.setDisable(nome.isBlank() || partitaIVA.isBlank() || indirizzo.isBlank() || !FormValidator.isValidEmail(email) || telefono.isBlank());
+        proseguiButton.setDisable(nome.isBlank() || partitaIVA.isBlank() || indirizzo.isBlank() || !FormValidator.isValidEmail(email) || telefono.isBlank() || logo.isBlank());
     }
 }

@@ -62,7 +62,8 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/users/register", "/api/users/login", "/api/csrf").permitAll()
-                .requestMatchers("/api/admin/register", "/api/admin/login").permitAll() // Permetti la registrazione e il login degli admin
+                .requestMatchers("/api/admin/register", "/api/admin/login").permitAll()
+                .requestMatchers("/api/agenzie/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN") // Richiede il ruolo ADMIN per gli endpoint admin
                 .anyRequest().authenticated()
