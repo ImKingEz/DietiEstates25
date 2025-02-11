@@ -211,6 +211,6 @@ public class RegisterController extends AbstractController implements Initializa
 
     private void openLoginPage() {
         loadScene("/com/dietiestates25ui/view/login-view.fxml",
-                stageLogin -> {}, indietroButton, "/com/dietiestates25ui/styles/login-style.css");
+                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/login-style.css");
     }
 }

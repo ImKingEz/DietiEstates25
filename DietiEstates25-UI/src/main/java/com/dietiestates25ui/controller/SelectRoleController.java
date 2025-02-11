@@ -29,16 +29,16 @@ public class SelectRoleController extends AbstractController implements Initiali
 
     private void openLoginPage() {
         loadScene("/com/dietiestates25ui/view/login-view.fxml",
-                stageSelectRole -> {}, tornaIndietroButton, "/com/dietiestates25ui/styles/login-style.css");
+                (fxmlLoader, stage) -> {}, tornaIndietroButton, "/com/dietiestates25ui/styles/login-style.css");
     }
 
     private void openLoginAgenteImmobiliarePage() {
         loadScene("/com/dietiestates25ui/view/login-agente-immobiliare-view.fxml",
-                stageSelectRole -> {}, agenteImmobiliareButton, "/com/dietiestates25ui/styles/login-agente-immobiliare-style.css");
+                (fxmlLoader, stage) -> {}, agenteImmobiliareButton, "/com/dietiestates25ui/styles/login-agente-immobiliare-style.css");
     }
 
     private void openLoginAmministratorePage() {
         loadScene("/com/dietiestates25ui/view/login-amministratore-view.fxml",
-                stageSelectRole -> {}, amministratoreButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
+                (fxmlLoader, stage) -> {}, amministratoreButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
     }
 }

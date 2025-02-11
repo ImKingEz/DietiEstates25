@@ -96,7 +96,7 @@ public class LoginController extends AbstractController implements Initializable
 
     private void openSelectRolePage() {
         loadScene("/com/dietiestates25ui/view/select-role-view.fxml",
-                stageSelectRole -> {}, agenziaImmobiliareButton, "/com/dietiestates25ui/styles/select-role-style.css");
+                (fxmlLoader, stage) -> {}, agenziaImmobiliareButton, "/com/dietiestates25ui/styles/select-role-style.css");
     }
 
     private void passwordTextFieldInitializer() {
@@ -111,7 +111,6 @@ public class LoginController extends AbstractController implements Initializable
         passwordVisible = !passwordVisible;
 
         if (passwordVisible) {
-            // Mostra la password
             passwordHBox.getChildren().remove(passwordPasswordField);
             passwordHBox.getChildren().addFirst(passwordTextField);
             passwordTextField.setPrefWidth(passwordPasswordField.getWidth());
@@ -120,8 +119,6 @@ public class LoginController extends AbstractController implements Initializable
 
             eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_open.png"))));
         } else {
-            // Nascondi la password
-
             passwordHBox.getChildren().remove(passwordTextField);
             passwordHBox.getChildren().addFirst(passwordPasswordField);
 
@@ -204,6 +201,6 @@ public class LoginController extends AbstractController implements Initializable
 
     private void openRegisterPage() {
         loadScene("/com/dietiestates25ui/view/register-view.fxml",
-                stageRegister -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
+                (fxmlLoader, stage) -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
     }
 }

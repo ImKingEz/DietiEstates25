@@ -49,10 +49,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Platform.runLater(() -> {
-            logo.requestFocus();
-            currentStage = (Stage) primaryAnchorPane.getScene().getWindow();
-        });
+        Platform.runLater(() -> logo.requestFocus());
 
         updateProseguiButton();
 
@@ -63,17 +60,19 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     private void openLoginAmmnistratorePage() {
         loadScene("/com/dietiestates25ui/view/login-amministratore-view.fxml",
-                stageLoginAmministratorePage -> {}, indietroButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
+                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
     }
 
     private void openAgenziaCredentialsPage() {
         AgenziaImmobiliare agenzia = new AgenziaImmobiliare(nomeTextField.getText().trim(), partitaIVATextField.getText().trim(),
                 indirizzoTextField.getText().trim(), emailTextField.getText().trim(), telefonoTextField.getText().trim(), logoTextField.getText().trim());
         loadScene("/com/dietiestates25ui/view/agenzia-credentials-view.fxml",
-                stageAgenziaCredentials -> {
-                    AgenziaCredentialsController agenziaCredentialsController = stageAgenziaCredentials.getController();
-                    agenziaCredentialsController.setAgenzia(agenzia);
-                }, indietroButton, "/com/dietiestates25ui/styles/agenzia-credentials-style.css");;
+                (fxmlLoader, stage) -> {
+                    AgenziaCredentialsController controller = fxmlLoader.getController();
+                    controller.setAgenzia(agenzia);
+                    controller.setStage(stage);
+                    controller.initializeData(); // NOW initialize the data
+                }, proseguiButton, "/com/dietiestates25ui/styles/agenzia-credentials-style.css");
     }
 
     private void updateProseguiButton() {

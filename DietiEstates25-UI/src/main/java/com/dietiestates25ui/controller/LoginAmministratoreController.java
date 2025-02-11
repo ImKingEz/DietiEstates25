@@ -79,12 +79,12 @@ public class LoginAmministratoreController extends AbstractController implements
 
     private void openRegisterAgenziaPage() {
         loadScene("/com/dietiestates25ui/view/register-agenzia-view.fxml",
-                stageRegisterAgenzia -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
+                (fxmlLoader, stage) -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
     }
 
     private void openSelectRolePage() {
         loadScene("/com/dietiestates25ui/view/select-role-view.fxml",
-                stageSelectRole -> {}, tornaIndietroButton, "/com/dietiestates25ui/styles/select-role-style.css");
+                (fxmlLoader, stage) -> {}, tornaIndietroButton, "/com/dietiestates25ui/styles/select-role-style.css");
     }
 
     private void passwordTextFieldInitializer() {

@@ -143,8 +143,9 @@ public abstract class AbstractController {
 
     public void openDashboard(String token, Button button) {
         loadScene("/com/dietiestates25ui/view/dashboard-view.fxml",
-                stageDashboard -> {
-                    DashboardController dashboardController = stageDashboard.getController();
+                (fxmlLoader, stage) -> {
+                    DashboardController dashboardController = fxmlLoader.getController();
+                    dashboardController.setStage(stage); // Chiama setStage anziché modificare currentStage
                     dashboardController.setToken(token);
                 }, button, "/com/dietiestates25ui/styles/dashboard-style.css");
     }
@@ -165,23 +166,26 @@ public abstract class AbstractController {
                 stage = currentStage;
             }
 
-
             if (stylesheetPath != null && !stylesheetPath.isEmpty()) {
                 scene.getStylesheets().add(getClass().getResource(stylesheetPath).toExternalForm());
             }
 
-            sceneConfigurator.configure(fxmlLoader);
+            // Passa lo stage al configurator e usa setOnShown per eseguire la configurazione dopo che lo stage è mostrato
+            Stage finalStage = stage;  // Copia per usare nella lambda expression
+            stage.setOnShown(e -> sceneConfigurator.configure(fxmlLoader, finalStage));
             stage.setTitle(APP_TITLE);
             stage.setScene(scene);
             stage.show();
+
         } catch (IOException e) {
-            logger.error("Errore durante il caricamento della scena: {}", e.getMessage());
+            logger.error("Errore durante il caricamento della scena: {}", e.getMessage(), e); // Stampa la stack trace completa
             showPopup("Errore durante il caricamento della scena", e.getMessage(), ERROR_ICON);
         }
     }
 
+
     @FunctionalInterface
     public interface SceneConfigurator {
-        void configure(FXMLLoader fxmlLoader);
+        void configure(FXMLLoader fxmlLoader, Stage stage); // Modificato per includere Stage
     }
 }

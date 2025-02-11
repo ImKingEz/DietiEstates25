@@ -10,7 +10,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -20,7 +19,7 @@ import java.util.ResourceBundle;
 
 public class AgenziaCredentialsController extends AbstractController implements Initializable {
 
-    AgenziaImmobiliare agenzia;
+    private AgenziaImmobiliare agenzia;
 
     @FXML
     private TextField emailTextField;
@@ -54,9 +53,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
-        Platform.runLater(() -> currentStage = (Stage) primaryAnchorPane.getScene().getWindow());
-
-        emailTextField.setText(agenzia.getEmail());
 
         updateConfermaButton();
 
@@ -66,6 +62,13 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
         passwordTextFieldInitializer();
         togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
+    }
+
+    public void initializeData() {
+        if (agenzia != null) {
+            logger.debug("Agenzia email is: {}", agenzia.getEmail());
+            Platform.runLater(() -> emailTextField.setText(agenzia.getEmail()));
+        }
     }
 
     private void passwordTextFieldInitializer() {
@@ -98,7 +101,7 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
     private void openRegisterAgenziaPage() {
         loadScene("/com/dietiestates25ui/view/register-agenzia-view.fxml",
-                stageRegisterAgenzia -> {}, indietroButton, "/com/dietiestates25ui/styles/register-style.css");
+                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/register-style.css");
     }
 
     private void registraAgenzia() {
