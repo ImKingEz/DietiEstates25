@@ -42,9 +42,6 @@ public class RegisterAgenziaController extends AbstractController implements Ini
     private TextField partitaIVATextField;
 
     @FXML
-    private AnchorPane primaryAnchorPane;
-
-    @FXML
     private Button proseguiButton;
 
     @FXML
@@ -66,7 +63,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     private void openLoginAmmnistratorePage() {
         loadScene("/com/dietiestates25ui/view/login-amministratore-view.fxml",
-                stageSelectRole -> {}, indietroButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
+                stageLoginAmministratorePage -> {}, indietroButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
     }
 
     private void openAgenziaCredentialsPage() {
@@ -86,17 +83,18 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         emailTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
         telefonoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
         //TODO Implementare il controllo per il logo
+
+        proseguiButton.setDisable(true);
     }
 
     private void checkFieldsForContinue() {
-        boolean isNomeValid = !nomeTextField.getText().trim().isBlank();
-        boolean isPartitaIVAValid = !partitaIVATextField.getText().trim().isBlank();
-        boolean isIndirizzoValid = !indirizzoTextField.getText().trim().isBlank();
+        String nome = nomeTextField.getText().trim();
+        String partitaIVA = partitaIVATextField.getText().trim();
+        String indirizzo = indirizzoTextField.getText().trim();
         String email = emailTextField.getText().trim();
-        boolean isEmailValid = FormValidator.isValidEmail(email);
-        boolean isTelefonoValid = !telefonoTextField.getText().trim().isBlank();
-        //TODO Implementare il controllo per il logo
+        String telefono = telefonoTextField.getText().trim();
+        //TODO Implementare il controllo per il logo, partita iva, indirizzo e telefono.
 
-        proseguiButton.setDisable(!(isNomeValid && isPartitaIVAValid && isIndirizzoValid && isEmailValid && isTelefonoValid));
+        proseguiButton.setDisable(nome.isBlank() || partitaIVA.isBlank() || indirizzo.isBlank() || !FormValidator.isValidEmail(email) || telefono.isBlank());
     }
 }
