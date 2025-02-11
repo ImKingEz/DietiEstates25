@@ -56,10 +56,11 @@ Button:pressed {
     -fx-fill:  #3A5F7D;
 }
 
-/* Stili aggiuntivi per TextArea */
-TextArea {
+#descrizioneTextArea {
     -fx-max-width: 300;
     -fx-min-width: 300;
-    -fx-max-height: 80; /* Regola l'altezza desiderata */
-    -fx-min-height: 80;
+    -fx-pref-width: 300;
+    -fx-max-height: 60;
+    -fx-min-height: 60;
+    -fx-pref-height: 60;
 }

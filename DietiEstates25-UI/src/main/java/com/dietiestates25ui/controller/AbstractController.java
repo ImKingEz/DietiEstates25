@@ -145,7 +145,7 @@ public abstract class AbstractController {
         loadScene("/com/dietiestates25ui/view/dashboard-view.fxml",
                 (fxmlLoader, stage) -> {
                     DashboardController dashboardController = fxmlLoader.getController();
-                    dashboardController.setStage(stage); // Chiama setStage anziché modificare currentStage
+                    dashboardController.setStage(stage); // Chiama setStage anzichÃ© modificare currentStage
                     dashboardController.setToken(token);
                 }, button, "/com/dietiestates25ui/styles/dashboard-style.css");
     }
@@ -170,15 +170,14 @@ public abstract class AbstractController {
                 scene.getStylesheets().add(getClass().getResource(stylesheetPath).toExternalForm());
             }
 
-            // Passa lo stage al configurator e usa setOnShown per eseguire la configurazione dopo che lo stage è mostrato
-            Stage finalStage = stage;  // Copia per usare nella lambda expression
-            stage.setOnShown(e -> sceneConfigurator.configure(fxmlLoader, finalStage));
+            sceneConfigurator.configure(fxmlLoader, stage);
+
             stage.setTitle(APP_TITLE);
             stage.setScene(scene);
             stage.show();
 
         } catch (IOException e) {
-            logger.error("Errore durante il caricamento della scena: {}", e.getMessage(), e); // Stampa la stack trace completa
+            logger.error("Errore durante il caricamento della scena: {}", e.getMessage(), e);
             showPopup("Errore durante il caricamento della scena", e.getMessage(), ERROR_ICON);
         }
     }
