@@ -64,9 +64,9 @@ public class RegisterController extends AbstractController implements Initializa
         updateRegistratiButton();
 
         utenteService = new UtenteService();
-        registratiButton.setOnAction(event -> registraUtente());
+        //registratiButton.setOnAction(event -> registraUtente());
 
-        indietroButton.setOnAction(event -> openLoginPage());
+        //indietroButton.setOnAction(event -> openLoginPage());
 
         createAndPlaceBackButton();
 
@@ -141,7 +141,7 @@ public class RegisterController extends AbstractController implements Initializa
             indietroButton.setDisable(true);
             showPopup("Registrazione completata!", "Reindirizzamento al login...", SUCCESS_ICON);
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
-            delay.setOnFinished(event -> openLoginPage());
+            //delay.setOnFinished(event -> openLoginPage());
             delay.play();
         } catch (Exception e) {
             logger.error("Errore durante la registrazione: {}", e.getMessage());
@@ -157,8 +157,8 @@ public class RegisterController extends AbstractController implements Initializa
         registratiButton.setDisable(nome.isBlank() || cognome.isBlank() || !FormValidator.isValidEmail(email) || !FormValidator.isValidPassword(password));
     }
 
-    private void openLoginPage() {
-        loadScene("/com/dietiestates25ui/view/login-view.fxml",
-                stageLogin -> {}, indietroButton, "/com/dietiestates25ui/styles/login-style.css");
-    }
+//    private void openLoginPage() {
+//        loadScene("/com/dietiestates25ui/view/login-view.fxml",
+//                stageLogin -> {}, indietroButton, "/com/dietiestates25ui/styles/login-style.css");
+//    }
 }

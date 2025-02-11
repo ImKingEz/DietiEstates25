@@ -57,7 +57,7 @@ public class LoginController extends AbstractController implements Initializable
 
         updateLoginButton();
         loginButton.setOnAction(event -> loginUtente());
-        registratiButton.setOnAction(event -> openRegisterPage());
+        //registratiButton.setOnAction(event -> openRegisterPage());
 
         utenteService = new UtenteService();
 
@@ -140,8 +140,8 @@ public class LoginController extends AbstractController implements Initializable
     }
 
 
-    private void openRegisterPage() {
-        loadScene("/com/dietiestates25ui/view/register-view.fxml",
-                stageRegister -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
-    }
+//    private void openRegisterPage() {
+//        loadScene("/com/dietiestates25ui/view/register-view.fxml",
+//                stageRegister -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
+//    }
 }

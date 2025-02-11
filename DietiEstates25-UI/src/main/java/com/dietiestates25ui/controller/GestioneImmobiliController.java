@@ -37,7 +37,7 @@ public class GestioneImmobiliController extends AbstractController implements In
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> {
             logo.requestFocus();
-            currentStage = (Stage) primaryAnchorPane.getScene().getWindow();
+            currentStage = (Stage) primaryAnchorPane.getScene().getWindow(); // Imposta currentStage
         });
 
         caricaImmobileButton.setOnAction(event -> openInserimentoDatiInserzionePage());
@@ -70,6 +70,6 @@ public class GestioneImmobiliController extends AbstractController implements In
 
     private void openInserimentoDatiInserzionePage() {
         loadScene("/com/dietiestates25ui/view/inserimento-inserzione-view.fxml",
-                stageInserimento -> {}, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
+                (fxmlLoader, stage) -> {}, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
     }
 }
