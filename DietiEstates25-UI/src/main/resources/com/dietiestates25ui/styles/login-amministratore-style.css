@@ -45,10 +45,6 @@ Button:pressed {
     -fx-min-width: 25;
 }
 
-#textNonHaiAccount, #agenziaImmobiliareText {
+#textAgenziaNonRegistrata {
     -fx-font-size: 14;
-}
-
-#textContinuaCon {
-    -fx-font-size: 13;
 }

@@ -1,8 +1,8 @@
 package com.dietiestates25ui.controller;
 
 import com.dietiestates25ui.handler.FormValidator;
-import com.dietiestates25ui.handler.OAuth2Handler;
-import com.dietiestates25ui.model.Utente;
+import com.dietiestates25ui.model.Amministratore;
+import com.dietiestates25ui.service.AmministratoreService;
 import com.dietiestates25ui.service.UtenteService;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -23,30 +23,18 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class LoginController extends AbstractController implements Initializable {
+public class LoginAmministratoreController extends AbstractController implements Initializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoginAmministratoreController.class);
 
     @FXML
     private TextField emailTextField;
-
-    @FXML
-    private Button facebookButton;
-
-    @FXML
-    private Button githubButton;
-
-    @FXML
-    private Button googleButton;
 
     @FXML
     private Button loginButton;
 
     @FXML
     private PasswordField passwordPasswordField;
-
-    @FXML
-    private Button registratiButton;
 
     @FXML
     private Button togglePasswordButton;
@@ -58,15 +46,16 @@ public class LoginController extends AbstractController implements Initializable
     private HBox passwordHBox;
 
     @FXML
-    private Button agenziaImmobiliareButton;
+    private Button registratiButton;
+
+    @FXML
+    private Button tornaIndietroButton;
 
     private TextField passwordTextField;
 
-    private UtenteService utenteService;
-
-    private OAuth2Handler oAuth2Handler;
-
     private boolean passwordVisible = false;
+
+    private AmministratoreService amministratoreService;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -76,27 +65,26 @@ public class LoginController extends AbstractController implements Initializable
         });
 
         updateLoginButton();
-        loginButton.setOnAction(event -> loginUtente());
-        registratiButton.setOnAction(event -> openRegisterPage());
 
-        utenteService = new UtenteService();
+        amministratoreService = new AmministratoreService();
+        loginButton.setOnAction(event -> loginAmministratore());
 
-        oAuth2Handler = new OAuth2Handler(this, loginButton);
-        actionButtonProvider();
+        registratiButton.setOnAction(event -> openRegisterAgenziaPage());
 
-        createAndPlaceBackButton();
-
-        updateWebView();
+        tornaIndietroButton.setOnAction(event -> openSelectRolePage());
 
         passwordTextFieldInitializer();
         togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
+    }
 
-        agenziaImmobiliareButton.setOnAction(event -> openSelectRolePage());
+    private void openRegisterAgenziaPage() {
+        loadScene("/com/dietiestates25ui/view/register-agenzia-view.fxml",
+                stageRegisterAgenzia -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
     }
 
     private void openSelectRolePage() {
         loadScene("/com/dietiestates25ui/view/select-role-view.fxml",
-                stageSelectRole -> {}, agenziaImmobiliareButton, "/com/dietiestates25ui/styles/select-role-style.css");
+                stageSelectRole -> {}, tornaIndietroButton, "/com/dietiestates25ui/styles/select-role-style.css");
     }
 
     private void passwordTextFieldInitializer() {
@@ -111,7 +99,6 @@ public class LoginController extends AbstractController implements Initializable
         passwordVisible = !passwordVisible;
 
         if (passwordVisible) {
-            // Mostra la password
             passwordHBox.getChildren().remove(passwordPasswordField);
             passwordHBox.getChildren().addFirst(passwordTextField);
             passwordTextField.setPrefWidth(passwordPasswordField.getWidth());
@@ -120,8 +107,6 @@ public class LoginController extends AbstractController implements Initializable
 
             eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_open.png"))));
         } else {
-            // Nascondi la password
-
             passwordHBox.getChildren().remove(passwordTextField);
             passwordHBox.getChildren().addFirst(passwordPasswordField);
 
@@ -129,31 +114,6 @@ public class LoginController extends AbstractController implements Initializable
             passwordTextField.setVisible(false);
         }
 
-    }
-
-    private void updateWebView() {
-        webView.setVisible(false);
-        webEngine = webView.getEngine();
-
-        webEngine.locationProperty().addListener((observable, oldValue, newValue) -> oAuth2Handler.handleOAuthRedirect(newValue));
-        webEngine.loadContent(
-                """
-                <script>
-                    window.onload = function() {
-                      if(window.location.href.includes('oauth2/success?token=') || window.location.href.includes('oauth2/error?error=') || window.location.href.includes('oauth2/firstlogin?token=')){
-                          window.location.href = window.location.href;
-                      }
-                    }
-                </script>
-                """
-        );
-    }
-
-
-    private void actionButtonProvider() {
-        googleButton.setOnAction(event -> loginWithProvider("google"));
-        facebookButton.setOnAction(event -> loginWithProvider("facebook"));
-        githubButton.setOnAction(event -> loginWithProvider("github"));
     }
 
     private void updateLoginButton() {
@@ -168,12 +128,12 @@ public class LoginController extends AbstractController implements Initializable
         loginButton.setDisable(!FormValidator.isValidEmail(email) || password.isBlank());
     }
 
-    private void loginUtente() {
+    private void loginAmministratore() {
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
-        Utente user = new Utente(email, password);
+        Amministratore admin = new Amministratore(email, password);
         try {
-            String token = utenteService.loginUtente(user);
+            String token = amministratoreService.loginAmministratore(admin);
             if (token != null) {
                 showPopup("Login effettuato con successo", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
@@ -186,24 +146,5 @@ public class LoginController extends AbstractController implements Initializable
             logger.error("Errore durante il login: {}", e.getMessage());
             showPopup("Errore durante il login", e.getMessage(), ERROR_ICON);
         }
-    }
-
-
-
-    private void loginWithProvider(String provider) {
-        try {
-            webView.setVisible(true);
-            providerBackButton.setVisible(true);
-            webEngine.load("http://localhost:8080/oauth2/authorization/" + provider);
-        } catch (Exception e) {
-            logger.error("Errore durante il login con provider: {}", e.getMessage());
-            showPopup("Errore durante il login con provider", e.getMessage(), ERROR_ICON);
-        }
-    }
-
-
-    private void openRegisterPage() {
-        loadScene("/com/dietiestates25ui/view/register-view.fxml",
-                stageRegister -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
     }
 }

@@ -1,11 +1,17 @@
 package com.dietiestates25backend.data.config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,6 +40,7 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final ApplicationContext applicationContext;
 
+
     @Autowired
     public SecurityConfig(OAuth2SuccessHandler oAuth2SuccessHandler, JwtService jwtService, ApplicationContext applicationContext) {
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
@@ -55,7 +62,9 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/users/register", "/api/users/login", "/api/csrf").permitAll()
+                .requestMatchers("/api/admin/register", "/api/admin/login").permitAll() // Permetti la registrazione e il login degli admin
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") // Richiede il ruolo ADMIN per gli endpoint admin
                 .anyRequest().authenticated()
         );
 
@@ -101,7 +110,19 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){
-        UserDetailsService userDetailsService = applicationContext.getBean(UserDetailsService.class);
-        return new JwtAuthenticationFilter(jwtService, userDetailsService);
+        return new JwtAuthenticationFilter(jwtService, applicationContext);
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider(@Qualifier("authService") UserDetailsService userDetailsService) {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

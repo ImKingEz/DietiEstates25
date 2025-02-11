@@ -13,52 +13,47 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0"
-            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.dietiestates25ui.controller.LoginController">
+<AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.LoginController">
 
-   <VBox alignment="CENTER" prefHeight="410.0" prefWidth="446.0" spacing="15.0" AnchorPane.bottomAnchor="0.0"
-         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+   <VBox alignment="BOTTOM_CENTER" prefHeight="410.0" prefWidth="446.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
       <VBox alignment="CENTER" prefHeight="410.0" prefWidth="1280.0" spacing="15.0" styleClass="secondaryBackground">
 
          <ImageView fx:id="logo" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
 
-            <Image url="@../images/logo2.png"/>
+            <Image url="@../images/logo2.png" />
 
          </ImageView>
-         <TextField fx:id="emailTextField" promptText="Email" styleClass="loginField"/>
+         <TextField fx:id="emailTextField" promptText="Email" styleClass="loginField" />
          <HBox fx:id="passwordHBox" alignment="CENTER">
 
             <PasswordField fx:id="passwordPasswordField" prefWidth="300.0" promptText="Password">
                <HBox.margin>
-                  <Insets/>
+                  <Insets />
                </HBox.margin>
             </PasswordField>
             <Button fx:id="togglePasswordButton" mnemonicParsing="false">
                <graphic>
-                  <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true"
-                             preserveRatio="true">
+                  <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
 
-                     <Image url="@../images/eye_closed.png"/>
+                     <Image url="@../images/eye_closed.png" />
 
                   </ImageView>
                </graphic>
             </Button>
 
          </HBox>
-         <Button fx:id="loginButton" mnemonicParsing="false" text="Login"/>
+         <Button fx:id="loginButton" mnemonicParsing="false" text="Login" />
          <VBox alignment="CENTER" prefHeight="70.0" prefWidth="1280.0" spacing="8.0">
 
-            <Text fx:id="textContinuaCon" strokeType="OUTSIDE" strokeWidth="0.0" text="Oppure continua con"
-                  textAlignment="CENTER"/>
+            <Text fx:id="textContinuaCon" strokeType="OUTSIDE" strokeWidth="0.0" text="Oppure continua con" textAlignment="CENTER" />
             <HBox alignment="CENTER" prefHeight="33.0" prefWidth="1280.0" spacing="40.0">
 
                <Button fx:id="googleButton" mnemonicParsing="false" text="Google">
                   <graphic>
                      <ImageView fitHeight="20.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
 
-                        <Image url="@../images/google.png"/>
+                        <Image url="@../images/google.png" />
 
                      </ImageView>
                   </graphic>
@@ -67,7 +62,7 @@
                   <graphic>
                      <ImageView fitHeight="18.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
 
-                        <Image url="@../images/facebook.png"/>
+                        <Image url="@../images/facebook.png" />
 
                      </ImageView>
                   </graphic>
@@ -76,7 +71,7 @@
                   <graphic>
                      <ImageView fitHeight="19.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
 
-                        <Image url="@../images/github.png"/>
+                        <Image url="@../images/github.png" />
 
                      </ImageView>
                   </graphic>
@@ -89,23 +84,37 @@
       </VBox>
       <VBox alignment="CENTER" prefHeight="56.0" prefWidth="1280.0" spacing="8.0">
 
-         <Text fx:id="textNonHaiAccount" strokeType="OUTSIDE" strokeWidth="0.0" text="Non hai un account?"
-               textAlignment="CENTER">
+         <Text fx:id="textNonHaiAccount" strokeType="OUTSIDE" strokeWidth="0.0" text="Non hai un account?" textAlignment="CENTER">
             <font>
-               <Font name="Verdana" size="12.0"/>
+               <Font name="Verdana" size="12.0" />
             </font>
          </Text>
-         <Button fx:id="registratiButton" alignment="CENTER" mnemonicParsing="false" text="Registrati"
-                 textAlignment="CENTER">
+         <Button fx:id="registratiButton" alignment="CENTER" mnemonicParsing="false" text="Registrati" textAlignment="CENTER">
             <font>
-               <Font name="Verdana" size="12.0"/>
+               <Font name="Verdana" size="12.0" />
             </font>
          </Button>
 
       </VBox>
+      <VBox alignment="CENTER" prefHeight="56.0" prefWidth="1280.0" spacing="8.0">
+
+            <Text fx:id="agenziaImmobiliareText" strokeType="OUTSIDE" strokeWidth="0.0" text="Lavori in un agenzia immobiliare?" textAlignment="CENTER">
+               <font>
+                  <Font name="Verdana" size="12.0" />
+               </font>
+            </Text>
+            <Button fx:id="agenziaImmobiliareButton" alignment="CENTER" mnemonicParsing="false" text="Clicca qui" textAlignment="CENTER">
+               <font>
+                  <Font name="Verdana" size="12.0" />
+               </font>
+            </Button>
+         <VBox.margin>
+            <Insets bottom="40.0" />
+         </VBox.margin>
+
+      </VBox>
 
    </VBox>
-   <WebView fx:id="webView" prefHeight="0.0" prefWidth="0.0" visible="false" AnchorPane.bottomAnchor="0.0"
-            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+   <WebView fx:id="webView" prefHeight="0.0" prefWidth="0.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
 
 </AnchorPane>
