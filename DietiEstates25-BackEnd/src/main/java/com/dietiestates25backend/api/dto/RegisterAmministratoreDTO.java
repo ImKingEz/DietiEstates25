@@ -2,6 +2,7 @@ package com.dietiestates25backend.api.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,11 @@ public class RegisterAmministratoreDTO {
     @NotBlank(message = "Email non può essere vuota")
     @Email(message = "Email non valida")
     private String email;
+
     @NotBlank(message = "Password non può essere vuota")
     @Size(min = 8, message = "La password deve contenere almeno 8 caratteri")
     private String password;
+
+    @NotNull(message = "idAgenzia cannot be null")
+    private Long idAgenzia;
 }

@@ -21,8 +21,17 @@ public class Amministratore {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "id_agenzia")
+    private Long idAgenzia;
+
     public Amministratore(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public Amministratore(String email, String password, Long idAgenzia) {
+        this.email = email;
+        this.password = password;
+        this.idAgenzia = idAgenzia;
     }
 }

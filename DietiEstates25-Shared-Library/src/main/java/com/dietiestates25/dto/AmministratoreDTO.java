@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AmministratoreDTO {
     private String email;
+    private Long idAgenzia;
 }

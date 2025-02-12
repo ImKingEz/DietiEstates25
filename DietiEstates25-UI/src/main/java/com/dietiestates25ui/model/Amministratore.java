@@ -3,17 +3,17 @@ package com.dietiestates25ui.model;
 public class Amministratore {
     private String email;
     private String password;
-    private int id;
+    private Long idAgenzia;
 
     public Amministratore(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public Amministratore(String email, String password, int id) {
+    public Amministratore(String email, String password, Long idAgenzia) {
         this.email = email;
         this.password = password;
-        this.id = id;
+        this.idAgenzia = idAgenzia;
     }
 
     public String getEmail() {
@@ -26,5 +26,13 @@ public class Amministratore {
 
     public String getPassword() {
         return password;
+    }
+
+    public Long getIdAgenzia() {
+        return idAgenzia;
+    }
+
+    public void setIdAgenzia(Long idAgenzia) {
+        this.idAgenzia = idAgenzia;
     }
 }

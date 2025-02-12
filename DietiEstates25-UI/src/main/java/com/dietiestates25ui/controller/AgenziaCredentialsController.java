@@ -2,6 +2,7 @@ package com.dietiestates25ui.controller;
 
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
+import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.service.AgenziaService;
 import com.dietiestates25ui.service.AmministratoreService;
 import javafx.animation.PauseTransition;
@@ -18,9 +19,11 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.CookieManager;

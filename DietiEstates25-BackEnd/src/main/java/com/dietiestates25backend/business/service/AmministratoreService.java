@@ -1,8 +1,10 @@
 package com.dietiestates25backend.business.service;
 
-import com.dietiestates25backend.business.entity.Amministratore;
-import com.dietiestates25backend.data.repository.AmministratoreRepository;
 import com.dietiestates25.dto.AmministratoreDTO;
+import com.dietiestates25backend.business.entity.Amministratore;
+import com.dietiestates25backend.business.entity.AgenziaImmobiliare;
+import com.dietiestates25backend.data.repository.AmministratoreRepository;
+import com.dietiestates25backend.data.repository.AgenziaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +28,15 @@ public class AmministratoreService implements UserDetailsService {
     private final AmministratoreRepository amministratoreRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AgenziaRepository agenziaRepository;
 
     @Autowired
-    public AmministratoreService(AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AmministratoreService(AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
+                                 AgenziaRepository agenziaRepository) {
         this.amministratoreRepository = amministratoreRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.agenziaRepository = agenziaRepository;
     }
 
     @Transactional
@@ -42,10 +47,15 @@ public class AmministratoreService implements UserDetailsService {
             throw new DataIntegrityViolationException("Email già in uso");
         }
 
+        // TODO: Implementare la logica per associare l'amministratore all'agenzia
+        AgenziaImmobiliare agenzia = agenziaRepository.findByEmail(amministratore.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Agenzia non trovata per l'email: " + amministratore.getEmail()));
+
+        amministratore.setIdAgenzia(agenzia.getId()); // Imposta l'ID dell'agenzia
         amministratore.setPassword(passwordEncoder.encode(amministratore.getPassword()));
         Amministratore savedAdmin = amministratoreRepository.save(amministratore);
         logger.debug("Admin saved: {}", savedAdmin.getId());
-        return new AmministratoreDTO(savedAdmin.getEmail());
+        return new AmministratoreDTO(savedAdmin.getEmail(), savedAdmin.getIdAgenzia());
     }
 
     @Transactional(readOnly = true)

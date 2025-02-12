@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
@@ -140,16 +141,16 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             imageView.setFitHeight(fixedImageSize);
             imageView.setPreserveRatio(true);
 
-            Image closeIcon = new Image(getClass().getResourceAsStream("/com/dietiestates25ui/images/close.png"));
+            Image closeIcon = new Image(getClass().getResourceAsStream("/com/dietiestates25ui/images/erroricon.png"));
             ImageView closeIconView = new ImageView(closeIcon);
-            closeIconView.setFitWidth(12);
-            closeIconView.setFitHeight(12);
+            closeIconView.setFitWidth(20);
+            closeIconView.setFitHeight(20);
 
             Button deleteButton = new Button();
             deleteButton.setGraphic(closeIconView);
 
-            deleteButton.setStyle("-fx-background-color: red; -fx-padding: 0px; -fx-font-size: 8px;");
-            deleteButton.setPrefSize(20, 20);
+            deleteButton.setStyle("-fx-padding: 0px; -fx-background-color: transparent;");
+            deleteButton.setPrefSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 
             deleteButton.setOnAction(e -> {
                 logo.requestFocus();

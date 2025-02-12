@@ -47,7 +47,6 @@ public class AgenziaService {
             throw new DataIntegrityViolationException("Email già in uso");
         }
 
-        // Valore temporaneo per evitare NOT NULL constraint
         String tempLogoPath = "temporary_logo";
 
         AgenziaImmobiliare agenzia = new AgenziaImmobiliare(
@@ -56,21 +55,21 @@ public class AgenziaService {
                 registerAgenziaDTO.getIndirizzo(),
                 registerAgenziaDTO.getEmail(),
                 registerAgenziaDTO.getTelefono(),
-                tempLogoPath // Valore temporaneo
+                tempLogoPath
         );
 
         AgenziaImmobiliare savedAgenzia = agenziaRepository.save(agenzia);
         logger.debug("Agenzia salvata con ID: {}", savedAgenzia.getId());
 
-        String logoPath = saveLogo(registerAgenziaDTO.getLogo(), savedAgenzia.getId()); // Salva il logo associato all'ID
+        String logoPath = saveLogo(registerAgenziaDTO.getLogo(), savedAgenzia.getId());
 
-        savedAgenzia.setLogo(logoPath); // Aggiorna il path del logo nell'agenzia salvata
-        agenziaRepository.save(savedAgenzia); // Salva nuovamente l'agenzia con il path del logo aggiornato
+        savedAgenzia.setLogo(logoPath);
+        agenziaRepository.save(savedAgenzia);
 
-        // Crea e salva l'amministratore
         Amministratore amministratore = new Amministratore();
         amministratore.setEmail(registerAgenziaDTO.getEmail());
-        amministratore.setPassword(passwordEncoder.encode(registerAgenziaDTO.getPassword())); // Hash della password
+        amministratore.setPassword(passwordEncoder.encode(registerAgenziaDTO.getPassword()));
+        amministratore.setIdAgenzia(savedAgenzia.getId());
         amministratoreRepository.save(amministratore);
         logger.debug("Amministratore salvato con email: {}", amministratore.getEmail());
 
@@ -89,7 +88,7 @@ public class AgenziaService {
 
     private String saveLogo(MultipartFile logo, Long agenziaId) {
         if (logo == null || logo.isEmpty()) {
-            return ""; // Restituisce una stringa vuota se non c'è logo
+            return "";
         }
 
         String fileExtension = "";
@@ -98,7 +97,7 @@ public class AgenziaService {
         if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
             fileExtension = originalFileName.substring(dotIndex);
         }
-        String fileName = "logo_" + agenziaId + fileExtension; // Nome file univoco
+        String fileName = "logo_" + agenziaId + fileExtension;
         Path uploadDir = Paths.get("uploads/logos");
 
         try {
@@ -110,7 +109,7 @@ public class AgenziaService {
             return "/uploads/logos/" + fileName;
         } catch (IOException e) {
             logger.error("Could not save logo: ", e);
-            return ""; // Restituisce una stringa vuota in caso di errore
+            return "";
         }
     }
 }
