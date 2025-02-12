@@ -19,8 +19,22 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class AgenziaCredentialsController extends AbstractController implements Initializable {
@@ -58,6 +72,8 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
     private boolean passwordVisible = false;
 
+    private File logoFile;
+
     AgenziaService agenziaService;
 
     AmministratoreService amministratoreService;
@@ -81,7 +97,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
     public void initializeData() {
         logger.info("initializeData() called in AgenziaCredentialsController");
         if (agenzia != null) {
-            logger.debug("Agenzia email is: ", agenzia.getEmail());
             Platform.runLater(() -> emailTextField.setText(agenzia.getEmail()));
         } else {
             logger.error("Agenzia is null");
@@ -119,25 +134,34 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
     private void openRegisterAgenziaPage() {
         loadScene("/com/dietiestates25ui/view/register-agenzia-view.fxml",
-                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/register-style.css");
+                (fxmlLoader, stage) -> {
+                }, indietroButton, "/com/dietiestates25ui/styles/register-style.css");
     }
 
     private void registraAgenzia() {
         Platform.runLater(() -> logo.getParent().requestFocus());
 
+        String email = emailTextField.getText().trim();
+        String password = passwordPasswordField.getText().trim();
+
         try {
-            logger.info("Chiamata a agenziaService.registraAgenzia()");
-            agenziaService.registraAgenzia(agenzia);
-            logger.info("Agenzia registrata con successo");
-            Amministratore amministratore = new Amministratore(agenzia.getEmail(), passwordPasswordField.getText());
-            amministratoreService.registraAmministratore(amministratore);
-            logger.info("Amministratore registrato con successo");
-            confermaButton.setDisable(true);
-            indietroButton.setDisable(true);
-            showPopup("Agenzia registrata con successo", "Registrazione completata", SUCCESS_ICON);
-            PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
-            delay.setOnFinished(event -> openLoginAmministratorePage());
-            delay.play();
+            logger.info("Tentativo di registrazione agenzia e amministratore...");
+
+            //uploadAgenziaData(agenzia, logoFile, email, password); // Invia i dati completi al backend
+
+            boolean registrationSuccessful = uploadAgenziaData(agenzia, logoFile, email, password);
+
+            if (registrationSuccessful) {
+                confermaButton.setDisable(true);
+                indietroButton.setDisable(true);
+                showPopup("Agenzia registrata con successo", "Registrazione completata", SUCCESS_ICON);
+                PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
+                delay.setOnFinished(event -> openLoginAmministratorePage());
+                delay.play();
+            } else {
+                showPopup(POPUP_ERROR_TITLE, "Errore durante la registrazione dell'agenzia o dell'amministratore.", ERROR_ICON);
+            }
+
         } catch (Exception e) {
             logger.error("Errore durante la registrazione: {}", e.getMessage());
             showPopup(POPUP_ERROR_TITLE, e.getMessage(), ERROR_ICON);
@@ -146,7 +170,8 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
     private void openLoginAmministratorePage() {
         loadScene("/com/dietiestates25ui/view/login-amministratore-view.fxml",
-                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
+                (fxmlLoader, stage) -> {
+                }, indietroButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
     }
 
     private void updateConfermaButton() {
@@ -163,5 +188,153 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
     public void setAgenzia(AgenziaImmobiliare agenzia) {
         this.agenzia = agenzia;
+    }
+
+    public void setLogoFile(File logoFile) {
+        this.logoFile = logoFile;
+    }
+
+    private boolean uploadAgenziaData(AgenziaImmobiliare agenzia, File logoFile, String email, String password) {
+        try {
+            // Costruisci la richiesta multipart
+            MultipartBodyPublisher publisher = new MultipartBodyPublisher();
+            publisher.addFormDataPart("nome", agenzia.getNome());
+            publisher.addFormDataPart("partitaIva", agenzia.getPartitaIva());
+            publisher.addFormDataPart("indirizzo", agenzia.getIndirizzo());
+            publisher.addFormDataPart("email", agenzia.getEmail());
+            publisher.addFormDataPart("telefono", agenzia.getTelefono());
+            publisher.addFormDataPart("password", password);
+
+            if (logoFile != null) {
+                Path logoPath = Paths.get(logoFile.getAbsolutePath());
+                String mimeType = Files.probeContentType(logoPath);
+                publisher.addFilePart("logo", logoFile.getName(), mimeType, logoPath);
+            }
+
+            // Recupera il token CSRF dai cookie
+            String csrfToken = null;
+            String csrfCookieName = "XSRF-TOKEN";
+            CookieManager cookieManager = new CookieManager();
+            HttpClient client = HttpClient.newBuilder()
+                    .cookieHandler(cookieManager)
+                    .build();
+
+            // Effettua una richiesta GET per ottenere i cookie CSRF
+            HttpRequest csrfRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/api/csrf"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> csrfResponse = client.send(csrfRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (csrfResponse.headers().map().containsKey("Set-Cookie")) {
+                List<String> setCookieHeaders = csrfResponse.headers().allValues("Set-Cookie");
+                for (String setCookieHeader : setCookieHeaders) {
+                    HttpCookie cookie = HttpCookie.parse(setCookieHeader).get(0);
+                    cookieManager.getCookieStore().add(null, cookie);
+                }
+            }
+
+            // Dopo aver gestito i cookie, recupera il token CSRF
+            for (HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
+                if (csrfCookieName.equals(cookie.getName())) {
+                    csrfToken = cookie.getValue();
+                    break;
+                }
+            }
+
+            if (csrfToken == null) {
+                logger.error("CSRF token not found in cookies.");
+                return false;
+            }
+
+            // Ottieni il corpo della richiesta come array di byte
+            byte[] requestBody = publisher.build();
+
+            // Crea la richiesta HTTP
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/api/agenzie/register"))
+                    .header("Content-Type", publisher.getContentType())
+                    .header("X-XSRF-TOKEN", csrfToken)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody)) // Usa ofByteArray
+                    .build();
+
+            // Invia la richiesta e gestisci la risposta
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            int statusCode = response.statusCode();
+
+            if (statusCode == 201) {
+                logger.info("Agenzia e amministratore registrati con successo.");
+                return true;
+            } else {
+                logger.error("Errore durante la registrazione dell'agenzia o dell'amministratore: {}", response.body());
+                return false;
+            }
+
+        } catch (IOException | InterruptedException e) {
+            logger.error("Errore durante l'upload dei dati dell'agenzia: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    // Inner class for building multipart form data
+    static class MultipartBodyPublisher {
+        private final String boundary;
+        private final java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
+        private final String LINE_FEED = "\r\n";
+
+        public MultipartBodyPublisher() {
+            this.boundary = generateBoundary();
+        }
+
+        private String generateBoundary() {
+            String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            StringBuilder buffer = new StringBuilder();
+            Random random = new Random();
+            for (int i = 0; i < 20; i++) { // A shorter boundary
+                buffer.append(characters.charAt(random.nextInt(characters.length())));
+            }
+            return buffer.toString();
+        }
+
+        public void addFormDataPart(String name, String value) {
+            try {
+                outputStream.write(("--" + boundary + LINE_FEED).getBytes());
+                outputStream.write(("Content-Disposition: form-data; name=\"" + name + "\"" + LINE_FEED).getBytes());
+                outputStream.write(("Content-Type: text/plain; charset=UTF-8" + LINE_FEED).getBytes());
+                outputStream.write(LINE_FEED.getBytes());
+                outputStream.write(value.getBytes());
+                outputStream.write(LINE_FEED.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void addFilePart(String fieldName, String fileName, String mimeType, Path filePath) {
+            try {
+                outputStream.write(("--" + boundary + LINE_FEED).getBytes());
+                outputStream.write(("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + fileName + "\"" + LINE_FEED).getBytes());
+                outputStream.write(("Content-Type: " + mimeType + LINE_FEED).getBytes());
+                outputStream.write(("Content-Transfer-Encoding: binary" + LINE_FEED).getBytes());
+                outputStream.write(LINE_FEED.getBytes());
+                Files.copy(filePath, outputStream);
+                outputStream.write(LINE_FEED.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public byte[] build() {
+            try {
+                outputStream.write(("--" + boundary + "--" + LINE_FEED).getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return outputStream.toByteArray();
+        }
+
+        public String getContentType() {
+            return "multipart/form-data; boundary=" + boundary;
+        }
     }
 }

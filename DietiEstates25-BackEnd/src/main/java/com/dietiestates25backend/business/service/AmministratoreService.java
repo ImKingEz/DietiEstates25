@@ -25,7 +25,7 @@ public class AmministratoreService implements UserDetailsService {
 
     private final AmministratoreRepository amministratoreRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;  // Puoi riutilizzare il JwtService esistente
+    private final JwtService jwtService;
 
     @Autowired
     public AmministratoreService(AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {

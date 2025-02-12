@@ -1,6 +1,5 @@
 package com.dietiestates25ui.controller;
 
-import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
 import javafx.application.Platform;
@@ -13,11 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +59,8 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     private final ObservableList<File> selectedImageList = FXCollections.observableArrayList();
 
+    private File selectedLogoFile = null;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
@@ -73,7 +72,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
         indietroButton.setOnAction(event -> openLoginAmmnistratorePage());
 
-        selezionaImmaginiButton.setOnAction(event ->  Platform.runLater(this::handleImageSelection));
+        selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
     }
 
     private void handleImageSelection() {
@@ -81,18 +80,12 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         fileChooser.setTitle("Seleziona Immagini");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
 
-        List<File> newFiles = fileChooser.showOpenMultipleDialog(currentStage);
+        File newFile = fileChooser.showOpenDialog(currentStage);
 
-        if (newFiles != null && !newFiles.isEmpty()) {
-            selectedImageList.addAll(newFiles);
-
-            if (selectedImageList.size() > 1) {
-                Platform.runLater(() -> showPopup("Attenzione", "Puoi selezionare al massimo 1 immagine.", ERROR_ICON));
-
-                while (selectedImageList.size() > 1) {
-                    selectedImageList.removeLast();
-                }
-            }
+        if (newFile != null) {
+            selectedImageList.clear(); // Clear previous selections
+            selectedImageList.add(newFile);
+            selectedLogoFile = newFile; // Set the selected logo file
 
             updateImageThumbnails();
         }
@@ -114,11 +107,11 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             // Load the close icon
             Image closeIcon = new Image(getClass().getResourceAsStream("/com/dietiestates25ui/images/close.png")); // Adjust path if needed
             ImageView closeIconView = new ImageView(closeIcon);
-            closeIconView.setFitWidth(12); // Adjust size as needed
+            closeIconView.setFitWidth(12);
             closeIconView.setFitHeight(12);
 
             Button deleteButton = new Button();
-            deleteButton.setGraphic(closeIconView);  // Set the icon
+            deleteButton.setGraphic(closeIconView);
 
             deleteButton.setStyle("-fx-background-color: red; -fx-padding: 0px; -fx-font-size: 8px;"); // Remove text, keep style if needed
             deleteButton.setPrefSize(20, 20);
@@ -127,6 +120,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             deleteButton.setOnAction(e -> {
                 logo.requestFocus();
                 selectedImageList.remove(file);
+                selectedLogoFile = null; // Also clear the selected logo file
                 immaginiFlowPane.getChildren().remove(imageView.getParent());
             });
 
@@ -137,9 +131,11 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         }
     }
 
+
     private void openLoginAmmnistratorePage() {
         loadScene("/com/dietiestates25ui/view/login-amministratore-view.fxml",
-                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
+                (fxmlLoader, stage) -> {
+                }, indietroButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
     }
 
     private void openAgenziaCredentialsPage() {
@@ -148,11 +144,10 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         String indirizzo = indirizzoTextField.getText().trim();
         String email = emailTextField.getText().trim();
         String telefono = telefonoTextField.getText().trim();
-        //TODO Aggiungere logo
 
         logger.info("Nome: {}, Partita IVA: {}, Indirizzo: {}, Email: {}, Telefono: {}", nome, partitaIVA, indirizzo, email, telefono);
 
-        AgenziaImmobiliare agenzia = new AgenziaImmobiliare(nome, partitaIVA, indirizzo, email, telefono, "logo"); //TODO Aggiungere logo
+        AgenziaImmobiliare agenzia = new AgenziaImmobiliare(nome, partitaIVA, indirizzo, email, telefono, "logo");
 
         loadScene("/com/dietiestates25ui/view/agenzia-credentials-view.fxml",
                 (fxmlLoader, stage) -> {
@@ -161,6 +156,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
                         if (controller != null) {
                             controller.setAgenzia(agenzia);
                             controller.setStage(stage);
+                            controller.setLogoFile(selectedLogoFile); // Pass the selected logo file
                             controller.initializeData();
                         } else {
                             logger.error("Controller is null after FXMLLoader.getController()");
@@ -177,7 +173,6 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
         emailTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
         telefonoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
-        //TODO Aggiungere listener per il logo
 
         proseguiButton.setDisable(true);
     }
@@ -188,9 +183,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         String indirizzo = indirizzoTextField.getText().trim();
         String email = emailTextField.getText().trim();
         String telefono = telefonoTextField.getText().trim();
-        //TODO Implementare il controllo per il logo, partita iva, indirizzo e telefono.
 
         proseguiButton.setDisable(nome.isBlank() || partitaIVA.isBlank() || indirizzo.isBlank() || !FormValidator.isValidEmail(email) || telefono.isBlank());
-        //TODO Aggiungere il controllo per il logo
     }
 }

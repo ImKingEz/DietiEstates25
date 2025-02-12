@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Data
@@ -28,6 +30,9 @@ public class RegisterAgenziaDTO {
     @NotBlank(message = "Il telefono è obbligatorio")
     private String telefono;
 
-    @NotBlank(message = "Il logo è obbligatorio")
-    private String logo;
+    private MultipartFile logo;
+
+    @NotBlank(message = "La password è obbligatoria")
+    @Length(min = 8, message = "La password deve essere di almeno 8 caratteri")
+    private String password;
 }
