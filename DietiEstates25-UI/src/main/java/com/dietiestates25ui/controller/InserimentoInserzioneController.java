@@ -4,8 +4,6 @@ import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -48,28 +46,50 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     private static final Logger logger = LoggerFactory.getLogger(InserimentoInserzioneController.class);
 
-    @FXML private TextField titoloTextField;
-    @FXML private ChoiceBox<String> tipologiaChoiceBox;
-    @FXML private TextField indirizzoTextField;
-    @FXML private Button apriMappaButton;
-    @FXML private WebView mapView;
-    @FXML private TextField prezzoTextField;
-    @FXML private TextArea descrizioneTextArea;
-    @FXML private Button selezionaImmaginiButton;
-    @FXML private FlowPane immaginiFlowPane;
-    @FXML private TextField superficieTextField;
-    @FXML private Spinner<Integer> camereSpinner;
-    @FXML private Spinner<Integer> bagniSpinner;
-    @FXML private TextField classeEnergeticaTextField;
-    @FXML private Spinner<Integer> pianoSpinner;
-    @FXML private CheckBox ascensoreCheckBox;
-    @FXML private CheckBox portineriaCheckBox;
-    @FXML private CheckBox climatizzazioneCheckBox;
-    @FXML private Button avantiButton;
-    @FXML private Button indietroButton;
-    @FXML private CheckBox vicinoScuoleCheckBox;
-    @FXML private CheckBox vicinoParchiCheckBox;
-    @FXML private CheckBox vicinoTrasportoPubblicoCheckBox;
+    @FXML
+    private TextField titoloTextField;
+    @FXML
+    private ChoiceBox<String> tipologiaChoiceBox;
+    @FXML
+    private TextField indirizzoTextField;
+    @FXML
+    private Button apriMappaButton;
+    @FXML
+    private WebView mapView;
+    @FXML
+    private TextField prezzoTextField;
+    @FXML
+    private TextArea descrizioneTextArea;
+    @FXML
+    private Button selezionaImmaginiButton;
+    @FXML
+    private FlowPane immaginiFlowPane;
+    @FXML
+    private TextField superficieTextField;
+    @FXML
+    private Spinner<Integer> camereSpinner;
+    @FXML
+    private Spinner<Integer> bagniSpinner;
+    @FXML
+    private TextField classeEnergeticaTextField;
+    @FXML
+    private Spinner<Integer> pianoSpinner;
+    @FXML
+    private CheckBox ascensoreCheckBox;
+    @FXML
+    private CheckBox portineriaCheckBox;
+    @FXML
+    private CheckBox climatizzazioneCheckBox;
+    @FXML
+    private Button avantiButton;
+    @FXML
+    private Button indietroButton;
+    @FXML
+    private CheckBox vicinoScuoleCheckBox;
+    @FXML
+    private CheckBox vicinoParchiCheckBox;
+    @FXML
+    private CheckBox vicinoTrasportoPubblicoCheckBox;
 
     private final ObservableList<File> selectedImageList = FXCollections.observableArrayList();
     private double latitudine;
@@ -137,28 +157,39 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     //Inizializza il comportamento per l'alert di javascript SOLO quando la mappa è caricata
                     webEngine.setOnAlert(event -> {
                         String data = event.getData();
-                        String[] parts = data.split("\\|");
+                        try {
+                            String[] parts = data.split("\\|");
 
-                        if (parts.length == 3) {
-                            String address = parts[0];
-                            double lat = Double.parseDouble(parts[1]);
-                            double lng = Double.parseDouble(parts[2]);
-                            Platform.runLater(() -> {
-                                indirizzoTextField.setText(address);
-                                mapView.setVisible(false);
-                                this.latitudine = lat;
-                                this.longitudine = lng;
-                                logger.info("Latitudine: {}, Longitudine: {}", this.latitudine, this.longitudine); //Verifica
+                            if (parts.length == 3) {
+                                // Ottieni l'indirizzo
+                                String address = parts[0];
 
-                                //Chiama getNearbyPlaces solo se hai latitudine e longitudine
-                                if (latitudine != 0 && longitudine != 0) {
-                                    getNearbyPlaces(address);
-                                } else {
-                                    logger.warn("Latitudine e Longitudine non valide, impossibile chiamare getNearbyPlaces");
-                                }
-                            });
-                        } else {
-                            Platform.runLater(() -> showPopup("Errore", "Formato dati ricevuto dalla mappa non valido.", ERROR_ICON));
+                                //Ottieni latitudine e longitudine
+                                double lat = Double.parseDouble(parts[1]);
+                                double lng = Double.parseDouble(parts[2]);
+
+                                Platform.runLater(() -> {
+                                    //Imposta i valori nei textfield
+                                    indirizzoTextField.setText(address);
+                                    mapView.setVisible(false); //Chiudi la webview
+                                    //Salva latitudine e longitudine
+                                    this.latitudine = lat;
+                                    this.longitudine = lng;
+                                    logger.info("Latitudine: {}, Longitudine: {}", this.latitudine, this.longitudine);
+
+                                    //Chiama getNearbyPlaces solo se hai latitudine e longitudine
+                                    if (latitudine != 0 && longitudine != 0) {
+                                        getNearbyPlaces(address);
+                                    } else {
+                                        logger.warn("Latitudine e Longitudine non valide, impossibile chiamare getNearbyPlaces");
+                                    }
+                                });
+                            } else {
+                                Platform.runLater(() -> showPopup("Errore", "Formato dati ricevuto dalla mappa non valido.", ERROR_ICON));
+                            }
+                        } catch (Exception e) {
+                            logger.error("Errore durante l'elaborazione dei dati ricevuti dalla mappa: {}", e.getMessage(), e);
+                            Platform.runLater(() -> showPopup("Errore", "Errore durante l'elaborazione dei dati ricevuti dalla mappa: " + e.getMessage(), ERROR_ICON));
                         }
                     });
 
@@ -187,7 +218,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         if (mapView != null && mapView.isVisible() && mapInitialized && address != null && !address.isEmpty()) {
             WebEngine webEngine = mapView.getEngine();  //Ottieni l'istanza locale
 
-            if(webEngine != null) { //Verifica che webEngine non sia NULL prima di chiamare executeScript
+            if (webEngine != null) { //Verifica che webEngine non sia NULL prima di chiamare executeScript
                 String script = "geocodeAddress('" + address + "');";  // Richiama la funzione Javascript
                 Platform.runLater(() -> webEngine.executeScript(script));
             }
@@ -206,25 +237,118 @@ public class InserimentoInserzioneController extends AbstractController implemen
     }
 
     private void handleImageSelection() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleziona Immagini");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
+
+        List<File> newFiles = fileChooser.showOpenMultipleDialog(currentStage);
+
+        if (newFiles != null && !newFiles.isEmpty()) {
+            selectedImageList.addAll(newFiles);
+
+            if (selectedImageList.size() > 5) {
+                Platform.runLater(() -> showPopup("Attenzione", "Puoi selezionare al massimo 5 immagini.", ERROR_ICON));
+
+                while (selectedImageList.size() > 5) {
+                    selectedImageList.remove(selectedImageList.size() - 1);
+                }
+            }
+
+            updateImageThumbnails();
+        }
+        checkFormValidity();
     }
 
     private void updateImageThumbnails() {
+        immaginiFlowPane.getChildren().clear();
+
+        double fixedImageSize = 50;
+
+        for (File file : selectedImageList) {
+            Image image = new Image(file.toURI().toString());
+            ImageView imageView = new ImageView(image);
+
+            imageView.setFitWidth(fixedImageSize);
+            imageView.setFitHeight(fixedImageSize);
+            imageView.setPreserveRatio(true);
+
+            Button deleteButton = new Button("X");
+            deleteButton.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-padding: 0px; -fx-font-size: 8px;");
+
+            deleteButton.setOnAction(e -> {
+                logo.requestFocus();
+                selectedImageList.remove(file);
+                immaginiFlowPane.getChildren().remove(imageView.getParent());
+                checkFormValidity();
+            });
+
+            VBox imageContainer = new VBox(imageView, deleteButton);
+            imageContainer.setAlignment(Pos.CENTER);
+
+            immaginiFlowPane.getChildren().add(imageContainer);
+        }
     }
 
     private void openGestioneImmobiliPage() {
+        loadScene("/com/dietiestates25ui/view/gestione-immobili-view.fxml",
+                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/gestione-immobili-style.css");
     }
 
     private void updateAvantiButtonState() {
+        titoloTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        prezzoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        superficieTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        classeEnergeticaTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        descrizioneTextArea.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+
+        tipologiaChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        camereSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        bagniSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        pianoSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+
+        selezionaImmaginiButton.disableProperty().bind(Bindings.size(selectedImageList).greaterThanOrEqualTo(5));
     }
 
     private void checkFormValidity() {
+        String titolo = titoloTextField.getText().trim();
+        String indirizzo = indirizzoTextField.getText().trim();
+        String prezzo = prezzoTextField.getText().trim();
+        String superficie = superficieTextField.getText().trim();
+        String classeEnergetica = classeEnergeticaTextField.getText().trim();
+        String descrizione = descrizioneTextArea.getText().trim();
+        String tipologia = tipologiaChoiceBox.getValue();
+
+        boolean isPrezzoValid = false;
+        try {
+            Double.parseDouble(prezzo);
+            isPrezzoValid = true;
+        } catch (NumberFormatException e) {
+            // Prezzo non valido
+        }
+
+        boolean isSuperficieValid = false;
+        try {
+            Double.parseDouble(superficie);
+            isSuperficieValid = true;
+        } catch (NumberFormatException e) {
+            // Superficie non valido
+        }
+
+        boolean requiredFieldsFilled = !titolo.isEmpty() && !indirizzo.isEmpty() && !descrizione.isEmpty() && isPrezzoValid && isSuperficieValid && !classeEnergetica.isEmpty() && (selectedImageList.size() > 0) && tipologia != null;
+        boolean isMaxImagesSelected = selectedImageList.size() <= 5;
+
+        avantiButton.setDisable(!requiredFieldsFilled || !isMaxImagesSelected);
+
+        logger.info("Form valid: {}", !avantiButton.isDisable());
     }
 
-    private void getCoordinatesFromAddress(String address) {
-    }
+//    private void getCoordinatesFromAddress(String address) {
+//    }
+//
+//    private void parseCoordinates(String responseBody) {
+//    }
 
-    private void parseCoordinates(String responseBody) {
-    }
     private void getNearbyPlaces(String address) {
         logger.info("Chiamata a getNearbyPlaces per l'indirizzo: {}", address);
         if (address == null || address.isEmpty()) {
@@ -232,7 +356,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        if(latitudine == 0 || longitudine == 0){
+        if (latitudine == 0 || longitudine == 0) {
             logger.warn("Latitudine o Longitudine non settate a valori diversi da 0. Impossibile chiamare l'API Geoapify.");
             return;
         }

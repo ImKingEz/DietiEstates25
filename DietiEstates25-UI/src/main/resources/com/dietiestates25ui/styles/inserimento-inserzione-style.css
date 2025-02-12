@@ -8,6 +8,12 @@
     -fx-effect: dropshadow( gaussian , rgba(0, 0, 0, 0.2) , 15 , 0 , 0 , 0 );
 }
 
+
+#apriMappaButton {
+    -fx-pref-height: 20;
+    -fx-pref-width: 60;
+}
+
 /* Stili per i bottoni */
 Button {
     -fx-background-color: #6c93c4;

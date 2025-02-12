@@ -1,60 +1,67 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>OpenLayers Map</title>
+    <title>OpenLayers Map - Select Point Only</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <!-- OpenLayers CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.5.1/ol.css">
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             width: 100%;
             margin: 0;
             padding: 0;
         }
+
         #map {
-            height: 90%; /* Ridotto per fare spazio all'input */
+            height: 100%;
             width: 100%;
         }
-        #addressInput {
-            width: 70%;
-            padding: 5px;
-            margin: 5px;
+
+        #confirmOverlay {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border: 1px solid #ccc;
+            z-index: 1000;
         }
-        #searchButton {
+
+        #confirmButton {
             padding: 5px 10px;
         }
     </style>
-    <!-- OpenLayers Javascript -->
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.1/dist/ol.js"></script>
 </head>
+
 <body>
-<div>
-    <input type="text" id="addressInput" placeholder="Inserisci un indirizzo">
-    <button id="searchButton" onclick="geocodeAddress()">Cerca</button>
-</div>
 <div id="map"></div>
 <script>
     console.log("OpenLayers loaded");
 
     var map;
-    var marker; // Marker per la posizione
+    var marker;
+    var selectedLongitude;
+    var selectedLatitude;
+    var defaultZoom = 13; //Zoom di partenza
 
     function initMap() {
         map = new ol.Map({
             target: 'map',
             layers: [
                 new ol.layer.Tile({
-                    source: new ol.source.OSM() // Usa OpenStreetMap come tile source predefinito
+                    source: new ol.source.OSM()
                 })
             ],
             view: new ol.View({
-                center: ol.proj.fromLonLat([14.2681, 40.8529]), // Napoli
-                zoom: 13
+                center: ol.proj.fromLonLat([14.2681, 40.8529]),
+                zoom: defaultZoom //Usa lo zoom di partenza
             })
         });
 
-        // Crea un layer vettoriale per il marker
         marker = new ol.layer.Vector({
             source: new ol.source.Vector(),
             style: new ol.style.Style({
@@ -72,64 +79,67 @@
         });
         map.addLayer(marker);
 
-        // Aggiungi un listener per il click sulla mappa
+        // Listener per il click sulla mappa
         map.on('click', function(evt) {
             var coordinate = ol.proj.toLonLat(evt.coordinate);
-            reverseGeocode(coordinate[0], coordinate[1]);
+            selectedLongitude = coordinate[0];
+            selectedLatitude = coordinate[1];
+            setMarker(selectedLongitude, selectedLatitude);
+            zoomToLocation(selectedLongitude, selectedLatitude); //Zoom al click
+            addConfirmationOverlay();
         });
     }
 
-    function geocodeAddress(address) {
-        if (!address) {
-            address = document.getElementById('addressInput').value;
-        }
-        if (address) {
-            var url = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.length > 0) {
-                        var lon = parseFloat(data[0].lon);
-                        var lat = parseFloat(data[0].lat);
-
-                        // Trasforma le coordinate in proiezione della mappa
-                        var coordinate = ol.proj.fromLonLat([lon, lat]);
-
-                        // Centra la mappa e aggiungi il marker
-                        map.getView().setCenter(coordinate);
-                        map.getView().setZoom(15);
-
-                        // Posiziona il marker
-                        setMarker(lon, lat);
-                        reverseGeocode(lon, lat);
-                    } else {
-                        alert("Indirizzo non trovato");
-                    }
-                })
-                .catch(error => {
-                    console.error("Errore di geocoding:", error);
-                    alert("Errore durante la ricerca dell'indirizzo");
-                });
-        } else {
-            alert("Inserisci un indirizzo");
-        }
-    }
-
     function setMarker(longitude, latitude) {
-        // Trasforma le coordinate in proiezione della mappa
         var coordinate = ol.proj.fromLonLat([longitude, latitude]);
 
-        // Rimuovi il marker precedente
         marker.getSource().clear();
 
-        // Crea una feature per il marker
         var feature = new ol.Feature({
             geometry: new ol.geom.Point(coordinate)
         });
 
-        // Aggiungi la feature al layer del marker
         marker.getSource().addFeature(feature);
+    }
+
+    function zoomToLocation(longitude, latitude) {
+        var coordinate = ol.proj.fromLonLat([longitude, latitude]);
+        map.getView().setCenter(coordinate);
+        //Verifica se lo zoom attuale è uguale a quello di default
+        if(map.getView().getZoom() === defaultZoom){
+            map.getView().setZoom(15); //Zoom solo se non si è zoommati
+        }
+    }
+
+    function addConfirmationOverlay() {
+        //Se esiste già un overlay di conferma, rimuovilo
+        const existingOverlay = document.getElementById('confirmOverlay');
+        if (existingOverlay) {
+            existingOverlay.remove();
+        }
+
+        var element = document.createElement('div');
+        element.id = 'confirmOverlay';
+        element.style.position = 'absolute';
+        element.style.top = '10px';
+        element.style.left = '50%';
+        element.style.transform = 'translateX(-50%)';
+        element.style.backgroundColor = 'white';
+        element.style.padding = '10px';
+        element.style.border = '1px solid black';
+        element.style.zIndex = '1000';
+
+
+        var confirmButton = document.createElement('button');
+        confirmButton.id = 'confirmButton';
+        confirmButton.textContent = 'Conferma Posizione';
+
+        confirmButton.addEventListener('click', function() {
+            reverseGeocode(selectedLongitude, selectedLatitude);
+        });
+
+        element.appendChild(confirmButton);
+        map.getTargetElement().appendChild(element);
     }
 
     function reverseGeocode(longitude, latitude) {
@@ -140,22 +150,25 @@
             .then(data => {
                 if (data && data.address) {
                     var address = data.display_name;
-                    // Chiama la funzione Java
-                    window.alert(address + "|" + latitude + "|" + longitude);
+                    sendDataToJava(address, longitude, latitude); //Passa tutti i dati necessari
                 } else {
-                    alert("Indirizzo non trovato per queste coordinate.");
+                    sendDataToJava("Indirizzo non trovato", longitude, latitude);
                 }
             })
             .catch(error => {
                 console.error("Errore nel reverse geocoding:", error);
-                alert("Errore durante la ricerca dell'indirizzo.");
+                sendDataToJava("Errore di connessione", longitude, latitude);
             });
+    }
+
+    function sendDataToJava(address, longitude, latitude) {
+        window.alert(address + "|" + latitude + "|" + longitude);
     }
 
     window.onload = function() {
         initMap();
-
     };
 </script>
 </body>
+
 </html>
