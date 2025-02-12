@@ -76,6 +76,9 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                     </padding>
                 </FlowPane>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Limite del peso del file: 2MB" wrappingWidth="229.07733154296875" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Dimensione massima: 512x512" wrappingWidth="229.07733154296875" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Proporzione: 1:1 (quadrato)" wrappingWidth="229.07733154296875" />
             </VBox>
             <Button fx:id="proseguiButton" mnemonicParsing="false" text="Prosegui" />
             <HBox prefWidth="200.0">

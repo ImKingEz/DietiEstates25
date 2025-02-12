@@ -60,8 +60,8 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     private File selectedLogoFile = null;
 
-    private final int MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-    private final int MAX_IMAGE_SIZE = 500; // 500px
+    private final int MAX_FILE_SIZE = 2 * 1024 * 1024;
+    private final int MAX_IMAGE_SIZE = 512;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

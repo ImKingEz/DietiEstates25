@@ -2,7 +2,6 @@ package com.dietiestates25ui.controller;
 
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
-import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.service.AgenziaService;
 import com.dietiestates25ui.service.AmministratoreService;
 import javafx.animation.PauseTransition;
@@ -19,7 +18,9 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.IOException;
 import java.net.CookieManager;
@@ -70,6 +71,9 @@ public class AgenziaCredentialsController extends AbstractController implements 
     @FXML
     private TextField passwordTextField;
 
+    @FXML
+    private Button generaButton;
+
     private boolean passwordVisible = false;
 
     private File logoFile;
@@ -92,6 +96,60 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
         passwordTextFieldInitializer();
         togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
+
+        disableGeneraButtonOnPasswordInsertion();
+
+        generaButton.setOnAction(event -> generateAndSetPassword());
+    }
+
+    private void disableGeneraButtonOnPasswordInsertion() {
+        passwordPasswordField.textProperty().addListener((observable, oldValue, newValue) ->
+                generaButton.setDisable(!newValue.isEmpty()));
+    }
+
+    private void generateAndSetPassword() {
+        String generatedPassword = generateRandomPassword(10);
+        passwordPasswordField.setText(generatedPassword);
+        copyToClipboard(generatedPassword);
+        Platform.runLater(() -> showPopup("Password Generata", "Password casuale copiata negli appunti!", SUCCESS_ICON));
+        generaButton.setDisable(true);
+    }
+
+    private String generateRandomPassword(int len) {
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+
+        // Assicurati che ci sia almeno una lettera maiuscola
+        sb.append((char) (random.nextInt(26) + 'A')); // A-Z
+
+        // Assicurati che ci sia almeno un numero
+        sb.append((char) (random.nextInt(10) + '0')); // 0-9
+
+        // Aggiungi i restanti caratteri casuali
+        for (int i = 2; i < len; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+
+        // Mescola la password per una maggiore casualità
+        List<Character> charList = new java.util.ArrayList<>();
+        for (char c : sb.toString().toCharArray()) {
+            charList.add(c);
+        }
+        java.util.Collections.shuffle(charList);
+
+        StringBuilder shuffledPassword = new StringBuilder();
+        for (char c : charList) {
+            shuffledPassword.append(c);
+        }
+
+        return shuffledPassword.toString();
+    }
+
+    private void copyToClipboard(String text) {
+        StringSelection stringSelection = new StringSelection(text);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
     }
 
     public void initializeData() {
@@ -147,13 +205,12 @@ public class AgenziaCredentialsController extends AbstractController implements 
         try {
             logger.info("Tentativo di registrazione agenzia e amministratore...");
 
-            //uploadAgenziaData(agenzia, logoFile, email, password); // Invia i dati completi al backend
-
             boolean registrationSuccessful = uploadAgenziaData(agenzia, logoFile, email, password);
 
             if (registrationSuccessful) {
                 confermaButton.setDisable(true);
                 indietroButton.setDisable(true);
+                generaButton.setDisable(true);
                 showPopup("Agenzia registrata con successo", "Registrazione completata", SUCCESS_ICON);
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
                 delay.setOnFinished(event -> openLoginAmministratorePage());
@@ -196,7 +253,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
     private boolean uploadAgenziaData(AgenziaImmobiliare agenzia, File logoFile, String email, String password) {
         try {
-            // Costruisci la richiesta multipart
             MultipartBodyPublisher publisher = new MultipartBodyPublisher();
             publisher.addFormDataPart("nome", agenzia.getNome());
             publisher.addFormDataPart("partitaIva", agenzia.getPartitaIva());
@@ -211,7 +267,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
                 publisher.addFilePart("logo", logoFile.getName(), mimeType, logoPath);
             }
 
-            // Recupera il token CSRF dai cookie
             String csrfToken = null;
             String csrfCookieName = "XSRF-TOKEN";
             CookieManager cookieManager = new CookieManager();
@@ -219,7 +274,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
                     .cookieHandler(cookieManager)
                     .build();
 
-            // Effettua una richiesta GET per ottenere i cookie CSRF
             HttpRequest csrfRequest = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8080/api/csrf"))
                     .GET()
@@ -235,7 +289,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
                 }
             }
 
-            // Dopo aver gestito i cookie, recupera il token CSRF
             for (HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
                 if (csrfCookieName.equals(cookie.getName())) {
                     csrfToken = cookie.getValue();
@@ -248,18 +301,15 @@ public class AgenziaCredentialsController extends AbstractController implements 
                 return false;
             }
 
-            // Ottieni il corpo della richiesta come array di byte
             byte[] requestBody = publisher.build();
 
-            // Crea la richiesta HTTP
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8080/api/agenzie/register"))
                     .header("Content-Type", publisher.getContentType())
                     .header("X-XSRF-TOKEN", csrfToken)
-                    .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody)) // Usa ofByteArray
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))
                     .build();
 
-            // Invia la richiesta e gestisci la risposta
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             int statusCode = response.statusCode();
 
@@ -277,7 +327,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
         }
     }
 
-    // Inner class for building multipart form data
     static class MultipartBodyPublisher {
         private final String boundary;
         private final java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();

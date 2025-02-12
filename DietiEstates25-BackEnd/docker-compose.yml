@@ -14,6 +14,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
   dietiestates-backend:
     build: .
     ports:
@@ -24,6 +25,9 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/DietiEstates25
     volumes:
-      - ./target/dietiestates-backend-1.0-SNAPSHOT.jar:/app/app.jar # Monta il JAR dal tuo host
+      - ./target/dietiestates-backend-1.0-SNAPSHOT.jar:/app/app.jar
+      - uploads:/app/uploads/logos
+
 volumes:
   postgres_data:
+  uploads:
