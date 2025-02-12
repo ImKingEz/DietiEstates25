@@ -85,7 +85,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
         if (newFile != null) {
             if (!validateImage(newFile)) {
-                return; // Non procedere se la validazione fallisce
+                return;
             }
 
             selectedImageList.clear();
@@ -93,6 +93,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             selectedLogoFile = newFile;
 
             updateImageThumbnails();
+            checkFieldsForContinue(); // Rivaluta l'abilitazione del bottone dopo la selezione
         }
     }
 
@@ -108,7 +109,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             double height = image.getHeight();
 
             if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
-                Platform.runLater(() -> showPopup("Errore", "Le dimensioni dell'immagine sono troppo grandi (max 500x500).", ERROR_ICON));
+                Platform.runLater(() -> showPopup("Errore", "Le dimensioni dell'immagine sono troppo grandi (max " + MAX_IMAGE_SIZE + "x" + MAX_IMAGE_SIZE + ").", ERROR_ICON));
                 return false;
             }
 
@@ -139,7 +140,6 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             imageView.setFitHeight(fixedImageSize);
             imageView.setPreserveRatio(true);
 
-            // Load the close icon
             Image closeIcon = new Image(getClass().getResourceAsStream("/com/dietiestates25ui/images/close.png"));
             ImageView closeIconView = new ImageView(closeIcon);
             closeIconView.setFitWidth(12);
@@ -156,6 +156,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
                 selectedImageList.remove(file);
                 selectedLogoFile = null;
                 immaginiFlowPane.getChildren().remove(imageView.getParent());
+                checkFieldsForContinue();// Rivaluta l'abilitazione del bottone dopo la rimozione
             });
 
             VBox imageContainer = new VBox(imageView, deleteButton);
@@ -190,7 +191,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
                         if (controller != null) {
                             controller.setAgenzia(agenzia);
                             controller.setStage(stage);
-                            controller.setLogoFile(selectedLogoFile); // Pass the selected logo file
+                            controller.setLogoFile(selectedLogoFile);
                             controller.initializeData();
                         } else {
                             logger.error("Controller is null after FXMLLoader.getController()");
@@ -208,7 +209,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         emailTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
         telefonoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForContinue());
 
-        proseguiButton.setDisable(true);
+        checkFieldsForContinue();
     }
 
     private void checkFieldsForContinue() {
@@ -218,6 +219,8 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         String email = emailTextField.getText().trim();
         String telefono = telefonoTextField.getText().trim();
 
-        proseguiButton.setDisable(nome.isBlank() || partitaIVA.isBlank() || indirizzo.isBlank() || !FormValidator.isValidEmail(email) || telefono.isBlank());
+        boolean isImageSelected = selectedLogoFile != null;
+
+        proseguiButton.setDisable(nome.isBlank() || !FormValidator.isValidPartitaIVA(partitaIVA) || indirizzo.isBlank() || !FormValidator.isValidEmail(email) || !FormValidator.isValidTelefono(telefono) || !isImageSelected);
     }
 }

@@ -1,49 +1,21 @@
 package com.dietiestates25ui.handler;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class FormValidator {
 
-    public static final int DOMAIN_MIN_LENGTH = 2;
+
+    private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+    private static final String TELEFONO_REGEX = "^\\d{10}$";
+    private static final String PARTITA_IVA_REGEX = "^\\d{11}$";
+
+
+    private static final Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
+    private static final Pattern telefonoPattern = Pattern.compile(TELEFONO_REGEX);
+    private static final Pattern partitaIVAPattern = Pattern.compile(PARTITA_IVA_REGEX);
 
     private FormValidator() {
-    }
-
-    public static boolean isValidEmail(String email) {
-        if (email.isBlank()) {
-            return false;
-        }
-        boolean hasAt = false;
-        for (int i = 0; i < email.length(); i++) {
-            if (hasAt) {
-                return isEmailValidAfterAt(email, i);
-            } else if (email.charAt(i) == '@' && i > 0) {
-                hasAt = true;
-            } else {
-                if (!isEmailValidBeforeAt(email, i)) {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean isEmailValidBeforeAt(String email, int i) {
-        return Character.isLetter(email.charAt(i)) || Character.isDigit(email.charAt(i)) || email.charAt(i) == '.' || email.charAt(i) == '-' || email.charAt(i) == '_';
-    }
-
-    private static boolean isEmailValidAfterAt(String email, int i) {
-        boolean hasDot = false;
-        for (int j = i; j < email.length(); j++) {
-            if (j == i && !Character.isLetter(email.charAt(j))) {
-                return false;
-            } else if (!Character.isLetter(email.charAt(j))) {
-                if (email.charAt(j) == '.' && !hasDot && j < email.length() - DOMAIN_MIN_LENGTH) {
-                    hasDot = true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return hasDot;
     }
 
     public static boolean isValidPassword(String password) {
@@ -63,5 +35,18 @@ public class FormValidator {
         return hasDigit && hasMaiusc;
     }
 
+    public static boolean isValidEmail(String email) {
+        Matcher matcher = emailPattern.matcher(email);
+        return matcher.matches();
+    }
 
+    public static boolean isValidTelefono(String telefono) {
+        Matcher matcher = telefonoPattern.matcher(telefono);
+        return matcher.matches();
+    }
+
+    public static boolean isValidPartitaIVA(String partitaIVA) {
+        Matcher matcher = partitaIVAPattern.matcher(partitaIVA);
+        return matcher.matches();
+    }
 }

@@ -33,12 +33,21 @@
                 <TextField fx:id="nomeTextField" promptText="Nome" styleClass="registerField" />
 
             </HBox>
-            <HBox alignment="CENTER" styleClass="HBoxField">
-
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
-                <TextField fx:id="partitaIVATextField" promptText="Partita IVA" styleClass="registerField" />
-
-            </HBox>
+         <VBox alignment="CENTER">
+            <children>
+               <HBox alignment="CENTER" styleClass="HBoxField">
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
+                     <TextField fx:id="partitaIVATextField" promptText="Partita IVA" styleClass="registerField" />
+                  </children>
+               </HBox>
+               <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox">
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Non inserire spazi, ma soltanto numeri" wrappingWidth="290.5339984893799" />
+                  </children>
+               </VBox>
+            </children>
+         </VBox>
             <HBox alignment="CENTER" styleClass="HBoxField">
 
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
@@ -60,12 +69,21 @@
                 </VBox>
 
             </VBox>
-         <HBox alignment="CENTER" styleClass="HBoxField">
+         <VBox alignment="CENTER">
             <children>
-               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
-               <TextField fx:id="telefonoTextField" promptText="Numero di telefono" styleClass="registerField" />
+               <HBox alignment="CENTER" styleClass="HBoxField">
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
+                     <TextField fx:id="telefonoTextField" promptText="Numero di telefono" styleClass="registerField" />
+                  </children>
+               </HBox>
+               <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox">
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Non inserire il prefisso e spazi" wrappingWidth="290.5339984893799" />
+                  </children>
+               </VBox>
             </children>
-         </HBox>
+         </VBox>
             <VBox alignment="CENTER" prefWidth="350.0" spacing="3.0">
                 <HBox alignment="CENTER" prefHeight="30.0" prefWidth="1280.0" spacing="10.0">
                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*Inserisci il logo:" />
