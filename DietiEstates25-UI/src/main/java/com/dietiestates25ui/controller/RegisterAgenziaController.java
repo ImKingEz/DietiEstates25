@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class RegisterAgenziaController extends AbstractController implements Initializable {
@@ -61,10 +60,12 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     private File selectedLogoFile = null;
 
+    private final int MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+    private final int MAX_IMAGE_SIZE = 500; // 500px
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
-
 
         updateProseguiButton();
 
@@ -83,12 +84,46 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         File newFile = fileChooser.showOpenDialog(currentStage);
 
         if (newFile != null) {
-            selectedImageList.clear(); // Clear previous selections
+            if (!validateImage(newFile)) {
+                return; // Non procedere se la validazione fallisce
+            }
+
+            selectedImageList.clear();
             selectedImageList.add(newFile);
-            selectedLogoFile = newFile; // Set the selected logo file
+            selectedLogoFile = newFile;
 
             updateImageThumbnails();
         }
+    }
+
+    private boolean validateImage(File file) {
+        if (file.length() > MAX_FILE_SIZE) {
+            Platform.runLater(() -> showPopup("Errore", "La dimensione del file è troppo grande (max 2MB).", ERROR_ICON));
+            return false;
+        }
+
+        try {
+            Image image = new Image(file.toURI().toString());
+            double width = image.getWidth();
+            double height = image.getHeight();
+
+            if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
+                Platform.runLater(() -> showPopup("Errore", "Le dimensioni dell'immagine sono troppo grandi (max 500x500).", ERROR_ICON));
+                return false;
+            }
+
+            if (width != height) {
+                Platform.runLater(() -> showPopup("Errore", "L'immagine deve essere quadrata.", ERROR_ICON));
+                return false;
+            }
+
+        } catch (Exception e) {
+            logger.error("Errore durante la validazione dell'immagine: {}", e.getMessage());
+            Platform.runLater(() -> showPopup("Errore", "Errore durante la validazione dell'immagine.", ERROR_ICON));
+            return false;
+        }
+
+        return true;
     }
 
     private void updateImageThumbnails() {
@@ -105,7 +140,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             imageView.setPreserveRatio(true);
 
             // Load the close icon
-            Image closeIcon = new Image(getClass().getResourceAsStream("/com/dietiestates25ui/images/close.png")); // Adjust path if needed
+            Image closeIcon = new Image(getClass().getResourceAsStream("/com/dietiestates25ui/images/close.png"));
             ImageView closeIconView = new ImageView(closeIcon);
             closeIconView.setFitWidth(12);
             closeIconView.setFitHeight(12);
@@ -113,14 +148,13 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             Button deleteButton = new Button();
             deleteButton.setGraphic(closeIconView);
 
-            deleteButton.setStyle("-fx-background-color: red; -fx-padding: 0px; -fx-font-size: 8px;"); // Remove text, keep style if needed
+            deleteButton.setStyle("-fx-background-color: red; -fx-padding: 0px; -fx-font-size: 8px;");
             deleteButton.setPrefSize(20, 20);
-
 
             deleteButton.setOnAction(e -> {
                 logo.requestFocus();
                 selectedImageList.remove(file);
-                selectedLogoFile = null; // Also clear the selected logo file
+                selectedLogoFile = null;
                 immaginiFlowPane.getChildren().remove(imageView.getParent());
             });
 
