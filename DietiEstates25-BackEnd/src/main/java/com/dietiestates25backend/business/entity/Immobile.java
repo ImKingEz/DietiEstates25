@@ -57,6 +57,21 @@ public class Immobile {
     @Column(name = "climatizzazione")
     private boolean climatizzazione;
 
+    @Column(name = "latitudine")
+    private double latitudine;
+
+    @Column(name = "longitudine")
+    private double longitudine;
+
+    @Column(name = "vicino_scuole")
+    private boolean vicinoScuole;
+
+    @Column(name = "vicino_parchi")
+    private boolean vicinoParchi;
+
+    @Column(name = "vicino_trasporto_pubblico")
+    private boolean vicinoTrasportoPubblico;
+
     @ElementCollection
     //@CollectionTable(name = "immagine", joinColumns = @JoinColumn(name = "immobile_id"))
     private List<String> immaginiUrls; // Immagazzina gli URL delle immagini

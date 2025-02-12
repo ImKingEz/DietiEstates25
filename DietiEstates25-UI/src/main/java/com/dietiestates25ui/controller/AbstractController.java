@@ -158,12 +158,18 @@ public abstract class AbstractController {
 
             if (sourceButton != null) {
                 stage = (Stage) sourceButton.getScene().getWindow();
+
                 stage.setWidth(stage.getWidth());
                 stage.setHeight(stage.getHeight());
                 stage.setX(stage.getX());
                 stage.setY(stage.getY());
             } else {
                 stage = currentStage;
+            }
+
+            AbstractController controller = fxmlLoader.getController();
+            if(controller != null) {
+                controller.setStage(stage);
             }
 
             if (stylesheetPath != null && !stylesheetPath.isEmpty()) {

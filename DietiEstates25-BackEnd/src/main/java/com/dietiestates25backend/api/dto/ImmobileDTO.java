@@ -47,6 +47,18 @@ public class ImmobileDTO {
 
     private boolean climatizzazione;
 
+    @NotBlank(message = "Latitudine non può essere vuota")
+    private double latitudine;
+
+    @NotBlank(message = "Longitudine non può essere vuota")
+    private double longitudine;
+
+    private boolean vicinoScuole;
+
+    private boolean vicinoParchi;
+
+    private boolean vicinoTrasportoPubblico;
+
     @Size(min = 1, max= 5, message = "Devi selezionare almeno un'immagine e non più di 5")
     private List<String> immaginiUrls;
 }

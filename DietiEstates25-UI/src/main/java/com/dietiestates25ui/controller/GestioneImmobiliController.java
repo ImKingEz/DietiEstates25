@@ -69,6 +69,9 @@ public class GestioneImmobiliController extends AbstractController implements In
 
     private void openInserimentoDatiInserzionePage() {
         loadScene("/com/dietiestates25ui/view/inserimento-inserzione-view.fxml",
-                (fxmlLoader, stage) -> {}, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
+                (fxmlLoader, stage) -> {
+                    InserimentoInserzioneController controller = fxmlLoader.getController();
+                    controller.setStage(stage); // Imposta lo Stage!
+                }, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
     }
 }

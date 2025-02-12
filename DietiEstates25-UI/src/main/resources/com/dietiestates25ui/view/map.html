@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenLayers Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- OpenLayers CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.5.1/ol.css">
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 90%; /* Ridotto per fare spazio all'input */
+            width: 100%;
+        }
+        #addressInput {
+            width: 70%;
+            padding: 5px;
+            margin: 5px;
+        }
+        #searchButton {
+            padding: 5px 10px;
+        }
+    </style>
+    <!-- OpenLayers Javascript -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.1/dist/ol.js"></script>
+</head>
+<body>
+<div>
+    <input type="text" id="addressInput" placeholder="Inserisci un indirizzo">
+    <button id="searchButton" onclick="geocodeAddress()">Cerca</button>
+</div>
+<div id="map"></div>
+<script>
+    console.log("OpenLayers loaded");
+
+    var map;
+    var marker; // Marker per la posizione
+
+    function initMap() {
+        map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM() // Usa OpenStreetMap come tile source predefinito
+                })
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([14.2681, 40.8529]), // Napoli
+                zoom: 13
+            })
+        });
+
+        // Crea un layer vettoriale per il marker
+        marker = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: 'red'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'white',
+                        width: 2
+                    })
+                })
+            })
+        });
+        map.addLayer(marker);
+
+        // Aggiungi un listener per il click sulla mappa
+        map.on('click', function(evt) {
+            var coordinate = ol.proj.toLonLat(evt.coordinate);
+            reverseGeocode(coordinate[0], coordinate[1]);
+        });
+    }
+
+    function geocodeAddress(address) {
+        if (!address) {
+            address = document.getElementById('addressInput').value;
+        }
+        if (address) {
+            var url = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        var lon = parseFloat(data[0].lon);
+                        var lat = parseFloat(data[0].lat);
+
+                        // Trasforma le coordinate in proiezione della mappa
+                        var coordinate = ol.proj.fromLonLat([lon, lat]);
+
+                        // Centra la mappa e aggiungi il marker
+                        map.getView().setCenter(coordinate);
+                        map.getView().setZoom(15);
+
+                        // Posiziona il marker
+                        setMarker(lon, lat);
+                        reverseGeocode(lon, lat);
+                    } else {
+                        alert("Indirizzo non trovato");
+                    }
+                })
+                .catch(error => {
+                    console.error("Errore di geocoding:", error);
+                    alert("Errore durante la ricerca dell'indirizzo");
+                });
+        } else {
+            alert("Inserisci un indirizzo");
+        }
+    }
+
+    function setMarker(longitude, latitude) {
+        // Trasforma le coordinate in proiezione della mappa
+        var coordinate = ol.proj.fromLonLat([longitude, latitude]);
+
+        // Rimuovi il marker precedente
+        marker.getSource().clear();
+
+        // Crea una feature per il marker
+        var feature = new ol.Feature({
+            geometry: new ol.geom.Point(coordinate)
+        });
+
+        // Aggiungi la feature al layer del marker
+        marker.getSource().addFeature(feature);
+    }
+
+    function reverseGeocode(longitude, latitude) {
+        var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.address) {
+                    var address = data.display_name;
+                    // Chiama la funzione Java
+                    window.alert(address + "|" + latitude + "|" + longitude);
+                } else {
+                    alert("Indirizzo non trovato per queste coordinate.");
+                }
+            })
+            .catch(error => {
+                console.error("Errore nel reverse geocoding:", error);
+                alert("Errore durante la ricerca dell'indirizzo.");
+            });
+    }
+
+    window.onload = function() {
+        initMap();
+
+    };
+</script>
+</body>
+</html>
