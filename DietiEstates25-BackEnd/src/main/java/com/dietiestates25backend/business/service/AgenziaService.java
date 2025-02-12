@@ -32,9 +32,9 @@ public class AgenziaService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AgenziaService(AgenziaRepository agenziaRepository, AmministratoreRepository amministratratoreRepository, PasswordEncoder passwordEncoder) {
+    public AgenziaService(AgenziaRepository agenziaRepository, AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder) {
         this.agenziaRepository = agenziaRepository;
-        this.amministratoreRepository = amministratratoreRepository;
+        this.amministratoreRepository = amministratoreRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -47,7 +47,8 @@ public class AgenziaService {
             throw new DataIntegrityViolationException("Email già in uso");
         }
 
-        String logoPath = saveLogo(registerAgenziaDTO.getLogo());
+        // Valore temporaneo per evitare NOT NULL constraint
+        String tempLogoPath = "temporary_logo";
 
         AgenziaImmobiliare agenzia = new AgenziaImmobiliare(
                 registerAgenziaDTO.getNome(),
@@ -55,11 +56,16 @@ public class AgenziaService {
                 registerAgenziaDTO.getIndirizzo(),
                 registerAgenziaDTO.getEmail(),
                 registerAgenziaDTO.getTelefono(),
-                logoPath
+                tempLogoPath // Valore temporaneo
         );
 
         AgenziaImmobiliare savedAgenzia = agenziaRepository.save(agenzia);
         logger.debug("Agenzia salvata con ID: {}", savedAgenzia.getId());
+
+        String logoPath = saveLogo(registerAgenziaDTO.getLogo(), savedAgenzia.getId()); // Salva il logo associato all'ID
+
+        savedAgenzia.setLogo(logoPath); // Aggiorna il path del logo nell'agenzia salvata
+        agenziaRepository.save(savedAgenzia); // Salva nuovamente l'agenzia con il path del logo aggiornato
 
         // Crea e salva l'amministratore
         Amministratore amministratore = new Amministratore();
@@ -81,23 +87,30 @@ public class AgenziaService {
         return agenziaDTO;
     }
 
-    private String saveLogo(MultipartFile logo) {
+    private String saveLogo(MultipartFile logo, Long agenziaId) {
         if (logo == null || logo.isEmpty()) {
-            return null; // Or a default logo path
+            return ""; // Restituisce una stringa vuota se non c'è logo
         }
 
-        String fileName = StringUtils.cleanPath(logo.getOriginalFilename());
-        Path uploadDir = Paths.get("uploads/logos"); // Creare la cartella uploads/logos
+        String fileExtension = "";
+        String originalFileName = StringUtils.cleanPath(logo.getOriginalFilename());
+        int dotIndex = originalFileName.lastIndexOf('.');
+        if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
+            fileExtension = originalFileName.substring(dotIndex);
+        }
+        String fileName = "logo_" + agenziaId + fileExtension; // Nome file univoco
+        Path uploadDir = Paths.get("uploads/logos");
+
         try {
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
             Path targetLocation = uploadDir.resolve(fileName);
             Files.copy(logo.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return "/uploads/logos/" + fileName; // Path relativo per accedere al logo
+            return "/uploads/logos/" + fileName;
         } catch (IOException e) {
             logger.error("Could not save logo: ", e);
-            return null; // Handle the error appropriately
+            return ""; // Restituisce una stringa vuota in caso di errore
         }
     }
 }
