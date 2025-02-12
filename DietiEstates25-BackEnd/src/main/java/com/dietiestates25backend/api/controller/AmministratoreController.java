@@ -34,11 +34,8 @@ public class AmministratoreController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AmministratoreDTO>> registerAdmin(@RequestBody @Valid RegisterAmministratoreDTO registerDTO) {
         logger.debug("registerAdmin() called with registerDTO: {}", registerDTO.getEmail());
-
-        Amministratore amministratore = new Amministratore(registerDTO.getEmail(), registerDTO.getPassword());
-
         try {
-            AmministratoreDTO amministratoreDTO = amministratoreService.registraAmministratore(amministratore);
+            AmministratoreDTO amministratoreDTO = amministratoreService.registraAmministratore(registerDTO);
             logger.debug("registerAdmin() successful with admin: {}", amministratoreDTO.getEmail());
             ApiResponse<AmministratoreDTO> response = new ApiResponse<>(true, amministratoreDTO, null);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -46,7 +43,12 @@ public class AmministratoreController {
             logger.error("registerAdmin() failed, email already registered: {}", registerDTO.getEmail());
             ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, "Email già in uso");
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        } catch (Exception ex) {
+        } catch (IllegalArgumentException ex) {
+            logger.error("registerAdmin() failed, agency not found: {}", registerDTO.getIdAgenzia());
+            ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        catch (Exception ex) {
             logger.error("registerAdmin() failed with error: {}", ex.getMessage());
             ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, "Errore durante la registrazione: " + ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
