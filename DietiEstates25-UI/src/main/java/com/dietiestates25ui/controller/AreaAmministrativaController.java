@@ -61,6 +61,10 @@ public class AreaAmministrativaController extends AbstractController implements 
     private void openRegisterAgentePage() {
         loadScene("/com/dietiestates25ui/view/register-agente-view.fxml",
                 (fxmlLoader, stage) -> {
+                    RegisterAgenteController controller = fxmlLoader.getController();
+                    controller.setStage(stage);
+                    controller.setToken(token);
+                    controller.setAmministratore(amministratore);
                 }, creaAccountAgenteButton, "/com/dietiestates25ui/styles/register-agente-style.css");
     }
 
