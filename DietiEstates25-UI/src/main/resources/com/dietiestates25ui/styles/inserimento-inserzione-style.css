@@ -46,6 +46,10 @@ Button:pressed {
     -fx-min-width: 300;
 }
 
+#indirizzoHBox {
+    -fx-spacing: 0;
+}
+
 /* Stili per gli HBox dei campi */
 .HBoxField {
     -fx-spacing: 5;

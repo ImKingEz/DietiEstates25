@@ -57,6 +57,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
     @FXML
     private WebView mapView;
     @FXML
+    private Button mapBackButton; // il nuovo bottone torna indietro
+    @FXML
     private TextField prezzoTextField;
     @FXML
     private TextArea descrizioneTextArea;
@@ -103,6 +105,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         System.out.println("dentro initialize");
         apriMappaButton.setOnAction(this::handleApriMappaButtonAction);
         indietroButton.setOnAction(event -> openGestioneImmobiliPage());
+        mapBackButton.setOnAction(event -> handleMapBackButtonAction());
 
         setupChoiceBox();
         setupSpinners();
@@ -113,6 +116,9 @@ public class InserimentoInserzioneController extends AbstractController implemen
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             // Se la mappa non è visible, non fare nulla.
         });
+
+        //Inizializza e posiziona il bottone "Torna indietro"
+        createAndPlaceBackButton();
     }
 
     public void setStage(Stage stage) {
@@ -125,11 +131,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
         try {
             mapView.setPrefWidth(primaryAnchorPane.getWidth());
             mapView.setPrefHeight(primaryAnchorPane.getHeight());
-            AnchorPane.setTopAnchor(mapView, 0.0);
-            AnchorPane.setBottomAnchor(mapView, 60.0); // Spazio per i bottoni
-            AnchorPane.setLeftAnchor(mapView, 0.0);
-            AnchorPane.setRightAnchor(mapView, 0.0);
+
+            //Rendi visibile sia la WebView che il bottone di ritorno
             mapView.setVisible(true);
+            mapBackButton.setVisible(true);
 
             // Forza un aggiornamento del layout
             primaryAnchorPane.applyCss();
@@ -141,6 +146,12 @@ public class InserimentoInserzioneController extends AbstractController implemen
             logger.error("Errore nel metodo handleApriMappaButtonAction: {}", e.getMessage(), e);
             showPopup("Errore", "Errore durante l'apertura della mappa: " + e.getMessage(), ERROR_ICON);
         }
+    }
+
+    @FXML
+    private void handleMapBackButtonAction() {
+        mapView.setVisible(false);
+        mapBackButton.setVisible(false);
     }
 
     private void initializeMap() {
@@ -172,6 +183,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
                                     //Imposta i valori nei textfield
                                     indirizzoTextField.setText(address);
                                     mapView.setVisible(false); //Chiudi la webview
+                                    mapBackButton.setVisible(false); //Nascondi il bottone
                                     //Salva latitudine e longitudine
                                     this.latitudine = lat;
                                     this.longitudine = lng;
@@ -471,5 +483,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     ConfermaInserzioneController controller = fxmlLoader.getController();
                     controller.setImmobile(Immobile);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");
+    }
+
+    @FXML
+    private void handleMapBackButtonAction(javafx.event.ActionEvent event) {
+        mapView.setVisible(false);
+        mapBackButton.setVisible(false);
     }
 }
