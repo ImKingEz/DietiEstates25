@@ -37,7 +37,7 @@ public class AgenteService {
         agente.setNome(registerAgenteDTO.getNome());
         agente.setCognome(registerAgenteDTO.getCognome());
         agente.setDataDiNascita(registerAgenteDTO.getDataDiNascita());
-        agente.setSesso(registerAgenteDTO.getSesso());
+        agente.setSesso(registerAgenteDTO.getSesso()); // Assegna direttamente la stringa
         agente.setEmail(registerAgenteDTO.getEmail());
         agente.setPassword(registerAgenteDTO.getPassword()); //TODO: DA HASHAARE
 
@@ -49,7 +49,7 @@ public class AgenteService {
         agenteDTO.setNome(savedAgente.getNome());
         agenteDTO.setCognome(savedAgente.getCognome());
         agenteDTO.setDataDiNascita(savedAgente.getDataDiNascita());
-        agenteDTO.setSesso(savedAgente.getSesso());
+        agenteDTO.setSesso(savedAgente.getSesso()); // Assegna direttamente la stringa
         agenteDTO.setEmail(savedAgente.getEmail());
 
         logger.debug("Ending registraAgente with agente: {}", agenteDTO.getEmail());
@@ -69,7 +69,7 @@ public class AgenteService {
         agente.setNome(registerAgenteDTO.getNome());
         agente.setCognome(registerAgenteDTO.getCognome());
         agente.setDataDiNascita(registerAgenteDTO.getDataDiNascita());
-        agente.setSesso(registerAgenteDTO.getSesso());
+        agente.setSesso(registerAgenteDTO.getSesso()); // Assegna direttamente la stringa
         agente.setEmail(registerAgenteDTO.getEmail());
         agente.setPassword(registerAgenteDTO.getPassword()); //TODO: DA HASHAARE
 
@@ -81,7 +81,7 @@ public class AgenteService {
         agenteDTO.setNome(savedAgente.getNome());
         agenteDTO.setCognome(savedAgente.getCognome());
         agenteDTO.setDataDiNascita(savedAgente.getDataDiNascita());
-        agenteDTO.setSesso(savedAgente.getSesso());
+        agenteDTO.setSesso(savedAgente.getSesso()); // Assegna direttamente la stringa
         agenteDTO.setEmail(savedAgente.getEmail());
 
         logger.debug("Ending registraAgente with agente: {}", agenteDTO.getEmail());
@@ -103,7 +103,7 @@ public class AgenteService {
         agenteDTO.setNome(agente.getNome());
         agenteDTO.setCognome(agente.getCognome());
         agenteDTO.setDataDiNascita(agente.getDataDiNascita());
-        agenteDTO.setSesso(agente.getSesso());
+        agenteDTO.setSesso(agente.getSesso()); // Assegna direttamente la stringa
         agenteDTO.setEmail(agente.getEmail());
 
         return agenteDTO;

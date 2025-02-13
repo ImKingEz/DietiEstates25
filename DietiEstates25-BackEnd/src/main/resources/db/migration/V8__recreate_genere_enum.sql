@@ -1,0 +1,4 @@
+DROP TYPE IF EXISTS genere CASCADE;
+CREATE TYPE genere AS ENUM ('MASCHIO', 'FEMMINA', 'NON_BINARIO');
+ALTER TABLE agente_immobiliare ADD COLUMN sesso genere;
+ALTER TABLE agente_immobiliare ALTER COLUMN sesso SET NOT NULL;

@@ -6,6 +6,7 @@ import com.dietiestates25ui.exception.ApiClientException;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.exception.ServiceUnavailableException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule; // Importa il JavaTimeModule
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,13 @@ public abstract class ApiService {
     protected static String csrfTokenHeaderName;
 
     private static final CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
+
+    // Crea e configura l'ObjectMapper statico una sola volta
+    protected static final ObjectMapper objectMapper = new ObjectMapper();
+    static {
+        objectMapper.registerModule(new JavaTimeModule()); // Registra il JavaTimeModule
+    }
+
     private static final HttpClient client = HttpClient.newBuilder()
             .cookieHandler(cookieManager)
             .build();
@@ -55,7 +63,6 @@ public abstract class ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                ObjectMapper objectMapper = new ObjectMapper();
                 CsrfResponse csrfResponse = objectMapper.readValue(response.body(), CsrfResponse.class);
                 if (csrfResponse != null && csrfResponse.getToken() != null && csrfResponse.getHeaderName() != null) {
                     csrfTokenValue = csrfResponse.getToken();
@@ -76,7 +83,7 @@ public abstract class ApiService {
         }
     }
 
-    protected <T> ApiResponse<T> handleResponse(HttpResponse<String> response, ObjectMapper objectMapper, Class<T> dataType) throws ApiClientException {
+    protected <T> ApiResponse<T> handleResponse(HttpResponse<String> response,  Class<T> dataType) throws ApiClientException {
         try {
             Type type = new ParameterizedType() {
                 @NotNull
@@ -150,9 +157,6 @@ public abstract class ApiService {
     private static void logUnexpectedException(Exception e) {
         logger.error("Errore inatteso durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage());
     }
-
-    // Metodi di log comuni (e.g., logEmailAlreadyInUse, logClientError, logServerError, logLoginFailed, logUpdateFailedClientError, logUpdateFailedServerError, logGetDetailsFailed)
-    // Questi metodi possono essere spostati qui e resi protected static per essere accessibili dalle sottoclassi.
 
     protected static void logEmailAlreadyInUse(HttpResponse<String> response) {
         if (logger.isWarnEnabled()) {

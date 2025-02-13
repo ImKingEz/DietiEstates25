@@ -1,14 +1,13 @@
 package com.dietiestates25ui.service;
 
 import com.dietiestates25.dto.ApiResponse;
-import com.dietiestates25.dto.AgenteDTO; // Assicurati di creare questo DTO
+import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25ui.exception.ApiClientException;
 import com.dietiestates25ui.exception.AuthenticationException;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.exception.ResourceNotFoundException;
 import com.dietiestates25ui.exception.ServiceUnavailableException;
 import com.dietiestates25ui.model.AgenteImmobiliare;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -29,8 +28,7 @@ public class AgenteService extends ApiService {
     public void registraAgente(AgenteImmobiliare agente) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonBody = objectMapper.writeValueAsString(agente);
+            String jsonBody = objectMapper.writeValueAsString(agente); // Usa objectMapper statico
 
             HttpRequest request =
                     HttpRequest.newBuilder()
@@ -44,10 +42,10 @@ public class AgenteService extends ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 201) {
-                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, objectMapper, AgenteDTO.class);
+                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class); // Rimosso objectMapper
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     logger.info("Agente registrato con successo: {}", agente.getEmail());
-                    return; // Registration successful
+                    return;
                 } else {
                     String errorMessage =
                             (apiResponse != null && apiResponse.getMessage() != null)
@@ -76,8 +74,7 @@ public class AgenteService extends ApiService {
     public void updateAgente(AgenteImmobiliare agente, String token) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonBody = objectMapper.writeValueAsString(agente);
+            String jsonBody = objectMapper.writeValueAsString(agente); // Usa objectMapper statico
 
             HttpRequest request =
                     HttpRequest.newBuilder()
@@ -92,7 +89,7 @@ public class AgenteService extends ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, objectMapper, AgenteDTO.class);
+                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class); // Rimosso objectMapper
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     logger.info("Agente aggiornato con successo: {}", agente.getEmail());
                     return;
@@ -131,7 +128,7 @@ public class AgenteService extends ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, new ObjectMapper(), AgenteDTO.class);
+                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class); // Rimosso new ObjectMapper()
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     AgenteDTO agenteDTO = apiResponse.getData();
                     logger.info("Dettagli agente recuperati con successo: {}", agenteDTO.getEmail());

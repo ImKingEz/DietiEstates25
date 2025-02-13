@@ -9,7 +9,6 @@ import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.exception.ResourceNotFoundException;
 import com.dietiestates25ui.exception.ServiceUnavailableException;
 import com.dietiestates25ui.model.Utente;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -29,8 +28,7 @@ public class UtenteService extends ApiService {
     public void registraUtente(Utente user) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonBody = objectMapper.writeValueAsString(user);
+            String jsonBody = objectMapper.writeValueAsString(user); // Usa objectMapper statico
             HttpRequest request =
                     HttpRequest.newBuilder()
                             .uri(URI.create(getBaseUrl() + "/register"))
@@ -45,7 +43,7 @@ public class UtenteService extends ApiService {
 
             if (statusCode == 201) {
                 ApiResponse<UtenteDTO> apiResponse =
-                        handleResponse(response, objectMapper, UtenteDTO.class);
+                        handleResponse(response, UtenteDTO.class); // Rimosso objectMapper
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     return;
                 } else {
@@ -77,9 +75,8 @@ public class UtenteService extends ApiService {
     public String loginUtente(Utente user) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            ObjectMapper objectMapper = new ObjectMapper();
             String jsonBody =
-                    objectMapper.writeValueAsString(
+                    objectMapper.writeValueAsString( // Usa objectMapper statico
                             Map.of("email", user.getEmail(), "password", user.getPassword()));
 
             HttpRequest request =
@@ -95,7 +92,7 @@ public class UtenteService extends ApiService {
 
             if (statusCode == 200) {
                 ApiResponse<LoginResponse> apiResponse =
-                        handleResponse(response, objectMapper, LoginResponse.class);
+                        handleResponse(response, LoginResponse.class); // Rimosso objectMapper
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     LoginResponse loginResponse = apiResponse.getData();
                     logger.info("Login effettuato con successo per l'utente: {}", user.getEmail());
@@ -128,15 +125,14 @@ public class UtenteService extends ApiService {
     public void updateUtente(Utente user, String token) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            ObjectMapper objectMapper = new ObjectMapper();
             String jsonBody;
             if (user.getCitta() != null) {
                 jsonBody =
-                        objectMapper.writeValueAsString(
+                        objectMapper.writeValueAsString( // Usa objectMapper statico
                                 Map.of("nome", user.getNome(), "cognome", user.getCognome(), "citta", user.getCitta()));
             } else {
                 jsonBody =
-                        objectMapper.writeValueAsString(Map.of("nome", user.getNome(), "cognome", user.getCognome()));
+                        objectMapper.writeValueAsString(Map.of("nome", user.getNome(), "cognome", user.getCognome())); // Usa objectMapper statico
             }
 
             HttpRequest request =
@@ -156,7 +152,7 @@ public class UtenteService extends ApiService {
                 logger.trace("Response Body: {}", response.body());
             }
 
-            handleUpdateRequestStatusCode(statusCode, response, objectMapper);
+            handleUpdateRequestStatusCode(statusCode, response); //Rimosso objectmapper
 
         } catch (Exception e) {
             throw handleGenericException(e.getMessage(), e);
@@ -164,10 +160,10 @@ public class UtenteService extends ApiService {
     }
 
     private void handleUpdateRequestStatusCode(
-            int statusCode, HttpResponse<String> response, ObjectMapper objectMapper)
+            int statusCode, HttpResponse<String> response) //Rimosso objectmapper
             throws ApiClientException, GenericServiceException, ServiceUnavailableException {
         if (statusCode == 200) {
-            ApiResponse<UtenteDTO> apiResponse = handleResponse(response, objectMapper, UtenteDTO.class);
+            ApiResponse<UtenteDTO> apiResponse = handleResponse(response, UtenteDTO.class); // Rimosso objectMapper
             if (apiResponse == null || !apiResponse.isSuccess()) {
                 String errorMessage =
                         (apiResponse != null && apiResponse.getMessage() != null)
@@ -201,7 +197,7 @@ public class UtenteService extends ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                ApiResponse<UtenteDTO> apiResponse = handleResponse(response, new ObjectMapper(), UtenteDTO.class);
+                ApiResponse<UtenteDTO> apiResponse = handleResponse(response, UtenteDTO.class); // Rimosso new ObjectMapper()
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     UtenteDTO utenteDTO = apiResponse.getData();
                     logger.info("Dettagli utente recuperati con successo.");

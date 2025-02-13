@@ -7,7 +7,6 @@ import com.dietiestates25ui.exception.AuthenticationException;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.exception.ServiceUnavailableException;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -26,8 +25,7 @@ public class AgenziaService extends ApiService {
     public void registraAgenzia(AgenziaImmobiliare agenzia) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonBody = objectMapper.writeValueAsString(agenzia);
+            String jsonBody = objectMapper.writeValueAsString(agenzia); // Usa objectMapper statico
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + "/register"))
@@ -42,7 +40,7 @@ public class AgenziaService extends ApiService {
             logger.info("Tentativo di registrazione agenzia. Status code: {}", statusCode);
 
             if (statusCode == 201) {
-                ApiResponse apiResponse = handleResponse(response, objectMapper, Void.class);
+                ApiResponse apiResponse = handleResponse(response, Void.class); //Rimosso objectMapper
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     logger.info("Registrazione agenzia effettuata con successo.");
                     return;
@@ -85,10 +83,8 @@ public class AgenziaService extends ApiService {
 
             logger.info("Tentativo di recupero dettagli agenzia con ID: {}. Status code: {}", agenziaId, statusCode);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-
             if (statusCode == 200) {
-                ApiResponse<AgenziaDTO> apiResponse = handleResponse(response, objectMapper, AgenziaDTO.class);
+                ApiResponse<AgenziaDTO> apiResponse = handleResponse(response, AgenziaDTO.class); //Rimosso objectMapper
                 if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
                     logger.info("Dettagli agenzia recuperati con successo per ID: {}.", agenziaId);
                     return apiResponse.getData();
