@@ -1,5 +1,6 @@
 package com.dietiestates25ui.service;
 
+import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25ui.exception.ApiClientException;
 import com.dietiestates25ui.exception.AuthenticationException;
@@ -67,6 +68,52 @@ public class AgenziaService extends ApiService {
         } catch (Exception e) {
             logger.error("Errore generico durante la registrazione dell'agenzia: {}", e.getMessage());
             throw handleGenericException("Errore durante la registrazione dell'agenzia: " + e.getMessage(), e);
+        }
+    }
+
+    public AgenziaDTO getAgenziaDetails(Long agenziaId, String token) throws GenericServiceException {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(getBaseUrl() + "/" + agenziaId))
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + token)
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = executeRequest(request);
+            int statusCode = response.statusCode();
+
+            logger.info("Tentativo di recupero dettagli agenzia con ID: {}. Status code: {}", agenziaId, statusCode);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            if (statusCode == 200) {
+                ApiResponse<AgenziaDTO> apiResponse = handleResponse(response, objectMapper, AgenziaDTO.class);
+                if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
+                    logger.info("Dettagli agenzia recuperati con successo per ID: {}.", agenziaId);
+                    return apiResponse.getData();
+                } else {
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante il recupero dei dettagli dell'agenzia.";
+                    logger.error("Errore nella risposta durante il recupero dei dettagli dell'agenzia: {}", errorMessage);
+                    throw new GenericServiceException(errorMessage);
+                }
+            } else if (statusCode == 404) {
+                logger.warn("Agenzia non trovata con ID: {}", agenziaId);
+                throw new ApiClientException("Agenzia non trovata.");
+            } else if (statusCode >= 400 && statusCode < 500) {
+                logClientError(statusCode, response.body());
+                throw new ApiClientException("Errore durante il recupero dei dettagli dell'agenzia: " + statusCode + ". Controlla l'ID dell'agenzia.");
+            } else if (statusCode >= 500) {
+                logServerError(statusCode, response.body());
+                throw new ServiceUnavailableException("Errore del server durante il recupero dei dettagli dell'agenzia. Riprova più tardi.");
+            } else {
+                logger.error("Recupero dettagli agenzia fallito per ID: {}. Status code: {}, Response body: {}", agenziaId, statusCode, response.body());
+                throw new GenericServiceException("Recupero dettagli agenzia fallito con status code: " + statusCode);
+            }
+
+        } catch (Exception e) {
+            logger.error("Errore generico durante il recupero dei dettagli dell'agenzia con ID: {}: {}", agenziaId, e.getMessage());
+            throw handleGenericException("Errore durante il recupero dei dettagli dell'agenzia: " + e.getMessage(), e);
         }
     }
 }

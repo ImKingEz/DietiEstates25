@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.web.csrf.CsrfToken;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class AmministratoreService implements UserDetailsService {
@@ -30,14 +33,16 @@ public class AmministratoreService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AgenziaRepository agenziaRepository;
+    private final HttpServletRequest httpServletRequest;
 
     @Autowired
     public AmministratoreService(AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
-                                 AgenziaRepository agenziaRepository) {
+                                 AgenziaRepository agenziaRepository, HttpServletRequest httpServletRequest) {
         this.amministratoreRepository = amministratoreRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.agenziaRepository = agenziaRepository;
+        this.httpServletRequest = httpServletRequest;
     }
 
     @Transactional
@@ -61,7 +66,7 @@ public class AmministratoreService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public String loginAmministratore(String email, String password) throws BadCredentialsException, UsernameNotFoundException {
+    public String loginAmministratore(String email, String password, String csrfToken) throws BadCredentialsException, UsernameNotFoundException {
         logger.debug("Starting loginAmministratore with email: {}", email);
         Amministratore amministratore = amministratoreRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
@@ -70,6 +75,12 @@ public class AmministratoreService implements UserDetailsService {
         if (!passwordEncoder.matches(password, amministratore.getPassword())) {
             logger.error("Login failed: Invalid password for admin: {}", email);
             throw new BadCredentialsException("Login Failed");
+        }
+
+        CsrfToken expectedCsrfToken = (CsrfToken) httpServletRequest.getAttribute(CsrfToken.class.getName());
+        if (expectedCsrfToken == null || !expectedCsrfToken.getToken().equals(csrfToken)) {
+            logger.error("Login failed: Invalid CSRF token for admin: {}", email);
+            throw new BadCredentialsException("Invalid CSRF Token");
         }
 
         logger.debug("Login successful for admin: {}", amministratore.getEmail());
@@ -85,4 +96,17 @@ public class AmministratoreService implements UserDetailsService {
         return new User(amministratore.getEmail(), amministratore.getPassword(), new ArrayList<>());
     }
 
+    @Transactional(readOnly = true)
+    public AmministratoreDTO getAmministratoreDetails(String email){
+        Amministratore amministratore = amministratoreRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Admin not found with email: " + email));
+        return new AmministratoreDTO(amministratore.getEmail(), amministratore.getIdAgenzia());
+    }
+
+    public String extractUsername(String token) {
+        return jwtService.extractUsername(token);
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        return jwtService.isTokenValid(token, userDetails);
+    }
 }

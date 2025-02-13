@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -56,11 +57,15 @@ public class AmministratoreController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> loginAdmin(@RequestBody @Valid LoginDTO loginDTO) {
+    public ResponseEntity<ApiResponse<LoginResponse>> loginAdmin(
+            @RequestBody @Valid LoginDTO loginDTO,
+            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader
+    ) {
         logger.debug("loginAdmin() called with email: {}", loginDTO.getEmail());
+        logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader);
 
         try {
-            String token = amministratoreService.loginAmministratore(loginDTO.getEmail(), loginDTO.getPassword());
+            String token = amministratoreService.loginAmministratore(loginDTO.getEmail(), loginDTO.getPassword(), csrfTokenHeader);
             LoginResponse loginResponse = new LoginResponse(token);
             logger.debug("loginAdmin() successful for admin: {}", loginDTO.getEmail());
             ApiResponse<LoginResponse> response = new ApiResponse<>(true, loginResponse, null);
@@ -69,9 +74,33 @@ public class AmministratoreController {
             logger.error("loginAdmin() failed, authentication error for admin: {}", loginDTO.getEmail());
             ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        } catch (Exception ex) {
+        }  catch (Exception ex){
             logger.error("loginAdmin() failed with error: {}", ex.getMessage());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito: " + ex.getMessage());
+            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito : " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<AmministratoreDTO>> getAdminDetails(@RequestHeader("Authorization") String authorizationHeader) {
+        logger.debug("getAdminDetails() called");
+        String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        try {
+            UserDetails userDetails = amministratoreService.loadUserByUsername(amministratoreService.extractUsername(token));
+            if (amministratoreService.isTokenValid(token, userDetails)) {
+                AmministratoreDTO amministratoreDTO = amministratoreService.getAmministratoreDetails(userDetails.getUsername());
+                logger.debug("getAdminDetails() successful for admin: {}", userDetails.getUsername());
+                ApiResponse<AmministratoreDTO> response = new ApiResponse<>(true, amministratoreDTO, null);
+                return ResponseEntity.ok(response);
+            } else {
+                logger.error("getAdminDetails() failed, token not valid");
+                ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, "Token non valido");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception ex) {
+            logger.error("getAdminDetails() failed with error: {}", ex.getMessage());
+            ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, "Errore nel recupero dei dettagli dell'amministratore: " + ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

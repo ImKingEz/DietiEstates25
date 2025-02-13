@@ -76,49 +76,42 @@ public class AmministratoreService extends ApiService {
 
     public String loginAmministratore(Amministratore admin) throws GenericServiceException {
         try {
-            fetchCsrfToken();
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonBody =
-                    objectMapper.writeValueAsString(
-                            Map.of("email", admin.getEmail(), "password", admin.getPassword()));
+            fetchCsrfToken(); // Ottieni il CSRF token
 
-            HttpRequest request =
-                    HttpRequest.newBuilder()
-                            .uri(URI.create(getBaseUrl() + "/login"))
-                            .header(CONTENT_TYPE, APPLICATION_JSON)
-                            .header(csrfTokenHeaderName, csrfTokenValue)
-                            .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                            .build();
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonBody = objectMapper.writeValueAsString(admin);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(getBaseUrl() + "/login"))
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
+                    .header(csrfTokenHeaderName, csrfTokenValue) // Includi il CSRF token
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
 
             HttpResponse<String> response = executeRequest(request);
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                ApiResponse<LoginResponse> apiResponse =
-                        handleResponse(response, objectMapper, LoginResponse.class);
+                ApiResponse<LoginResponse> apiResponse = handleResponse(response, objectMapper, LoginResponse.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     LoginResponse loginResponse = apiResponse.getData();
-                    logger.info("Login effettuato con successo per l'utente: {}", admin.getEmail());
                     return loginResponse.getToken();
                 } else {
-                    String errorMessage =
-                            (apiResponse != null && apiResponse.getMessage() != null)
-                                    ? apiResponse.getMessage()
-                                    : "Login fallito.";
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore durante il login.";
                     throw new AuthenticationException(errorMessage);
                 }
-
-            } else {
-                logLoginFailed(admin.getEmail(), statusCode);
-                switch (statusCode) {
-                    case 401:
-                        throw new AuthenticationException("Credenziali non valide. Controlla email e password.");
-                    case 404:
-                        throw new ResourceNotFoundException("Utente non trovato. Controlla email e password.");
-                    default:
-                        throw new GenericServiceException("Login fallito: (" + statusCode + ")");
-                }
+            } else if (statusCode == 401) {
+                logger.error("Credenziali non valide. Status code: {}, Response body: {}", statusCode, response.body());
+                throw new AuthenticationException("Credenziali non valide. Riprova.");
+            } else if (statusCode >= 400 && statusCode < 500) {
+                logClientError(statusCode, response.body());
+                throw new ApiClientException("Errore durante il login: " + statusCode + ". Controlla i dati inseriti.");
+            } else if (statusCode >= 500) {
+                logServerError(statusCode, response.body());
+                throw new ServiceUnavailableException("Errore del server durante il login. Riprova più tardi.");
             }
+
+            throw new GenericServiceException("Login fallito con status code: " + statusCode);
 
         } catch (Exception e) {
             throw handleGenericException(e.getMessage(), e);

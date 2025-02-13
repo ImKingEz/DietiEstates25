@@ -1,9 +1,10 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.AmministratoreDTO;
+import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.service.AmministratoreService;
-import com.dietiestates25ui.service.UtenteService;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -139,12 +140,32 @@ public class LoginAmministratoreController extends AbstractController implements
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
 
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
-                delay.setOnFinished(event -> openDashboard(token, loginButton));
+                delay.setOnFinished(event -> {
+                    AmministratoreDTO adminDTO = null;
+                    try {
+                        adminDTO = amministratoreService.getAmministratoreDetails(token);
+                        admin.setIdAgenzia(adminDTO.getIdAgenzia());
+                        openAreaAmministrativaPage(token, admin);
+                    } catch (GenericServiceException e) {
+                        logger.error("Errore durante il recupero dei dati dell'amministratore: {}", e.getMessage());
+                        showPopup("Errore durante il login", e.getMessage(), ERROR_ICON);
+                    }
+                });
                 delay.play();
             }
         } catch (Exception e) {
             logger.error("Errore durante il login: {}", e.getMessage());
             showPopup("Errore durante il login", e.getMessage(), ERROR_ICON);
         }
+    }
+
+    private void openAreaAmministrativaPage(String token, Amministratore admin) {
+        loadScene("/com/dietiestates25ui/view/area-amministrativa-view.fxml",
+                (fxmlLoader, stage) -> {
+                    AreaAmministrativaController controller = fxmlLoader.getController();
+                    controller.setStage(stage);
+                    controller.setToken(token);
+                    controller.setAmministratore(admin);
+                }, loginButton, "/com/dietiestates25ui/styles/area-amministrativa-style.css");
     }
 }

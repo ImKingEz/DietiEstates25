@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 
 @Service
 public class AgenziaService {
@@ -111,5 +112,27 @@ public class AgenziaService {
             logger.error("Could not save logo: ", e);
             return "";
         }
+    }
+
+    public AgenziaDTO getAgenziaDetails(Long agenziaId) {
+        Optional<AgenziaImmobiliare> agenziaOptional = agenziaRepository.findById(agenziaId);
+
+        if (agenziaOptional.isEmpty()) {
+            logger.warn("Agenzia non trovata con ID: {}", agenziaId);
+            throw new IllegalArgumentException("Agenzia non trovata con ID: " + agenziaId); // Oppure una custom exception
+        }
+
+        AgenziaImmobiliare agenzia = agenziaOptional.get();
+
+        AgenziaDTO agenziaDTO = new AgenziaDTO(
+                agenzia.getNome(),
+                agenzia.getPartitaIva(),
+                agenzia.getIndirizzo(),
+                agenzia.getEmail(),
+                agenzia.getTelefono(),
+                agenzia.getLogo()
+        );
+
+        return agenziaDTO;
     }
 }

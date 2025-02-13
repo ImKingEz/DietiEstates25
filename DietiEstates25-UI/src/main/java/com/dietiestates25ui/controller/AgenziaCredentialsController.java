@@ -123,18 +123,14 @@ public class AgenziaCredentialsController extends AbstractController implements 
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
 
-        // Assicurati che ci sia almeno una lettera maiuscola
-        sb.append((char) (random.nextInt(26) + 'A')); // A-Z
+        sb.append((char) (random.nextInt(26) + 'A'));
 
-        // Assicurati che ci sia almeno un numero
-        sb.append((char) (random.nextInt(10) + '0')); // 0-9
+        sb.append((char) (random.nextInt(10) + '0'));
 
-        // Aggiungi i restanti caratteri casuali
         for (int i = 2; i < len; i++) {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
 
-        // Mescola la password per una maggiore casualità
         List<Character> charList = new java.util.ArrayList<>();
         for (char c : sb.toString().toCharArray()) {
             charList.add(c);

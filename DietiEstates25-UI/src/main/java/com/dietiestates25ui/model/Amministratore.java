@@ -10,6 +10,11 @@ public class Amministratore {
         this.password = password;
     }
 
+    public Amministratore(String email, Long idAgenzia) {
+        this.email = email;
+        this.idAgenzia = idAgenzia;
+    }
+
     public Amministratore(String email, String password, Long idAgenzia) {
         this.email = email;
         this.password = password;

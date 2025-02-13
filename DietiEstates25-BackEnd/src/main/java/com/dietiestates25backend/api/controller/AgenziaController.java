@@ -12,10 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -58,6 +55,23 @@ public class AgenziaController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         } catch (Exception ex) {
             ApiResponse<AgenziaDTO> response = new ApiResponse<>(false, null, "Errore durante la registrazione: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/{agenziaId}")
+    public ResponseEntity<ApiResponse<AgenziaDTO>> getAgenziaDetails(@PathVariable Long agenziaId) {
+        try {
+            AgenziaDTO agenziaDTO = agenziaService.getAgenziaDetails(agenziaId);
+            ApiResponse<AgenziaDTO> response = new ApiResponse<>(true, agenziaDTO, null);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Agenzia non trovata con ID: {}", agenziaId);
+            ApiResponse<AgenziaDTO> response = new ApiResponse<>(false, null, "Agenzia non trovata");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception ex) {
+            logger.error("Errore durante il recupero dei dettagli dell'agenzia con ID: {}", agenziaId, ex);
+            ApiResponse<AgenziaDTO> response = new ApiResponse<>(false, null, "Errore durante il recupero dei dettagli dell'agenzia: " + ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
