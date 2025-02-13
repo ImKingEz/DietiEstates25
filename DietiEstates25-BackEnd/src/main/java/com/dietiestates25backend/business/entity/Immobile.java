@@ -73,6 +73,9 @@ public class Immobile {
     private boolean vicinoTrasportoPubblico;
 
     @ElementCollection
-    //@CollectionTable(name = "immagine", joinColumns = @JoinColumn(name = "immobile_id"))
     private List<String> immaginiUrls; // Immagazzina gli URL delle immagini
+
+    //@ManyToOne
+    @JoinColumn(name = "id_agente")
+    private String agente;
 }

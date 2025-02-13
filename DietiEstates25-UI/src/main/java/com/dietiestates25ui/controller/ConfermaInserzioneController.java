@@ -1,6 +1,11 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.ApiResponse;
+import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25ui.model.Immobile;
+import com.dietiestates25ui.service.ImmobileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -9,18 +14,18 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class ConfermaInserzioneController extends AbstractController implements Initializable {
 
@@ -47,8 +52,16 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private Immobile Immobile;
 
+    private String token;
+
+    private ImmobileService immobileService = new ImmobileService(); // Crea un'istanza di ImmobileService
+
     public void setImmobile(Immobile Immobile) {
         this.Immobile = Immobile;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override
@@ -125,45 +138,46 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private void salvaImmobile() {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String immobileJson = objectMapper.writeValueAsString(Immobile);
+            ImmobileService.fetchCsrfToken();
+            ImmobileDTO immobileDTO = convertToDTO(Immobile);
+            immobileService.salvaImmobile(immobileDTO, token);
+            showPopup("Successo", "Immobile salvato correttamente!", SUCCESS_ICON);
+            logger.info("Immobile salvato correttamente!");
+            PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
+            delay.setOnFinished(event -> openGestioneImmobiliPage());
+            delay.play();
 
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/immobili/create"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(immobileJson))
-                    .build();
-
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(response -> {
-                        Platform.runLater(() -> {
-                            if (response.statusCode() == 201) {
-                                showPopup("Successo", "Immobile salvato correttamente!", SUCCESS_ICON);
-                                logger.info("Immobile salvato correttamente!");
-                                PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
-                                delay.setOnFinished(event -> openGestioneImmobiliPage());
-                                delay.play();
-                            } else {
-                                showPopup("Errore", "Errore durante il salvataggio dell'immobile: " + response.body(), ERROR_ICON);
-                                logger.error("Errore durante il salvataggio dell'immobile: {}", response.body());
-                            }
-                        });
-                    })
-                    .exceptionally(e -> {
-                        Platform.runLater(() -> {
-                            showPopup("Errore", "Errore di connessione al server: " + e.getMessage(), ERROR_ICON);
-                            logger.error("Errore di connessione al server: {}", e.getMessage());
-                        });
-                        return null;
-                    });
 
         } catch (Exception e) {
             Platform.runLater(() -> {
-                showPopup("Errore", "Errore durante la conversione dei dati: " + e.getMessage(), ERROR_ICON);
-                logger.error("Errore durante la conversione dei dati: {}", e.getMessage());
+                showPopup("Errore", "Errore durante il salvataggio dell'immobile: " + e.getMessage(), ERROR_ICON);
+                logger.error("Errore durante il salvataggio dell'immobile: {}", e.getMessage());
             });
         }
+    }
+
+    private ImmobileDTO convertToDTO(Immobile immobile) {
+        ImmobileDTO immobileDTO = new ImmobileDTO();
+        immobileDTO.setTitolo(immobile.getTitolo());
+        immobileDTO.setTipologia(immobile.getTipologia());
+        immobileDTO.setIndirizzo(immobile.getIndirizzo());
+        immobileDTO.setPrezzo(immobile.getPrezzo());
+        immobileDTO.setDescrizione(immobile.getDescrizione());
+        immobileDTO.setDimensione(immobile.getDimensione());
+        immobileDTO.setNumero_camere(immobile.getNumero_camere());
+        immobileDTO.setNumero_bagni(immobile.getNumero_bagni());
+        immobileDTO.setClasseEnergetica(immobile.getClasseEnergetica());
+        immobileDTO.setPiano(immobile.getPiano());
+        immobileDTO.setAscensore(immobile.isAscensore());
+        immobileDTO.setPortineria(immobile.isPortineria());
+        immobileDTO.setClimatizzazione(immobile.isClimatizzazione());
+        immobileDTO.setLatitudine(immobile.getLatitudine());
+        immobileDTO.setLongitudine(immobile.getLongitudine());
+        immobileDTO.setVicinoScuole(immobile.isVicinoScuole());
+        immobileDTO.setVicinoParchi(immobile.isVicinoParchi());
+        immobileDTO.setVicinoTrasportoPubblico(immobile.isVicinoTrasportoPubblico());
+        immobileDTO.setImmaginiUrls(immobile.getImmaginiUrls());
+        return immobileDTO;
     }
 
     private void openGestioneImmobiliPage() {

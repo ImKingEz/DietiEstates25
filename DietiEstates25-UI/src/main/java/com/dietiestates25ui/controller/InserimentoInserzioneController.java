@@ -1,4 +1,5 @@
 package com.dietiestates25ui.controller;
+
 import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,7 +12,6 @@ import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -19,7 +19,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -27,7 +26,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +38,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class InserimentoInserzioneController extends AbstractController implements Initializable {
 
@@ -100,6 +99,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     private boolean mapInitialized = false;  // Flag per verificare se la mappa è stata inizializzata
 
+    private String token;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Inizializza gli elementi FXML
@@ -124,6 +125,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     public void setStage(Stage stage) {
         this.currentStage = stage;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @FXML
@@ -374,12 +379,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         logger.info("Form valid: {}", !avantiButton.isDisable());
     }
 
-//    private void getCoordinatesFromAddress(String address) {
-//    }
-//
-//    private void parseCoordinates(String responseBody) {
-//    }
-
     private void getNearbyPlaces(String address) {
         logger.info("Chiamata a getNearbyPlaces per l'indirizzo: {}", address);
         if (address == null || address.isEmpty()) {
@@ -501,6 +500,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
                 (fxmlLoader, stage) -> {
                     ConfermaInserzioneController controller = fxmlLoader.getController();
                     controller.setImmobile(Immobile);
+                    controller.setToken(token);
+                    controller.setStage(stage);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");
     }
 

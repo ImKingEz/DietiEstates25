@@ -44,6 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             loggerJwtAuthFilter.debug("No or invalid authorization header");
+            loggerJwtAuthFilter.debug("No or invalid authorization header. Header value: {}", authHeader); //AGGIUNGI QUESTO LOG
             return;
         }
 
