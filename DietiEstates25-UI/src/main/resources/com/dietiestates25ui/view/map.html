@@ -152,7 +152,7 @@
                     var address = data.display_name;
                     sendDataToJava(address, longitude, latitude); //Passa tutti i dati necessari
                 } else {
-                    sendDataToJava("Indirizzo non trovato", longitude, latitude);
+                    sendDataToJava("Indirizzo non identificato per questo punto", longitude, latitude);
                 }
             })
             .catch(error => {

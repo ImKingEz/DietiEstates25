@@ -1,5 +1,4 @@
 package com.dietiestates25ui.controller;
-
 import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,8 +55,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private Button apriMappaButton;
     @FXML
     private WebView mapView;
+
     @FXML
     private Button mapBackButton; // il nuovo bottone torna indietro
+
     @FXML
     private TextField prezzoTextField;
     @FXML
@@ -102,7 +103,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Inizializza gli elementi FXML
-        System.out.println("dentro initialize");
         apriMappaButton.setOnAction(this::handleApriMappaButtonAction);
         indietroButton.setOnAction(event -> openGestioneImmobiliPage());
         mapBackButton.setOnAction(event -> handleMapBackButtonAction());
@@ -110,6 +110,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         setupChoiceBox();
         setupSpinners();
         selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
+
         updateAvantiButtonState();
 
         // Listener sull'indirizzoTextField (chiamato solo se la mappa è inizializzata)
@@ -175,25 +176,41 @@ public class InserimentoInserzioneController extends AbstractController implemen
                                 // Ottieni l'indirizzo
                                 String address = parts[0];
 
+                                // Controllo aggiuntivo: verifica se l'indirizzo contiene solo una parola
+                                if (address.split("\\s+").length <= 1) {
+                                    Platform.runLater(() -> {
+                                        showPopup("Attenzione", "L'indirizzo restituito non è valido", ERROR_ICON);
+                                        mapView.setVisible(false);
+                                        mapBackButton.setVisible(false);
+                                    });
+                                    return; // Esci dal listener, non elaborare ulteriormente
+                                }
+
                                 //Ottieni latitudine e longitudine
                                 double lat = Double.parseDouble(parts[1]);
                                 double lng = Double.parseDouble(parts[2]);
 
                                 Platform.runLater(() -> {
-                                    //Imposta i valori nei textfield
-                                    indirizzoTextField.setText(address);
-                                    mapView.setVisible(false); //Chiudi la webview
-                                    mapBackButton.setVisible(false); //Nascondi il bottone
-                                    //Salva latitudine e longitudine
-                                    this.latitudine = lat;
-                                    this.longitudine = lng;
-                                    logger.info("Latitudine: {}, Longitudine: {}", this.latitudine, this.longitudine);
-
-                                    //Chiama getNearbyPlaces solo se hai latitudine e longitudine
-                                    if (latitudine != 0 && longitudine != 0) {
-                                        getNearbyPlaces(address);
+                                    if (address.equals("Indirizzo non identificato per questo punto") || address.equals("Errore di connessione")) { //Verifica il messaggio di errore
+                                        showPopup("Attenzione", address, ERROR_ICON); //Mostra il popup
+                                        mapView.setVisible(false);
+                                        mapBackButton.setVisible(false);
                                     } else {
-                                        logger.warn("Latitudine e Longitudine non valide, impossibile chiamare getNearbyPlaces");
+                                        //Imposta i valori nei textfield
+                                        indirizzoTextField.setText(address);
+                                        mapView.setVisible(false); //Chiudi la webview
+                                        mapBackButton.setVisible(false); //Nascondi il bottone
+                                        //Salva latitudine e longitudine
+                                        this.latitudine = lat;
+                                        this.longitudine = lng;
+                                        logger.info("Latitudine: {}, Longitudine: {}", this.latitudine, this.longitudine);
+
+                                        //Chiama getNearbyPlaces solo se hai latitudine e longitudine
+                                        if (latitudine != 0 && longitudine != 0) {
+                                            getNearbyPlaces(address);
+                                        } else {
+                                            logger.warn("Latitudine e Longitudine non valide, impossibile chiamare getNearbyPlaces");
+                                        }
                                     }
                                 });
                             } else {
@@ -320,6 +337,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
         pianoSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
 
         selezionaImmaginiButton.disableProperty().bind(Bindings.size(selectedImageList).greaterThanOrEqualTo(5));
+
+        avantiButton.setDisable(true);
     }
 
     private void checkFormValidity() {
