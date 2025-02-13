@@ -1,14 +1,38 @@
-/* Stili generali */
-* {
-    -fx-font-family: "Verdana";
-}
+/* Importa gli stili dalla schermata di inserimento (se necessario) */
+@import "inserimento-inserzione-style.css";
+
+/* Stili aggiuntivi specifici per la schermata di conferma */
 
 .secondaryBackground {
-    -fx-background-color: #EAF3FA;
-    -fx-effect: dropshadow( gaussian , rgba(0, 0, 0, 0.2) , 15 , 0 , 0 , 0 );
+    -fx-background-color: #EAF3FA; /* Colore di sfondo */
 }
 
-/* Stili per i bottoni */
+.label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #3A5F7D;
+    -fx-font-size: 12px;
+}
+
+.value {
+    -fx-font-size: 12px;
+    -fx-text-fill: #3A5F7D;
+}
+
+.section {
+    -fx-padding: 8px; /* Ancora più piccolo! */
+    -fx-border-width: 1px;
+    -fx-border-color: #ddd;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+.image-frame {
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 1);
+}
+
+/* Stili per i bottoni (coerenti con l'inserimento) */
 Button {
     -fx-background-color: #6c93c4;
     -fx-text-fill: white;
@@ -24,20 +48,4 @@ Button:hover {
 
 Button:pressed {
     -fx-background-color: #3f648f;
-}
-
-/* Stili per le label */
-Label {
-    -fx-font-size: 14px;
-    -fx-text-fill: #333;
-}
-
-/* Stili specifici per la schermata di conferma */
-#titoloLabel, #indirizzoLabel, #prezzoLabel, #superficieLabel, #descrizioneLabel, #vicinanzeLabel {
-    -fx-font-weight: bold;
-    -fx-padding: 5px;
-}
-
-#immobileImageView {
-    -fx-effect: dropshadow( gaussian , rgba(0, 0, 0, 0.3) , 8 , 0 , 0 , 0 );
 }

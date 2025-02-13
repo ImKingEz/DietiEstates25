@@ -23,7 +23,9 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -49,6 +51,18 @@ public class ConfermaInserzioneController extends AbstractController implements 
     private ImageView immobileImageView;
     @FXML
     private Label vicinanzeLabel;
+    @FXML
+    private Label serviziLabel; // NUOVA ETICHETTA
+    @FXML
+    private Label tipologiaLabel;  // NUOVA ETICHETTA
+    @FXML
+    private Label numeroCamereLabel;  // NUOVA ETICHETTA
+    @FXML
+    private Label numeroBagniLabel;  // NUOVA ETICHETTA
+    @FXML
+    private Label classeEnergeticaLabel;  // NUOVA ETICHETTA
+    @FXML
+    private Label pianoLabel;  // NUOVA ETICHETTA
 
     private Immobile Immobile;
 
@@ -78,11 +92,29 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private void mostraDettagliImmobile() {
         if (Immobile != null) {
-            titoloLabel.setText("Titolo: " + Immobile.getTitolo());
-            indirizzoLabel.setText("Indirizzo: " + Immobile.getIndirizzo());
-            prezzoLabel.setText("Prezzo: €" + Immobile.getPrezzo());
-            superficieLabel.setText("Superficie: " + Immobile.getDimensione() + " mq");
-            descrizioneLabel.setText("Descrizione: " + Immobile.getDescrizione());
+            titoloLabel.setText(Immobile.getTitolo());
+            indirizzoLabel.setText(Immobile.getIndirizzo());
+            // Formatta il prezzo con il simbolo dell'euro
+            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.ITALY);
+            prezzoLabel.setText(currencyFormatter.format(Immobile.getPrezzo()));
+
+            // Formatta la superficie con "mq"
+            superficieLabel.setText(String.format("%.2f mq", Immobile.getDimensione()));
+            descrizioneLabel.setText(Immobile.getDescrizione());
+            vicinanzeLabel.setText(getVicinanzeText());
+
+            // Gestione dei servizi aggiuntivi
+            String serviziText = getServiziText();
+            serviziLabel.setText(serviziText);
+
+            tipologiaLabel.setText(Immobile.getTipologia());
+            numeroCamereLabel.setText(String.valueOf(Immobile.getNumero_camere()));
+            numeroBagniLabel.setText(String.valueOf(Immobile.getNumero_bagni()));
+            classeEnergeticaLabel.setText(Immobile.getClasseEnergetica());
+
+            // Gestione del piano: se il piano è -1 (interrato) visualizzare "Interrato", altrimenti il numero del piano
+            String pianoText = (Immobile.getPiano() == -1) ? "Interrato" : String.valueOf(Immobile.getPiano());
+            pianoLabel.setText(pianoText);
 
             // Gestione dell'immagine
             if (Immobile.getImmaginiUrls() != null && !Immobile.getImmaginiUrls().isEmpty()) {
@@ -99,36 +131,48 @@ public class ConfermaInserzioneController extends AbstractController implements 
                 // Se non ci sono immagini, cancella l'immagine
                 immobileImageView.setImage(null);
             }
-
-            // Gestione delle vicinanze
-            StringBuilder vicinanzeText = new StringBuilder();
-            if (Immobile.isVicinoScuole()) {
-                vicinanzeText.append("Vicino a scuole, ");
-            }
-            if (Immobile.isVicinoParchi()) {
-                vicinanzeText.append("Vicino a parchi, ");
-            }
-            if (Immobile.isVicinoTrasportoPubblico()) {
-                vicinanzeText.append("Vicino a trasporto pubblico, ");
-            }
-
-            if (vicinanzeText.length() > 0) {
-                vicinanzeText.delete(vicinanzeText.length() - 2, vicinanzeText.length());
-            }
-
-            vicinanzeLabel.setText("Vicinanze: " + vicinanzeText.toString());
         } else {
-            logger.warn("Immobile is null. Check if data is being passed correctly.");
-            // Imposta valori di default o placeholder per evitare errori
-            titoloLabel.setText("Titolo: Non disponibile");
-            indirizzoLabel.setText("Indirizzo: Non disponibile");
-            prezzoLabel.setText("Prezzo: Non disponibile");
-            superficieLabel.setText("Superficie: Non disponibile");
-            descrizioneLabel.setText("Descrizione: Non disponibile");
-            vicinanzeLabel.setText("Vicinanze: Non disponibile");
-
-            immobileImageView.setImage(null);
+            // ... codice per i valori di default ...
         }
+    }
+
+    private String getServiziText() {
+        StringBuilder serviziText = new StringBuilder();
+
+        if (Immobile.isAscensore()) {
+            serviziText.append("Ascensore, ");
+        }
+        if (Immobile.isPortineria()) {
+            serviziText.append("Portineria, ");
+        }
+        if (Immobile.isClimatizzazione()) {
+            serviziText.append("Climatizzazione, ");
+        }
+
+        if (serviziText.length() > 0) {
+            serviziText.delete(serviziText.length() - 2, serviziText.length()); // Remove last comma and space
+        }
+
+        return serviziText.toString();
+    }
+
+    private String getVicinanzeText() {
+        StringBuilder vicinanzeText = new StringBuilder();
+        if (Immobile.isVicinoScuole()) {
+            vicinanzeText.append("Vicino a scuole, ");
+        }
+        if (Immobile.isVicinoParchi()) {
+            vicinanzeText.append("Vicino a parchi, ");
+        }
+        if (Immobile.isVicinoTrasportoPubblico()) {
+            vicinanzeText.append("Vicino a trasporto pubblico, ");
+        }
+
+        if (vicinanzeText.length() > 0) {
+            vicinanzeText.delete(vicinanzeText.length() - 2, vicinanzeText.length());
+        }
+
+        return vicinanzeText.toString();
     }
 
     private void openInserimentoDatiInserzionePage() {
