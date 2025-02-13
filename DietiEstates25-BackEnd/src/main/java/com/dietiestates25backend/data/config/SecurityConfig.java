@@ -64,6 +64,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/register", "/api/users/login", "/api/csrf").permitAll()
                 .requestMatchers("/api/admin/register", "/api/admin/login").permitAll()
                 .requestMatchers("/api/agenzie/register").permitAll()
+                .requestMatchers("/api/agenti/register", "/api/agenti/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 .requestMatchers("/api/admin/me").permitAll()
                 .anyRequest().authenticated()

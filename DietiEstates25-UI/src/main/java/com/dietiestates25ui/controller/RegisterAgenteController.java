@@ -1,7 +1,9 @@
 package com.dietiestates25ui.controller;
 
 import com.dietiestates25ui.handler.FormValidator;
+import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Amministratore;
+import com.dietiestates25ui.service.AgenteService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -77,6 +77,8 @@ public class RegisterAgenteController extends AbstractController implements Init
 
     private Amministratore amministratore;
 
+    private final AgenteService agenteService = new AgenteService();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
@@ -85,6 +87,8 @@ public class RegisterAgenteController extends AbstractController implements Init
         updateRegistraButton();
 
         indietroButton.setOnAction(event -> openAreaAmministrativaPage());
+
+        registraButton.setOnAction(event -> registraAgente());
 
         passwordTextFieldInitializer();
         togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
@@ -161,6 +165,7 @@ public class RegisterAgenteController extends AbstractController implements Init
         registraButton.setDisable(true);
     }
 
+    @FXML
     private void registraAgente() {
         String nome = nomeTextField.getText().trim();
         String cognome = cognomeTextField.getText().trim();
@@ -171,7 +176,19 @@ public class RegisterAgenteController extends AbstractController implements Init
 
         Platform.runLater(() -> nomeTextField.getParent().requestFocus());
 
-        //TODO: Implementare la registrazione dell'agente
+        AgenteImmobiliare agente = new AgenteImmobiliare(nome, cognome, dataNascita, sesso, email, password);
+        logger.info("Registrazione di {} {} {} {} {} {}", nome, cognome, dataNascita, sesso, email, password);
+
+        try {
+            agenteService.registraAgente(agente);
+            // Gestisci il successo (mostra un messaggio, torna alla pagina precedente, ecc.)
+            showAlert(Alert.AlertType.INFORMATION, "Registrazione avvenuta con successo", "Reindirizzamento alla pagina amministrativa...");
+            openAreaAmministrativaPage(); // Torna alla pagina amministrativa dopo la registrazione
+        } catch (Exception e) {
+            // Gestisci l'errore (mostra un messaggio di errore)
+            logger.error("Errore durante la registrazione dell'agente", e);
+            showAlert(Alert.AlertType.ERROR, "Errore", "Impossibile registrare l'agente: " + e.getMessage());
+        }
     }
 
     private void checkFieldsForRegister() {
@@ -191,5 +208,13 @@ public class RegisterAgenteController extends AbstractController implements Init
 
     public void setAmministratore(Amministratore admin) {
         this.amministratore = admin;
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
