@@ -2,6 +2,8 @@ package com.dietiestates25ui.service;
 
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AgenteDTO;
+import com.dietiestates25.dto.LoginResponse;
+import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.ApiClientException;
 import com.dietiestates25ui.exception.AuthenticationException;
 import com.dietiestates25ui.exception.GenericServiceException;
@@ -12,6 +14,7 @@ import com.dietiestates25ui.model.AgenteImmobiliare;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,11 +118,61 @@ public class AgenteService extends ApiService {
         }
     }
 
-    public AgenteDTO getAgenteDetails(Long id, String token) throws GenericServiceException {
+    public String loginAgente(AgenteImmobiliare agente) throws GenericServiceException {
+        try {
+            fetchCsrfToken();
+            String jsonBody =
+                    objectMapper.writeValueAsString( // Usa objectMapper statico
+                            Map.of("email", agente.getEmail(), "password", agente.getPassword()));
+
+            HttpRequest request =
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(getBaseUrl() + "/login"))
+                            .header(CONTENT_TYPE, APPLICATION_JSON)
+                            .header(csrfTokenHeaderName, csrfTokenValue)
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                            .build();
+
+            HttpResponse<String> response = executeRequest(request);
+            int statusCode = response.statusCode();
+
+            if (statusCode == 200) {
+                ApiResponse<LoginResponse> apiResponse =
+                        handleResponse(response, LoginResponse.class);
+                if (apiResponse != null && apiResponse.isSuccess()) {
+                    LoginResponse loginResponse = apiResponse.getData();
+                    logger.info("Login effettuato con successo per l'agente: {}", agente.getEmail());
+                    return loginResponse.getToken();
+                } else {
+                    String errorMessage =
+                            (apiResponse != null && apiResponse.getMessage() != null)
+                                    ? apiResponse.getMessage()
+                                    : "Login fallito.";
+                    throw new AuthenticationException(errorMessage);
+                }
+
+            } else {
+                logLoginFailed(agente.getEmail(), statusCode);
+                switch (statusCode) {
+                    case 401:
+                        throw new AuthenticationException("Credenziali non valide. Controlla email e password.");
+                    case 404:
+                        throw new ResourceNotFoundException("Utente non trovato. Controlla email e password.");
+                    default:
+                        throw new GenericServiceException("Login fallito: (" + statusCode + ")");
+                }
+            }
+
+        } catch (Exception e) {
+            throw handleGenericException(e.getMessage(), e);
+        }
+    }
+
+    public AgenteDTO getAgenteDetails(String token) throws GenericServiceException {
         try {
             HttpRequest request =
                     HttpRequest.newBuilder()
-                            .uri(URI.create(getBaseUrl() + "/" + id))
+                            .uri(URI.create(getBaseUrl() + "/me"))
                             .header("Authorization", "Bearer " + token)
                             .GET()
                             .build();
@@ -128,24 +181,24 @@ public class AgenteService extends ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class); // Rimosso new ObjectMapper()
+                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     AgenteDTO agenteDTO = apiResponse.getData();
-                    logger.info("Dettagli agente recuperati con successo: {}", agenteDTO.getEmail());
+                    logger.info("Dettagli utente recuperati con successo.");
                     return agenteDTO;
                 } else {
                     String errorMessage =
                             (apiResponse != null && apiResponse.getMessage() != null)
                                     ? apiResponse.getMessage()
-                                    : "Impossibile recuperare i dettagli dell'agente.";
+                                    : "Impossibile recuperare i dettagli dell'utente.";
                     throw new GenericServiceException(errorMessage);
                 }
             } else {
                 logGetDetailsFailed(statusCode);
                 if (statusCode == 404) {
-                    throw new ResourceNotFoundException("Agente non trovato.");
+                    throw new ResourceNotFoundException("Utente non trovato.");
                 }
-                throw new GenericServiceException("Impossibile recuperare i dettagli dell'agente: " + statusCode);
+                throw new GenericServiceException("Impossibile recuperare i dettagli dell'utente: " + statusCode);
             }
 
         } catch (Exception e) {

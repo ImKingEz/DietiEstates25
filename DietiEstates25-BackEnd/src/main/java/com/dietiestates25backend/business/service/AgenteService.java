@@ -4,14 +4,17 @@ import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25backend.api.dto.RegisterAgenteDTO;
 import com.dietiestates25backend.business.entity.AgenteImmobiliare;
 import com.dietiestates25backend.data.repository.AgenteRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AgenteService {
@@ -19,13 +22,37 @@ public class AgenteService {
     private static final Logger logger = LoggerFactory.getLogger(AgenteService.class);
 
     private final AgenteRepository agenteRepository;
-
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final HttpServletRequest httpServletRequest;
 
     @Autowired
-    public AgenteService(AgenteRepository agenteRepository, PasswordEncoder passwordEncoder) {
+    public AgenteService(AgenteRepository agenteRepository, PasswordEncoder passwordEncoder, JwtService jwtService, HttpServletRequest httpServletRequest) {
         this.agenteRepository = agenteRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.httpServletRequest = httpServletRequest;
+    }
+
+    @Transactional(readOnly = true)
+    public String loginAgente(String email, String password, String csrfToken) throws BadCredentialsException {
+        logger.debug("Starting loginAgente with email: {}", email);
+        AgenteImmobiliare agente = agenteRepository.findByEmail(email).orElseThrow(() -> new BadCredentialsException("Agente not found"));
+        logger.debug("Agente retrieved from database: {}", agente.getEmail());
+
+        if (!passwordEncoder.matches(password, agente.getPassword())) {
+            logger.error("Login failed: Invalid password for agente: {}", email);
+            throw new BadCredentialsException("Login Failed");
+        }
+
+        CsrfToken expectedCsrfToken = (CsrfToken) httpServletRequest.getAttribute(CsrfToken.class.getName());
+        if (expectedCsrfToken == null || !expectedCsrfToken.getToken().equals(csrfToken)) {
+            logger.error("Login failed: Invalid CSRF token for agente: {}", email);
+            throw new BadCredentialsException("Invalid CSRF Token");
+        }
+
+        logger.debug("Login successful for agente: {}", agente.getEmail());
+        return jwtService.generateToken(agente);
     }
 
     public AgenteDTO registraAgente(RegisterAgenteDTO registerAgenteDTO) {
@@ -92,24 +119,9 @@ public class AgenteService {
         return agenteDTO;
     }
 
-    public AgenteDTO getAgenteDetails(Long id) {
-        Optional<AgenteImmobiliare> agenteOptional = agenteRepository.findById(id);
-
-        if (agenteOptional.isEmpty()) {
-            logger.warn("Agente non trovato con ID: {}", id);
-            throw new IllegalArgumentException("Agente non trovato con ID: " + id); // Oppure una custom exception
-        }
-
-        AgenteImmobiliare agente = agenteOptional.get();
-
-        AgenteDTO agenteDTO = new AgenteDTO();
-        agenteDTO.setIdAgenzia(agente.getIdAgenzia());
-        agenteDTO.setNome(agente.getNome());
-        agenteDTO.setCognome(agente.getCognome());
-        agenteDTO.setDataDiNascita(agente.getDataDiNascita());
-        agenteDTO.setSesso(agente.getSesso());
-        agenteDTO.setEmail(agente.getEmail());
-
-        return agenteDTO;
+    @Transactional(readOnly = true)
+    public AgenteDTO getAgenteDetails(String email){
+        AgenteImmobiliare agente = agenteRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Agente not found with email: " + email));
+        return new AgenteDTO(agente.getIdAgenzia(), agente.getNome(), agente.getCognome(), agente.getDataDiNascita(), agente.getSesso(), agente.getEmail());
     }
 }

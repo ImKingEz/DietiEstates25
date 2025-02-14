@@ -7,22 +7,17 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.authentication.BadCredentialsException;
-import java.util.ArrayList;
 import com.dietiestates25backend.api.dto.UpdateUtenteDTO;
 
 @Service
-public class AuthService implements UserDetailsService {
+public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     private final UtenteRepository userRepository;
@@ -58,9 +53,9 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public String loginUtente(String email, String password, String csrfToken) throws BadCredentialsException, UsernameNotFoundException {
+    public String loginUtente(String email, String password, String csrfToken) throws BadCredentialsException {
         logger.debug("Starting loginUtente with email: {}", email);
-        Utente user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Utente user = userRepository.findByEmail(email).orElseThrow(() -> new BadCredentialsException("User not found"));
         logger.debug("User retrieved from database: {}", user.getEmail());
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -79,10 +74,10 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional
-    public UtenteDTO updateUtente(UpdateUtenteDTO updateUtenteDTO, String email) throws UsernameNotFoundException {
+    public UtenteDTO updateUtente(UpdateUtenteDTO updateUtenteDTO, String email) throws EntityNotFoundException {
         logger.debug("Starting updateUtente with email: {}", email);
         Utente user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         logger.debug("User retrieved from database: {}", user.getEmail());
         user.setNome(updateUtenteDTO.getNome());
         user.setCognome(updateUtenteDTO.getCognome());
@@ -92,18 +87,6 @@ public class AuthService implements UserDetailsService {
         UtenteDTO utenteDTO = new UtenteDTO(savedUser.getNome(), savedUser.getCognome(), savedUser.getCitta(), savedUser.getEmail());
         logger.debug("Ending updateUtente with user: {}", utenteDTO.getEmail());
         return utenteDTO;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.debug("loadUserByUsername: Attemting to find user: {}",username);
-        Utente utente = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato"));
-
-        logger.debug("loadUserByUsername: Found user: {}",username);
-
-        return new User(utente.getEmail(), utente.getPassword(), new ArrayList<>());
     }
 
     public UtenteDTO getUtenteDetails(String email){

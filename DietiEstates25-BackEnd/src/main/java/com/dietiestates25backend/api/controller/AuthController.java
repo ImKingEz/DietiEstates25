@@ -16,7 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -76,7 +76,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (AuthenticationException ex) {
             logger.error("loginUser() failed, authentication error for user: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito");
+            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Credenziali non valide");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception ex){
             logger.error("loginUser() failed with error: {}", ex.getMessage());
@@ -88,7 +88,6 @@ public class AuthController {
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<UtenteDTO>> updateUtente(
             @RequestBody UpdateUtenteDTO updateUtenteDTO,
-            @RequestHeader("Authorization") String authorizationHeader,
             @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader, HttpServletRequest request) {
         logger.debug("updateUtente() called with user: {}", updateUtenteDTO);
 
@@ -96,19 +95,14 @@ public class AuthController {
             logger.error("updateUtente() failed, CSRF token missing");
             return new ResponseEntity<>(new ApiResponse<>(false, null, "CSRF token mancante"), HttpStatus.FORBIDDEN);
         }
-        String token = authorizationHeader.substring(7);
+
         try {
-            UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));
-            if (jwtService.isTokenValid(token, userDetails)) {
-                UtenteDTO utenteDTO = authService.updateUtente(updateUtenteDTO, userDetails.getUsername());
-                logger.debug("updateUtente() successful for user: {}", userDetails.getUsername());
-                ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                logger.error("updateUtente() failed, token not valid");
-                ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Token non valido");
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            }
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            UtenteDTO utenteDTO = authService.updateUtente(updateUtenteDTO, userEmail);
+            logger.debug("updateUtente() successful for user: {}", userEmail);
+            ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
         } catch (Exception ex) {
             logger.error("updateUtente() failed with error: {}", ex.getMessage());
             ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore durante l'aggiornamento dell'utente: " + ex.getMessage());
@@ -117,21 +111,15 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UtenteDTO>> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<UtenteDTO>> getUserDetails() {
         logger.debug("getUserDetails() called");
-        String token = authorizationHeader.substring(7);
+
         try {
-            UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));
-            if (jwtService.isTokenValid(token, userDetails)) {
-                UtenteDTO utenteDTO = authService.getUtenteDetails(userDetails.getUsername());
-                logger.debug("getUserDetails() successful for user: {}", userDetails.getUsername());
-                ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
-                return ResponseEntity.ok(response);
-            } else {
-                logger.error("getUserDetails() failed, token not valid");
-                ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Token non valido");
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            }
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            UtenteDTO utenteDTO = authService.getUtenteDetails(userEmail);
+            logger.debug("getUserDetails() successful for user: {}", userEmail);
+            ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
+            return ResponseEntity.ok(response);
 
         } catch (Exception ex) {
             logger.error("getUserDetails() failed with error: {}", ex.getMessage());

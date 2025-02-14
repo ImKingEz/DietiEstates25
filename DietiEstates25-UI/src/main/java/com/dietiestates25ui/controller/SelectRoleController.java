@@ -22,7 +22,7 @@ public class SelectRoleController extends AbstractController implements Initiali
     public void initialize(URL location, ResourceBundle resources) {
         amministratoreButton.setOnAction(event -> openLoginAmministratorePage());
 
-        agenteImmobiliareButton.setOnAction(event -> openLoginAgenteImmobiliarePage());
+        agenteImmobiliareButton.setOnAction(event -> openLoginAgentePage());
 
         tornaIndietroButton.setOnAction(event -> openLoginPage());
     }
@@ -32,9 +32,9 @@ public class SelectRoleController extends AbstractController implements Initiali
                 (fxmlLoader, stage) -> {}, tornaIndietroButton, "/com/dietiestates25ui/styles/login-style.css");
     }
 
-    private void openLoginAgenteImmobiliarePage() {
-        loadScene("/com/dietiestates25ui/view/login-agente-immobiliare-view.fxml",
-                (fxmlLoader, stage) -> {}, agenteImmobiliareButton, "/com/dietiestates25ui/styles/login-agente-immobiliare-style.css");
+    private void openLoginAgentePage() {
+        loadScene("/com/dietiestates25ui/view/login-agente-view.fxml",
+                (fxmlLoader, stage) -> {}, agenteImmobiliareButton, "/com/dietiestates25ui/styles/login-agente-style.css");
     }
 
     private void openLoginAmministratorePage() {

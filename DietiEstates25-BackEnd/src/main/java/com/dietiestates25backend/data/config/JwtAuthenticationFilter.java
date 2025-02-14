@@ -1,6 +1,7 @@
 package com.dietiestates25backend.data.config;
 
 import com.dietiestates25backend.business.service.AmministratoreService;
+import com.dietiestates25backend.business.service.CustomUserDetailsService; // Importa CustomUserDetailsService
 import com.dietiestates25backend.business.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,13 +28,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger loggerJwtAuthFilter = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtService jwtService;
-    private final ApplicationContext applicationContext; // Inietta ApplicationContext
+    private final CustomUserDetailsService userDetailsService; // Inietta CustomUserDetailsService
 
     @Autowired
-    public JwtAuthenticationFilter(JwtService jwtService,
-                                   ApplicationContext applicationContext) {
+    public JwtAuthenticationFilter(JwtService jwtService, CustomUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
-        this.applicationContext = applicationContext;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -59,22 +58,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = null;
             try {
-                // Prova a caricare l'utente dal servizio utenti
-                UserDetailsService utenteUserDetailsService = applicationContext.getBean("authService", UserDetailsService.class);
-                userDetails = utenteUserDetailsService.loadUserByUsername(userEmail);
-                loggerJwtAuthFilter.debug("Retrieved user details (user) : {}", userDetails);
+                userDetails = userDetailsService.loadUserByUsername(userEmail);
+                loggerJwtAuthFilter.debug("Retrieved user details : {}", userDetails);
             } catch (UsernameNotFoundException e) {
-                loggerJwtAuthFilter.debug("User not found in user repository, checking admin repository");
-                try {
-                    // Ottieni AmministratoreService dal ApplicationContext
-                    AmministratoreService amministratoreService = applicationContext.getBean(AmministratoreService.class);
-                    // Se non trovato, prova a caricare l'amministratore dal servizio amministratori
-                    userDetails = amministratoreService.loadUserByUsername(userEmail);
-                    loggerJwtAuthFilter.debug("Retrieved user details (admin): {}", userDetails);
-                } catch (UsernameNotFoundException ex) {
-                    loggerJwtAuthFilter.error("User not found in either user or admin repository: {}", userEmail);
-                    // Non fare nulla, l'utente non è autorizzato
-                }
+                loggerJwtAuthFilter.error("User not found: {}", userEmail);
             }
 
             if (userDetails != null && jwtService.isTokenValid(jwt, userDetails)) {

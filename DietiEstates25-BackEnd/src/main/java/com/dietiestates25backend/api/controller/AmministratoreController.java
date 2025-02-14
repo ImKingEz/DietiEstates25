@@ -5,7 +5,6 @@ import com.dietiestates25.dto.AmministratoreDTO;
 import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.RegisterAmministratoreDTO;
 import com.dietiestates25backend.api.dto.LoginDTO;
-import com.dietiestates25backend.business.entity.Amministratore;
 import com.dietiestates25backend.business.service.AmministratoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -72,7 +71,7 @@ public class AmministratoreController {
             return ResponseEntity.ok(response);
         } catch (AuthenticationException ex) {
             logger.error("loginAdmin() failed, authentication error for admin: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito");
+            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Credenziali non valide");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }  catch (Exception ex){
             logger.error("loginAdmin() failed with error: {}", ex.getMessage());
@@ -82,21 +81,15 @@ public class AmministratoreController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<AmministratoreDTO>> getAdminDetails(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<AmministratoreDTO>> getAdminDetails() {
         logger.debug("getAdminDetails() called");
-        String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
+
         try {
-            UserDetails userDetails = amministratoreService.loadUserByUsername(amministratoreService.extractUsername(token));
-            if (amministratoreService.isTokenValid(token, userDetails)) {
-                AmministratoreDTO amministratoreDTO = amministratoreService.getAmministratoreDetails(userDetails.getUsername());
-                logger.debug("getAdminDetails() successful for admin: {}", userDetails.getUsername());
-                ApiResponse<AmministratoreDTO> response = new ApiResponse<>(true, amministratoreDTO, null);
-                return ResponseEntity.ok(response);
-            } else {
-                logger.error("getAdminDetails() failed, token not valid");
-                ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, "Token non valido");
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            }
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            AmministratoreDTO amministratoreDTO = amministratoreService.getAmministratoreDetails(userEmail);
+            logger.debug("getAdminDetails() successful for admin: {}", userEmail);
+            ApiResponse<AmministratoreDTO> response = new ApiResponse<>(true, amministratoreDTO, null);
+            return ResponseEntity.ok(response);
 
         } catch (Exception ex) {
             logger.error("getAdminDetails() failed with error: {}", ex.getMessage());

@@ -1,10 +1,9 @@
 package com.dietiestates25backend.data.config;
 
+import com.dietiestates25backend.business.service.CustomUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -38,14 +37,14 @@ public class SecurityConfig {
 
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtService jwtService;
-    private final ApplicationContext applicationContext;
+    private final CustomUserDetailsService customUserDetailsService; // Injected here
 
 
     @Autowired
-    public SecurityConfig(OAuth2SuccessHandler oAuth2SuccessHandler, JwtService jwtService, ApplicationContext applicationContext) {
+    public SecurityConfig(OAuth2SuccessHandler oAuth2SuccessHandler, JwtService jwtService, CustomUserDetailsService customUserDetailsService) {
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
         this.jwtService = jwtService;
-        this.applicationContext = applicationContext;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Bean
@@ -112,13 +111,13 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){
-        return new JwtAuthenticationFilter(jwtService, applicationContext);
+        return new JwtAuthenticationFilter(jwtService, customUserDetailsService);
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(@Qualifier("authService") UserDetailsService userDetailsService) {
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setUserDetailsService(customUserDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }

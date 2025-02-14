@@ -1,5 +1,6 @@
 package com.dietiestates25backend.business.service;
 
+import com.dietiestates25backend.business.entity.AgenteImmobiliare;
 import com.dietiestates25backend.business.entity.Amministratore;
 import com.dietiestates25backend.business.entity.Utente;
 import io.jsonwebtoken.Claims;
@@ -25,17 +26,18 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long expiration;
 
-    // Overload per Utente
     public String generateToken(Utente utente){
         return generateToken(new HashMap<>(), utente);
     }
 
-    // Overload per Amministratore
     public String generateToken(Amministratore amministratore){
         return generateToken(new HashMap<>(), amministratore);
     }
 
-    // Metodo principale per Utente
+    public String generateToken(AgenteImmobiliare agente){
+        return generateToken(new HashMap<>(), agente);
+    }
+
     public String generateToken(
             Map<String, Object> extraClaims,
             Utente utente
@@ -50,7 +52,6 @@ public class JwtService {
                 .compact();
     }
 
-    // Metodo principale per Amministratore
     public String generateToken(
             Map<String, Object> extraClaims,
             Amministratore amministratore
@@ -61,6 +62,20 @@ public class JwtService {
                 .setSubject(amministratore.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+expiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(
+            Map<String, Object> extraClaims,
+            AgenteImmobiliare agente
+    ) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(agente.getEmail())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
