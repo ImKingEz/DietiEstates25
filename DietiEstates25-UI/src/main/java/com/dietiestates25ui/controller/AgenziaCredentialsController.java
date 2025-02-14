@@ -151,6 +151,19 @@ public class AgenziaCredentialsController extends AbstractController implements 
     private void openRegisterAgenziaPage() {
         loadScene("/com/dietiestates25ui/view/register-agenzia-view.fxml",
                 (fxmlLoader, stage) -> {
+                    try {
+                        RegisterAgenziaController controller = fxmlLoader.getController();
+                        if (controller != null) {
+                            controller.setAgenzia(agenzia);
+                            controller.setStage(stage);
+                            controller.setLogoFile(logoFile);
+                            controller.initializeData();
+                        } else {
+                            logger.error("Controller is null after FXMLLoader.getController()");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Exception during controller setup: ", e);
+                    }
                 }, indietroButton, "/com/dietiestates25ui/styles/register-style.css");
     }
 

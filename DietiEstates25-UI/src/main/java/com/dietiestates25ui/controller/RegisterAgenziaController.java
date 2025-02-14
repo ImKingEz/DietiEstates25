@@ -64,6 +64,8 @@ public class RegisterAgenziaController extends AbstractController implements Ini
     private final int MAX_FILE_SIZE = 2 * 1024 * 1024;
     private final int MAX_IMAGE_SIZE = 512;
 
+    private AgenziaImmobiliare agenzia = null;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
@@ -94,7 +96,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             selectedLogoFile = newFile;
 
             updateImageThumbnails();
-            checkFieldsForContinue(); // Rivaluta l'abilitazione del bottone dopo la selezione
+            checkFieldsForContinue();
         }
     }
 
@@ -157,7 +159,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
                 selectedImageList.remove(file);
                 selectedLogoFile = null;
                 immaginiFlowPane.getChildren().remove(imageView.getParent());
-                checkFieldsForContinue();// Rivaluta l'abilitazione del bottone dopo la rimozione
+                checkFieldsForContinue();
             });
 
             VBox imageContainer = new VBox(imageView, deleteButton);
@@ -223,5 +225,27 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         boolean isImageSelected = selectedLogoFile != null;
 
         proseguiButton.setDisable(nome.isBlank() || !FormValidator.isValidPartitaIVA(partitaIVA) || indirizzo.isBlank() || !FormValidator.isValidEmail(email) || !FormValidator.isValidTelefono(telefono) || !isImageSelected);
+    }
+
+    public void setAgenzia(AgenziaImmobiliare agenzia) {
+        this.agenzia = agenzia;
+    }
+
+    public void setLogoFile(File logoFile) {
+        this.selectedLogoFile = logoFile;
+    }
+
+    public void initializeData() {
+        if (agenzia != null) {
+            nomeTextField.setText(agenzia.getNome());
+            partitaIVATextField.setText(agenzia.getPartitaIva());
+            indirizzoTextField.setText(agenzia.getIndirizzo());
+            emailTextField.setText(agenzia.getEmail());
+            telefonoTextField.setText(agenzia.getTelefono());
+        }
+        if (selectedLogoFile != null) {
+            selectedImageList.add(selectedLogoFile);
+            updateImageThumbnails();
+        }
     }
 }
