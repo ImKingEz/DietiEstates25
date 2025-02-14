@@ -15,10 +15,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -75,6 +76,11 @@ public class SecurityConfig {
                 .successHandler(oAuth2SuccessHandler)
         );
 
+        http.exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint(authenticationEntryPoint())
+                .accessDeniedHandler(accessDeniedHandler())
+        );
+
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
@@ -87,6 +93,15 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new RestAccessDeniedHandler();
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -94,7 +109,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of("http://localhost:8000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-CSRF-TOKEN"));
-        configuration.setExposedHeaders(Arrays.asList("X-CSRF-TOKEN"));
+        configuration.setExposedHeaders(List.of("X-CSRF-TOKEN"));
         configuration.setAllowCredentials(true);
         logger.debug("CORS configuration: {}", configuration.getAllowedOrigins());
         logger.debug("CORS allowed methods: {}", configuration.getAllowedMethods());
