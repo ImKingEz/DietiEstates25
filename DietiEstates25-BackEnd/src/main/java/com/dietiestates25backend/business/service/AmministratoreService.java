@@ -4,8 +4,10 @@ import com.dietiestates25.dto.AmministratoreDTO;
 import com.dietiestates25backend.api.dto.RegisterAmministratoreDTO;
 import com.dietiestates25backend.business.entity.Amministratore;
 import com.dietiestates25backend.business.entity.AgenziaImmobiliare;
+import com.dietiestates25backend.data.repository.AgenteRepository;
 import com.dietiestates25backend.data.repository.AmministratoreRepository;
 import com.dietiestates25backend.data.repository.AgenziaRepository;
+import com.dietiestates25backend.data.repository.UtenteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class AmministratoreService {
     private static final Logger logger = LoggerFactory.getLogger(AmministratoreService.class);
 
     private final AmministratoreRepository amministratoreRepository;
+    private final UtenteRepository userRepository;
+    private final AgenteRepository agenteRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AgenziaRepository agenziaRepository;
@@ -32,20 +36,30 @@ public class AmministratoreService {
 
     @Autowired
     public AmministratoreService(AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
-                                 AgenziaRepository agenziaRepository, HttpServletRequest httpServletRequest) {
+                                 AgenziaRepository agenziaRepository, HttpServletRequest httpServletRequest, UtenteRepository utenteRepository, AgenteRepository agenteRepository) {
         this.amministratoreRepository = amministratoreRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.agenziaRepository = agenziaRepository;
+        this.userRepository = utenteRepository;
         this.httpServletRequest = httpServletRequest;
+        this.agenteRepository = agenteRepository;
     }
 
     @Transactional
     public AmministratoreDTO registraAmministratore(RegisterAmministratoreDTO registerDTO) {
         logger.debug("Starting registraAmministratore with email: {}", registerDTO.getEmail());
         if (amministratoreRepository.existsByEmail(registerDTO.getEmail())) {
-            logger.error("Admin email already registered: {}", registerDTO.getEmail());
-            throw new DataIntegrityViolationException("Email già in uso");
+            logger.error("Admin email already registered in amministratore: {}", registerDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli amministratori");
+        }
+        if (userRepository.existsByEmail(registerDTO.getEmail())) {
+            logger.error("Email already registered in utente: {}", registerDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli utenti");
+        }
+        if (agenteRepository.existsByEmail(registerDTO.getEmail())) {
+            logger.error("Email already registered in agente: {}", registerDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli agenti");
         }
 
         AgenziaImmobiliare agenzia = agenziaRepository.findById(registerDTO.getIdAgenzia())

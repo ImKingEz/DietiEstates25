@@ -6,6 +6,8 @@ import com.dietiestates25backend.business.entity.AgenziaImmobiliare;
 import com.dietiestates25backend.business.entity.Amministratore;
 import com.dietiestates25backend.data.repository.AgenziaRepository;
 import com.dietiestates25backend.data.repository.AmministratoreRepository;
+import com.dietiestates25backend.data.repository.UtenteRepository; //Import
+import com.dietiestates25backend.data.repository.AgenteRepository; //Import
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +33,16 @@ public class AgenziaService {
     private final AgenziaRepository agenziaRepository;
     private final AmministratoreRepository amministratoreRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UtenteRepository utenteRepository; //Inject
+    private final AgenteRepository agenteRepository; //Inject
 
     @Autowired
-    public AgenziaService(AgenziaRepository agenziaRepository, AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder) {
+    public AgenziaService(AgenziaRepository agenziaRepository, AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder, UtenteRepository utenteRepository, AgenteRepository agenteRepository) {
         this.agenziaRepository = agenziaRepository;
         this.amministratoreRepository = amministratoreRepository;
         this.passwordEncoder = passwordEncoder;
+        this.utenteRepository = utenteRepository;
+        this.agenteRepository = agenteRepository;
     }
 
     @Transactional
@@ -44,8 +50,20 @@ public class AgenziaService {
         logger.debug("Starting registraAgenzia with email: {}", registerAgenziaDTO.getEmail());
 
         if (agenziaRepository.existsByEmail(registerAgenziaDTO.getEmail())) {
-            logger.error("Email già registrata: {}", registerAgenziaDTO.getEmail());
-            throw new DataIntegrityViolationException("Email già in uso");
+            logger.error("Email già registrata nella tabella agenzie: {}", registerAgenziaDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella delle agenzie");
+        }
+        if (utenteRepository.existsByEmail(registerAgenziaDTO.getEmail())) {
+            logger.error("Email già registrata nella tabella utenti: {}", registerAgenziaDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli utenti");
+        }
+        if (agenteRepository.existsByEmail(registerAgenziaDTO.getEmail())) {
+            logger.error("Email già registrata nella tabella agenti: {}", registerAgenziaDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli agenti");
+        }
+        if (amministratoreRepository.existsByEmail(registerAgenziaDTO.getEmail())) {
+            logger.error("Email già registrata nella tabella amministratori: {}", registerAgenziaDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli amministratori");
         }
 
         String tempLogoPath = "temporary_logo";

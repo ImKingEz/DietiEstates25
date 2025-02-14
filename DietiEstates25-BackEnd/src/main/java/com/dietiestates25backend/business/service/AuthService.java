@@ -2,6 +2,8 @@ package com.dietiestates25backend.business.service;
 
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25backend.business.entity.Utente;
+import com.dietiestates25backend.data.repository.AgenteRepository;
+import com.dietiestates25backend.data.repository.AmministratoreRepository;
 import com.dietiestates25backend.data.repository.UtenteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +23,8 @@ public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     private final UtenteRepository userRepository;
+    private final AgenteRepository agenteRepository;
+    private final AmministratoreRepository amministratoreRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -29,19 +33,29 @@ public class AuthService {
     private final HttpServletRequest httpServletRequest;
 
     @Autowired
-    public AuthService(UtenteRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, HttpServletRequest httpServletRequest) {
+    public AuthService(UtenteRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, HttpServletRequest httpServletRequest, AgenteRepository agenteRepository, AmministratoreRepository amministratoreRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.httpServletRequest = httpServletRequest;
+        this.agenteRepository = agenteRepository;
+        this.amministratoreRepository = amministratoreRepository;
     }
 
     @Transactional
     public UtenteDTO registraUtente(Utente user) {
         logger.debug("Starting registerUtente with user: {}", user.getEmail());
         if (userRepository.existsByEmail(user.getEmail())) {
-            logger.error("Email already registered: {}", user.getEmail());
-            throw new DataIntegrityViolationException("Email già in uso");
+            logger.error("Email already registered in utente: {}", user.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli utenti");
+        }
+        if (agenteRepository.existsByEmail(user.getEmail())) {
+            logger.error("Email already registered in agente: {}", user.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli agenti");
+        }
+        if (amministratoreRepository.existsByEmail(user.getEmail())) {
+            logger.error("Email already registered in amministratore: {}", user.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli amministratori");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

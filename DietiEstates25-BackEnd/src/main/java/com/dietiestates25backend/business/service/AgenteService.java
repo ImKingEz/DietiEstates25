@@ -4,6 +4,8 @@ import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25backend.api.dto.RegisterAgenteDTO;
 import com.dietiestates25backend.business.entity.AgenteImmobiliare;
 import com.dietiestates25backend.data.repository.AgenteRepository;
+import com.dietiestates25backend.data.repository.AmministratoreRepository;
+import com.dietiestates25backend.data.repository.UtenteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -22,16 +24,20 @@ public class AgenteService {
     private static final Logger logger = LoggerFactory.getLogger(AgenteService.class);
 
     private final AgenteRepository agenteRepository;
+    private final UtenteRepository userRepository;
+    private final AmministratoreRepository amministratoreRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final HttpServletRequest httpServletRequest;
 
     @Autowired
-    public AgenteService(AgenteRepository agenteRepository, PasswordEncoder passwordEncoder, JwtService jwtService, HttpServletRequest httpServletRequest) {
+    public AgenteService(AgenteRepository agenteRepository, PasswordEncoder passwordEncoder, JwtService jwtService, HttpServletRequest httpServletRequest, UtenteRepository userRepository, AmministratoreRepository amministratoreRepository) {
         this.agenteRepository = agenteRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.httpServletRequest = httpServletRequest;
+        this.userRepository = userRepository;
+        this.amministratoreRepository = amministratoreRepository;
     }
 
     @Transactional(readOnly = true)
@@ -55,12 +61,20 @@ public class AgenteService {
         return jwtService.generateToken(agente);
     }
 
+    @Transactional
     public AgenteDTO registraAgente(RegisterAgenteDTO registerAgenteDTO) {
         logger.debug("Starting registraAgente with email: {}", registerAgenteDTO.getEmail());
-
         if (agenteRepository.existsByEmail(registerAgenteDTO.getEmail())) {
-            logger.error("Email già registrata: {}", registerAgenteDTO.getEmail());
-            throw new DataIntegrityViolationException("Email già in uso");
+            logger.error("Email already registered in agente: {}", registerAgenteDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli agenti");
+        }
+        if (userRepository.existsByEmail(registerAgenteDTO.getEmail())) {
+            logger.error("Email already registered in utente: {}", registerAgenteDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli utenti");
+        }
+        if (amministratoreRepository.existsByEmail(registerAgenteDTO.getEmail())) {
+            logger.error("Email already registered in amministratore: {}", registerAgenteDTO.getEmail());
+            throw new DataIntegrityViolationException("Email già in uso nella tabella degli amministratori");
         }
 
         AgenteImmobiliare agente = new AgenteImmobiliare();
