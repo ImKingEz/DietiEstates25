@@ -11,13 +11,16 @@ public class AgenteImmobiliare {
     private String email;
     private String password;
 
-    public AgenteImmobiliare(String nome, String cognome, LocalDate dataDiNascita, String sesso, String email, String password) {
+    private Long idAgenzia;
+
+    public AgenteImmobiliare(String nome, String cognome, LocalDate dataDiNascita, String sesso, String email, String password, Long idAgenzia) {
         this.nome = nome;
         this.cognome = cognome;
         this.dataDiNascita = dataDiNascita;
         this.sesso = sesso;
         this.email = email;
         this.password = password;
+        this.idAgenzia = idAgenzia;
     }
 
     public AgenteImmobiliare(String email, String password) {
@@ -71,6 +74,14 @@ public class AgenteImmobiliare {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long getIdAgenzia() {
+        return idAgenzia;
+    }
+
+    public void setIdAgenzia(Long idAgenzia) {
+        this.idAgenzia = idAgenzia;
     }
 }
 

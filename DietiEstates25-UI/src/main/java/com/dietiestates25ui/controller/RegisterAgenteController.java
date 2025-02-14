@@ -4,6 +4,7 @@ import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.service.AgenteService;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,18 +178,20 @@ public class RegisterAgenteController extends AbstractController implements Init
 
         Platform.runLater(() -> nomeTextField.getParent().requestFocus());
 
-        AgenteImmobiliare agente = new AgenteImmobiliare(nome, cognome, dataNascita, sesso, email, password);
-        logger.info("Registrazione di {} {} {} {} {} {}", nome, cognome, dataNascita, sesso, email, password);
+        AgenteImmobiliare agente = new AgenteImmobiliare(nome, cognome, dataNascita, sesso, email, password, amministratore.getIdAgenzia());
+        logger.info("Registrazione di {} {} {} {} {} {} {}", nome, cognome, dataNascita, sesso, email, password, amministratore.getIdAgenzia());
 
         try {
             agenteService.registraAgente(agente);
-            // Gestisci il successo (mostra un messaggio, torna alla pagina precedente, ecc.)
-            showAlert(Alert.AlertType.INFORMATION, "Registrazione avvenuta con successo", "Reindirizzamento alla pagina amministrativa...");
-            openAreaAmministrativaPage(); // Torna alla pagina amministrativa dopo la registrazione
+            registraButton.setDisable(true);
+            indietroButton.setDisable(true);
+            showPopup("Registrazione completata!", "Reindirizzamento all'area amministrativa...", SUCCESS_ICON);
+            PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
+            delay.setOnFinished(event -> openAreaAmministrativaPage());
+            delay.play();
         } catch (Exception e) {
-            // Gestisci l'errore (mostra un messaggio di errore)
             logger.error("Errore durante la registrazione dell'agente", e);
-            showAlert(Alert.AlertType.ERROR, "Errore", "Impossibile registrare l'agente: " + e.getMessage());
+            showPopup(POPUP_ERROR_TITLE, e.getMessage(), ERROR_ICON);
         }
     }
 

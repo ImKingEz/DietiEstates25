@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,9 +20,12 @@ public class AgenteService {
 
     private final AgenteRepository agenteRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public AgenteService(AgenteRepository agenteRepository) {
+    public AgenteService(AgenteRepository agenteRepository, PasswordEncoder passwordEncoder) {
         this.agenteRepository = agenteRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public AgenteDTO registraAgente(RegisterAgenteDTO registerAgenteDTO) {
@@ -37,9 +41,9 @@ public class AgenteService {
         agente.setNome(registerAgenteDTO.getNome());
         agente.setCognome(registerAgenteDTO.getCognome());
         agente.setDataDiNascita(registerAgenteDTO.getDataDiNascita());
-        agente.setSesso(registerAgenteDTO.getSesso()); // Assegna direttamente la stringa
+        agente.setSesso(registerAgenteDTO.getSesso());
         agente.setEmail(registerAgenteDTO.getEmail());
-        agente.setPassword(registerAgenteDTO.getPassword()); //TODO: DA HASHAARE
+        agente.setPassword(passwordEncoder.encode(registerAgenteDTO.getPassword()));
 
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
         logger.debug("Agente salvato con ID: {}", savedAgente.getId());
@@ -49,7 +53,7 @@ public class AgenteService {
         agenteDTO.setNome(savedAgente.getNome());
         agenteDTO.setCognome(savedAgente.getCognome());
         agenteDTO.setDataDiNascita(savedAgente.getDataDiNascita());
-        agenteDTO.setSesso(savedAgente.getSesso()); // Assegna direttamente la stringa
+        agenteDTO.setSesso(savedAgente.getSesso());
         agenteDTO.setEmail(savedAgente.getEmail());
 
         logger.debug("Ending registraAgente with agente: {}", agenteDTO.getEmail());
@@ -69,9 +73,9 @@ public class AgenteService {
         agente.setNome(registerAgenteDTO.getNome());
         agente.setCognome(registerAgenteDTO.getCognome());
         agente.setDataDiNascita(registerAgenteDTO.getDataDiNascita());
-        agente.setSesso(registerAgenteDTO.getSesso()); // Assegna direttamente la stringa
+        agente.setSesso(registerAgenteDTO.getSesso());
         agente.setEmail(registerAgenteDTO.getEmail());
-        agente.setPassword(registerAgenteDTO.getPassword()); //TODO: DA HASHAARE
+        agente.setPassword(passwordEncoder.encode(registerAgenteDTO.getPassword()));
 
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
         logger.debug("Agente salvato con ID: {}", savedAgente.getId());
@@ -81,7 +85,7 @@ public class AgenteService {
         agenteDTO.setNome(savedAgente.getNome());
         agenteDTO.setCognome(savedAgente.getCognome());
         agenteDTO.setDataDiNascita(savedAgente.getDataDiNascita());
-        agenteDTO.setSesso(savedAgente.getSesso()); // Assegna direttamente la stringa
+        agenteDTO.setSesso(savedAgente.getSesso());
         agenteDTO.setEmail(savedAgente.getEmail());
 
         logger.debug("Ending registraAgente with agente: {}", agenteDTO.getEmail());
@@ -103,7 +107,7 @@ public class AgenteService {
         agenteDTO.setNome(agente.getNome());
         agenteDTO.setCognome(agente.getCognome());
         agenteDTO.setDataDiNascita(agente.getDataDiNascita());
-        agenteDTO.setSesso(agente.getSesso()); // Assegna direttamente la stringa
+        agenteDTO.setSesso(agente.getSesso());
         agenteDTO.setEmail(agente.getEmail());
 
         return agenteDTO;
