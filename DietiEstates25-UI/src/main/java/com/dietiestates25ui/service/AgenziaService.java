@@ -34,53 +34,6 @@ public class AgenziaService extends ApiService {
         return BASE_URL;
     }
 
-    public void registraAgenzia(AgenziaImmobiliare agenzia) throws GenericServiceException {
-        try {
-            fetchCsrfToken();
-            String jsonBody = objectMapper.writeValueAsString(agenzia); // Usa objectMapper statico
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(getBaseUrl() + "/register"))
-                    .header(CONTENT_TYPE, APPLICATION_JSON)
-                    .header(csrfTokenHeaderName, csrfTokenValue)
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                    .build();
-
-            HttpResponse<String> response = executeRequest(request);
-            int statusCode = response.statusCode();
-
-            logger.info("Tentativo di registrazione agenzia. Status code: {}", statusCode);
-
-            if (statusCode == 201) {
-                ApiResponse apiResponse = handleResponse(response, Void.class); //Rimosso objectMapper
-                if (apiResponse != null && apiResponse.isSuccess()) {
-                    logger.info("Registrazione agenzia effettuata con successo.");
-                    return;
-                } else {
-                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la registrazione dell'agenzia.";
-                    logger.error("Errore nella risposta durante la registrazione dell'agenzia: {}", errorMessage);
-                    throw new GenericServiceException(errorMessage);
-                }
-            } else if (statusCode == 409) {
-                logEmailAlreadyInUse(response);
-                throw new AuthenticationException("Email già in uso. Inserisci un'altra email.");
-            } else if (statusCode >= 400 && statusCode < 500) {
-                logClientError(statusCode, response.body());
-                throw new ApiClientException("Errore durante la registrazione dell'agenzia: " + statusCode + ". Controlla i dati inseriti.");
-            } else if (statusCode >= 500) {
-                logServerError(statusCode, response.body());
-                throw new ServiceUnavailableException("Errore del server durante la registrazione dell'agenzia. Riprova più tardi.");
-            } else {
-                logger.error("Registrazione agenzia fallita. Status code: {}, Response body: {}", statusCode, response.body());
-                throw new GenericServiceException("Registrazione agenzia fallita con status code: " + statusCode);
-            }
-
-        } catch (Exception e) {
-            logger.error("Errore generico durante la registrazione dell'agenzia: {}", e.getMessage());
-            throw handleGenericException("Errore durante la registrazione dell'agenzia: " + e.getMessage(), e);
-        }
-    }
-
     public AgenziaDTO getAgenziaDetails(Long agenziaId, String token) throws GenericServiceException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -125,7 +78,7 @@ public class AgenziaService extends ApiService {
         }
     }
 
-    public void uploadAgenziaData(AgenziaImmobiliare agenzia, File logoFile, String email, String password) throws GenericServiceException {
+    public void registerAgenzia(AgenziaImmobiliare agenzia, File logoFile, String email, String password) throws GenericServiceException {
         try {
             MultipartBodyPublisher publisher = new MultipartBodyPublisher();
             publisher.addFormDataPart("nome", agenzia.getNome());
@@ -141,64 +94,48 @@ public class AgenziaService extends ApiService {
                 publisher.addFilePart("logo", logoFile.getName(), mimeType, logoPath);
             }
 
-            String csrfToken = null;
-            String csrfCookieName = "XSRF-TOKEN";
-            CookieManager cookieManager = new CookieManager();
-            HttpClient client = HttpClient.newBuilder()
-                    .cookieHandler(cookieManager)
-                    .build();
-
-            HttpRequest csrfRequest = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/csrf"))
-                    .GET()
-                    .build();
-
-            HttpResponse<String> csrfResponse = client.send(csrfRequest, HttpResponse.BodyHandlers.ofString());
-
-            if (csrfResponse.headers().map().containsKey("Set-Cookie")) {
-                List<String> setCookieHeaders = csrfResponse.headers().allValues("Set-Cookie");
-                for (String setCookieHeader : setCookieHeaders) {
-                    HttpCookie cookie = HttpCookie.parse(setCookieHeader).get(0);
-                    cookieManager.getCookieStore().add(null, cookie);
-                }
-            }
-
-            for (HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
-                if (csrfCookieName.equals(cookie.getName())) {
-                    csrfToken = cookie.getValue();
-                    break;
-                }
-            }
-
-            if (csrfToken == null) {
-                logger.error("CSRF token not found in cookies.");
-                throw new GenericServiceException("Errore durante il recupero del token CSRF.");
-            }
+            fetchCsrfToken();
 
             byte[] requestBody = publisher.build();
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8080/api/agenzie/register"))
                     .header("Content-Type", publisher.getContentType())
-                    .header("X-XSRF-TOKEN", csrfToken)
+                    .header(csrfTokenHeaderName, csrfTokenValue)
                     .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))
                     .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = executeRequest(request);
             int statusCode = response.statusCode();
 
             if (statusCode == 201) {
-                logger.info("Agenzia e amministratore registrati con successo.");
-                return;
-            } else {
-                logger.error("Errore durante la registrazione dell'agenzia o dell'amministratore: {}", response.body());
-                throw new GenericServiceException("Errore durante la registrazione dell'agenzia o dell'amministratore: " + response.body());
+                ApiResponse<AgenziaDTO> apiResponse =
+                        handleResponse(response, AgenziaDTO.class); // Rimosso objectMapper
+                if (apiResponse != null && apiResponse.isSuccess()) {
+                    return;
+                } else {
+                    String errorMessage =
+                            (apiResponse != null && apiResponse.getMessage() != null)
+                                    ? apiResponse.getMessage()
+                                    : "Errore sconosciuto durante la registrazione.";
+                    throw new GenericServiceException(errorMessage);
+                }
+            } else if (statusCode == 409) {
+                logEmailAlreadyInUse(response);
+                throw new AuthenticationException("Email già in uso. Inserisci un'altra email.");
+            } else if (statusCode >= 400 && statusCode < 500) {
+                logClientError(statusCode, response.body());
+                throw new ApiClientException(
+                        "Errore durante la registrazione: " + statusCode + ". Controlla i dati inseriti.");
+            } else if (statusCode >= 500) {
+                logServerError(statusCode, response.body());
+                throw new ServiceUnavailableException("Errore del server durante la registrazione. Riprova più tardi.");
             }
 
-        } catch (IOException | InterruptedException e) {
-            logger.error("Errore durante l'upload dei dati dell'agenzia: {}", e.getMessage());
-            throw handleGenericException("Errore durante l'upload dei dati dell'agenzia: " + e.getMessage(), e);
+            throw new GenericServiceException("Registrazione fallita con status code: " + statusCode);
 
+        } catch (Exception e) {
+            throw handleGenericException(e.getMessage(), e);
         }
     }
 

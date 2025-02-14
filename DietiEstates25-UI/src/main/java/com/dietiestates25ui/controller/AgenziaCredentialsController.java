@@ -3,7 +3,6 @@ package com.dietiestates25ui.controller;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
-import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.service.AgenziaService;
 import com.dietiestates25ui.service.AmministratoreService;
 import javafx.animation.PauseTransition;
@@ -20,26 +19,12 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.net.CookieManager;
-import java.net.HttpCookie;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 public class AgenziaCredentialsController extends AbstractController implements Initializable {
@@ -177,7 +162,7 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
         try {
             logger.info("Tentativo di registrazione agenzia e amministratore...");
-            agenziaService.uploadAgenziaData(agenzia, logoFile, email, password);
+            agenziaService.registerAgenzia(agenzia, logoFile, email, password);
             confermaButton.setDisable(true);
             indietroButton.setDisable(true);
             generaButton.setDisable(true);
