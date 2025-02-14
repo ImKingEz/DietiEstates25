@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -86,6 +87,7 @@ public class AuthController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('ROLE_UTENTE')")
     public ResponseEntity<ApiResponse<UtenteDTO>> updateUtente(
             @RequestBody UpdateUtenteDTO updateUtenteDTO,
             @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader, HttpServletRequest request) {
@@ -111,6 +113,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasRole('ROLE_UTENTE')")
     public ResponseEntity<ApiResponse<UtenteDTO>> getUserDetails() {
         logger.debug("getUserDetails() called");
 

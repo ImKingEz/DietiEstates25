@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,7 @@ public class AgenteController {
     }
 
     @PostMapping("/register")
+    @PreAuthorize("hasAuthority('WRITE_AGENTE')")
     public ResponseEntity<ApiResponse<AgenteDTO>> registerAgente(@RequestBody @Valid RegisterAgenteDTO registerAgenteDTO) {
         logger.debug("registerAgente() called with registerAgenteDTO: {}", registerAgenteDTO.getEmail());
         try {
@@ -78,6 +80,7 @@ public class AgenteController {
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasAuthority('WRITE_AGENTE')")
     public ResponseEntity<ApiResponse<AgenteDTO>> updateAgente(@RequestBody @Valid RegisterAgenteDTO registerAgenteDTO) {
         logger.debug("updateAgente() called with registerAgenteDTO: {}", registerAgenteDTO.getEmail());
         try {
@@ -97,6 +100,7 @@ public class AgenteController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasAuthority('READ_AGENTE')")
     public ResponseEntity<ApiResponse<AgenteDTO>> getUserDetails() {
         logger.debug("getUserDetails() called");
         try {

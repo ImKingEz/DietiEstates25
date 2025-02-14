@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -32,6 +33,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
@@ -63,9 +65,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/register", "/api/users/login", "/api/csrf").permitAll()
                 .requestMatchers("/api/admin/register", "/api/admin/login").permitAll()
                 .requestMatchers("/api/agenzie/register").permitAll()
-                .requestMatchers("/api/agenti/register", "/api/agenti/login").permitAll()
+                .requestMatchers("/api/agenti/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
-                .requestMatchers("/api/admin/me").permitAll()
                 .anyRequest().authenticated()
         );
 

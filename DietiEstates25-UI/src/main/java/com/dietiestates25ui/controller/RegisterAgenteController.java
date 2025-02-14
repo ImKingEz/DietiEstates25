@@ -184,7 +184,7 @@ public class RegisterAgenteController extends AbstractController implements Init
         logger.info("Registrazione di {} {} {} {} {} {} {}", nome, cognome, dataNascita, sesso, email, password, amministratore.getIdAgenzia());
 
         try {
-            agenteService.registraAgente(agente);
+            agenteService.registraAgente(agente, token);
             registraButton.setDisable(true);
             indietroButton.setDisable(true);
             showPopup("Registrazione completata!", "Reindirizzamento all'area amministrativa...", SUCCESS_ICON);

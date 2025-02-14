@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,6 +47,7 @@ public class AgenziaController {
     }
 
     @GetMapping("/{agenziaId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_AGENZIA') or hasRole('ROLE_AGENTE')")
     public ResponseEntity<ApiResponse<AgenziaDTO>> getAgenziaDetails(@PathVariable Long agenziaId) {
         try {
             AgenziaDTO agenziaDTO = agenziaService.getAgenziaDetails(agenziaId);

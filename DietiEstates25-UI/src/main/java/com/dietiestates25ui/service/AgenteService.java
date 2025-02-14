@@ -28,15 +28,16 @@ public class AgenteService extends ApiService {
         return BASE_URL;
     }
 
-    public void registraAgente(AgenteImmobiliare agente) throws GenericServiceException {
+    public void registraAgente(AgenteImmobiliare agente, String token) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            String jsonBody = objectMapper.writeValueAsString(agente); // Usa objectMapper statico
+            String jsonBody = objectMapper.writeValueAsString(agente);
 
             HttpRequest request =
                     HttpRequest.newBuilder()
                             .uri(URI.create(getBaseUrl() + "/register"))
                             .header(CONTENT_TYPE, APPLICATION_JSON)
+                            .header("Authorization", "Bearer " + token)
                             .header(csrfTokenHeaderName, csrfTokenValue)
                             .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                             .build();
@@ -45,7 +46,7 @@ public class AgenteService extends ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 201) {
-                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class); // Rimosso objectMapper
+                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     logger.info("Agente registrato con successo: {}", agente.getEmail());
                     return;
@@ -77,7 +78,7 @@ public class AgenteService extends ApiService {
     public void updateAgente(AgenteImmobiliare agente, String token) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            String jsonBody = objectMapper.writeValueAsString(agente); // Usa objectMapper statico
+            String jsonBody = objectMapper.writeValueAsString(agente);
 
             HttpRequest request =
                     HttpRequest.newBuilder()
@@ -92,7 +93,7 @@ public class AgenteService extends ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class); // Rimosso objectMapper
+                ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     logger.info("Agente aggiornato con successo: {}", agente.getEmail());
                     return;
@@ -122,7 +123,7 @@ public class AgenteService extends ApiService {
         try {
             fetchCsrfToken();
             String jsonBody =
-                    objectMapper.writeValueAsString( // Usa objectMapper statico
+                    objectMapper.writeValueAsString(
                             Map.of("email", agente.getEmail(), "password", agente.getPassword()));
 
             HttpRequest request =
