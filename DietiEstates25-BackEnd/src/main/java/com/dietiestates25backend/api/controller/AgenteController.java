@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -100,9 +99,7 @@ public class AgenteController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<AgenteDTO>> getUserDetails() {
         logger.debug("getUserDetails() called");
-
         try {
-            // Ottieni l'email dell'utente autenticato dal SecurityContextHolder
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
             AgenteDTO agenteDTO = agenteService.getAgenteDetails(userEmail);
             logger.debug("getUserDetails() successful for agente: {}", userEmail);

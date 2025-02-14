@@ -89,16 +89,8 @@ public class AgenteService {
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
         logger.debug("Agente salvato con ID: {}", savedAgente.getId());
 
-        AgenteDTO agenteDTO = new AgenteDTO();
-        agenteDTO.setIdAgenzia(savedAgente.getIdAgenzia());
-        agenteDTO.setNome(savedAgente.getNome());
-        agenteDTO.setCognome(savedAgente.getCognome());
-        agenteDTO.setDataDiNascita(savedAgente.getDataDiNascita());
-        agenteDTO.setSesso(savedAgente.getSesso());
-        agenteDTO.setEmail(savedAgente.getEmail());
-
-        logger.debug("Ending registraAgente with agente: {}", agenteDTO.getEmail());
-        return agenteDTO;
+        logger.debug("Ending registraAgente with agente: {}", savedAgente.getEmail());
+        return new AgenteDTO(savedAgente.getIdAgenzia(), savedAgente.getNome(), savedAgente.getCognome(), savedAgente.getDataDiNascita(), savedAgente.getSesso(), savedAgente.getEmail());
     }
 
     public AgenteDTO updateAgente(RegisterAgenteDTO registerAgenteDTO) {
@@ -121,16 +113,8 @@ public class AgenteService {
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
         logger.debug("Agente salvato con ID: {}", savedAgente.getId());
 
-        AgenteDTO agenteDTO = new AgenteDTO();
-        agenteDTO.setIdAgenzia(savedAgente.getIdAgenzia());
-        agenteDTO.setNome(savedAgente.getNome());
-        agenteDTO.setCognome(savedAgente.getCognome());
-        agenteDTO.setDataDiNascita(savedAgente.getDataDiNascita());
-        agenteDTO.setSesso(savedAgente.getSesso());
-        agenteDTO.setEmail(savedAgente.getEmail());
-
-        logger.debug("Ending registraAgente with agente: {}", agenteDTO.getEmail());
-        return agenteDTO;
+        logger.debug("Ending registraAgente with agente: {}", savedAgente.getEmail());
+        return new AgenteDTO(savedAgente.getIdAgenzia(), savedAgente.getNome(), savedAgente.getCognome(), savedAgente.getDataDiNascita(), savedAgente.getSesso(), savedAgente.getEmail());
     }
 
     @Transactional(readOnly = true)

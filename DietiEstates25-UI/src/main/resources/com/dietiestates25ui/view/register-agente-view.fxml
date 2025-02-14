@@ -51,13 +51,13 @@
                                  </HBox>
                      <HBox alignment="CENTER" styleClass="HBoxField">
             
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                         <DatePicker fx:id="dataDatePicker" promptText="Data di nascita" styleClass="registerField" />
             
                      </HBox>
                      <HBox alignment="CENTER" styleClass="HBoxField">
                         <children>
-                           <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
+                           <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                            <SplitMenuButton fx:id="sessoSplitMenuButton" mnemonicParsing="false" prefWidth="300.0" text="Sesso">
                              <items>
                                <MenuItem fx:id="maschioMenuItem" mnemonicParsing="false" text="Maschio" />

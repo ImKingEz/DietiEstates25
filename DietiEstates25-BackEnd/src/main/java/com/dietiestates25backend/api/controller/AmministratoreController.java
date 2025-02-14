@@ -48,11 +48,6 @@ public class AmministratoreController {
             ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-        catch (Exception ex) {
-            logger.error("registerAdmin() failed with error: {}", ex.getMessage());
-            ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, "Errore durante la registrazione: " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
     }
 
     @PostMapping("/login")
@@ -83,7 +78,6 @@ public class AmministratoreController {
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<AmministratoreDTO>> getAdminDetails() {
         logger.debug("getAdminDetails() called");
-
         try {
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
             AmministratoreDTO amministratoreDTO = amministratoreService.getAmministratoreDetails(userEmail);

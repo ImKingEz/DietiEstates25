@@ -35,3 +35,7 @@ TextField {
     -fx-font-size: 10;
     -fx-fill:  #3A5F7D;
 }
+
+.textAsterisco {
+    -fx-fill: #3A5F7D;
+}

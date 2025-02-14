@@ -10,10 +10,7 @@ import com.dietiestates25ui.model.AgenziaImmobiliare;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.CookieManager;
-import java.net.HttpCookie;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
@@ -49,7 +46,7 @@ public class AgenziaService extends ApiService {
             logger.info("Tentativo di recupero dettagli agenzia con ID: {}. Status code: {}", agenziaId, statusCode);
 
             if (statusCode == 200) {
-                ApiResponse<AgenziaDTO> apiResponse = handleResponse(response, AgenziaDTO.class); //Rimosso objectMapper
+                ApiResponse<AgenziaDTO> apiResponse = handleResponse(response, AgenziaDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
                     logger.info("Dettagli agenzia recuperati con successo per ID: {}.", agenziaId);
                     return apiResponse.getData();
@@ -78,7 +75,7 @@ public class AgenziaService extends ApiService {
         }
     }
 
-    public void registerAgenzia(AgenziaImmobiliare agenzia, File logoFile, String email, String password) throws GenericServiceException {
+    public void registerAgenzia(AgenziaImmobiliare agenzia, File logoFile, String password) throws GenericServiceException {
         try {
             MultipartBodyPublisher publisher = new MultipartBodyPublisher();
             publisher.addFormDataPart("nome", agenzia.getNome());
@@ -99,7 +96,7 @@ public class AgenziaService extends ApiService {
             byte[] requestBody = publisher.build();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/agenzie/register"))
+                    .uri(URI.create(getBaseUrl() + "/register"))
                     .header("Content-Type", publisher.getContentType())
                     .header(csrfTokenHeaderName, csrfTokenValue)
                     .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))
@@ -110,7 +107,8 @@ public class AgenziaService extends ApiService {
 
             if (statusCode == 201) {
                 ApiResponse<AgenziaDTO> apiResponse =
-                        handleResponse(response, AgenziaDTO.class); // Rimosso objectMapper
+                        handleResponse(response, AgenziaDTO.class);
+                        handleResponse(response, AgenziaDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     return;
                 } else {
@@ -179,7 +177,7 @@ public class AgenziaService extends ApiService {
             String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             StringBuilder buffer = new StringBuilder();
             Random random = new Random();
-            for (int i = 0; i < 20; i++) { // A shorter boundary
+            for (int i = 0; i < 20; i++) {
                 buffer.append(characters.charAt(random.nextInt(characters.length())));
             }
             return buffer.toString();

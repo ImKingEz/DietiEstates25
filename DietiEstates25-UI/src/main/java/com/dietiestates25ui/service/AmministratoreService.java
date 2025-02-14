@@ -28,7 +28,7 @@ public class AmministratoreService extends ApiService {
     public void registraAmministratore(Amministratore admin) throws GenericServiceException {
         try {
             fetchCsrfToken();
-            String jsonBody = objectMapper.writeValueAsString(admin); // Usa objectMapper statico
+            String jsonBody = objectMapper.writeValueAsString(admin);
             HttpRequest request =
                     HttpRequest.newBuilder()
                             .uri(URI.create(getBaseUrl() + "/register"))
@@ -43,7 +43,7 @@ public class AmministratoreService extends ApiService {
 
             if (statusCode == 201) {
                 ApiResponse<AmministratoreDTO> apiResponse =
-                        handleResponse(response, AmministratoreDTO.class); // Rimosso objectMapper
+                        handleResponse(response, AmministratoreDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     return;
                 } else {
@@ -74,14 +74,14 @@ public class AmministratoreService extends ApiService {
 
     public String loginAmministratore(Amministratore admin) throws GenericServiceException {
         try {
-            fetchCsrfToken(); // Ottieni il CSRF token
+            fetchCsrfToken();
 
-            String jsonBody = objectMapper.writeValueAsString(admin); // Usa objectMapper statico
+            String jsonBody = objectMapper.writeValueAsString(admin);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + "/login"))
                     .header(CONTENT_TYPE, APPLICATION_JSON)
-                    .header(csrfTokenHeaderName, csrfTokenValue) // Includi il CSRF token
+                    .header(csrfTokenHeaderName, csrfTokenValue)
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
 
@@ -89,7 +89,7 @@ public class AmministratoreService extends ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                ApiResponse<LoginResponse> apiResponse = handleResponse(response, LoginResponse.class); // Rimosso objectMapper
+                ApiResponse<LoginResponse> apiResponse = handleResponse(response, LoginResponse.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     LoginResponse loginResponse = apiResponse.getData();
                     return loginResponse.getToken();
@@ -129,7 +129,7 @@ public class AmministratoreService extends ApiService {
 
             if (statusCode == 200) {
                 ApiResponse<AmministratoreDTO> apiResponse =
-                        handleResponse(response, AmministratoreDTO.class); // Rimosso new ObjectMapper()
+                        handleResponse(response, AmministratoreDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     AmministratoreDTO amministratoreDTO = apiResponse.getData();
                     logger.info("Dettagli utente recuperati con successo.");

@@ -30,21 +30,7 @@ public class AgenziaController {
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<AgenziaDTO>> registerAgenzia(
-            @RequestPart("nome") String nome,
-            @RequestPart("partitaIva") String partitaIva,
-            @RequestPart("indirizzo") String indirizzo,
-            @RequestPart("email") String email,
-            @RequestPart("telefono") String telefono,
-            @RequestPart("password") String password,
-            @RequestPart(value = "logo", required = false) MultipartFile logo) {
-        RegisterAgenziaDTO registerAgenziaDTO = new RegisterAgenziaDTO();
-        registerAgenziaDTO.setNome(nome);
-        registerAgenziaDTO.setPartitaIva(partitaIva);
-        registerAgenziaDTO.setIndirizzo(indirizzo);
-        registerAgenziaDTO.setEmail(email);
-        registerAgenziaDTO.setTelefono(telefono);
-        registerAgenziaDTO.setPassword(password);
-        registerAgenziaDTO.setLogo(logo);
+            @Valid @ModelAttribute RegisterAgenziaDTO registerAgenziaDTO) {  // Modified parameter
 
         try {
             AgenziaDTO agenziaDTO = agenziaService.registraAgenzia(registerAgenziaDTO);

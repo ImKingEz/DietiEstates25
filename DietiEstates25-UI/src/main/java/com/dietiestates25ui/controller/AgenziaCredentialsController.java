@@ -170,12 +170,11 @@ public class AgenziaCredentialsController extends AbstractController implements 
     private void registraAgenzia() {
         Platform.runLater(() -> logo.getParent().requestFocus());
 
-        String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
 
         try {
             logger.info("Tentativo di registrazione agenzia e amministratore...");
-            agenziaService.registerAgenzia(agenzia, logoFile, email, password);
+            agenziaService.registerAgenzia(agenzia, logoFile, password);
             confermaButton.setDisable(true);
             indietroButton.setDisable(true);
             generaButton.setDisable(true);

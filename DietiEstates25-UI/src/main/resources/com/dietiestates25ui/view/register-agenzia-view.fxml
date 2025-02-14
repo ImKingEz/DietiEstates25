@@ -37,7 +37,7 @@
             <children>
                <HBox alignment="CENTER" styleClass="HBoxField">
                   <children>
-                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                      <TextField fx:id="partitaIVATextField" promptText="Partita IVA" styleClass="registerField" />
                   </children>
                </HBox>
@@ -50,7 +50,7 @@
          </VBox>
             <HBox alignment="CENTER" styleClass="HBoxField">
 
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                 <TextField fx:id="indirizzoTextField" promptText="Indirizzo sede legale" styleClass="registerField" />
 
             </HBox>
@@ -73,7 +73,7 @@
             <children>
                <HBox alignment="CENTER" styleClass="HBoxField">
                   <children>
-                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="*" />
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                      <TextField fx:id="telefonoTextField" promptText="Numero di telefono" styleClass="registerField" />
                   </children>
                </HBox>

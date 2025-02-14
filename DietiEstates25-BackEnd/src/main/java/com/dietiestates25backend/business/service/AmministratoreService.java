@@ -68,9 +68,9 @@ public class AmministratoreService {
         Amministratore amministratore = new Amministratore();
         amministratore.setEmail(registerDTO.getEmail());
         amministratore.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-        amministratore.setIdAgenzia(agenzia.getId()); // Imposta l'ID dell'agenzia
+        amministratore.setIdAgenzia(agenzia.getId());
         Amministratore savedAdmin = amministratoreRepository.save(amministratore);
-        logger.debug("Admin saved: {}", savedAdmin.getId());
+        logger.debug("Admin saved: {}", savedAdmin.getEmail());
         return new AmministratoreDTO(savedAdmin.getEmail(), savedAdmin.getIdAgenzia());
     }
 
