@@ -12,15 +12,15 @@
 <?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.ConfermaInserzioneController">
-    <children>
-        <VBox alignment="CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="30.0" styleClass="secondaryBackground">
+    
+        <VBox alignment="CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="20.0" styleClass="secondaryBackground">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
             </padding>
             <ImageView fx:id="logo" fitHeight="163.0" fitWidth="251.0" pickOnBounds="true" preserveRatio="true">
-                <image>
+                
                     <Image url="@../images/logo2.png" />
-                </image>
+                
             </ImageView>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" text="Conferma Inserzione" textAlignment="CENTER">
                 <font>
@@ -28,9 +28,9 @@
                 </font>
             </Text>
 
-            <HBox alignment="CENTER" maxHeight="320.0" maxWidth="1202.0" minHeight="320.0" minWidth="900.0" prefHeight="320.0" prefWidth="1202.0" styleClass="section">
-                <children>
-                    <ImageView fx:id="immobileImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="image-frame">
+            <HBox alignment="CENTER_LEFT" maxHeight="320.0" maxWidth="1202.0" minHeight="320.0" minWidth="900.0" prefHeight="320.0" prefWidth="1202.0" spacing="50.0" styleClass="section">
+                
+                    <ImageView fx:id="immobileImageView" fitHeight="308.0" fitWidth="343.0" pickOnBounds="true" preserveRatio="true" styleClass="image-frame">
                         <HBox.margin>
                             <Insets right="20.0" />
                         </HBox.margin>
@@ -59,24 +59,19 @@
                             <Label fx:id="superficieLabel" styleClass="value" text="120 mq" wrapText="true" />
                         </HBox>
 
-                        <HBox fx:id="descrizioneHBox" alignment="CENTER_LEFT" maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="5.0">
-                            <Label maxHeight="40.0" minHeight="40.0" prefHeight="40.0" styleClass="label" text="Descrizione: " />
-                            <Label fx:id="descrizioneLabel" alignment="CENTER" styleClass="value" text="Descrizione dell'immobile" wrapText="true" />
-                        </HBox>
-
-                        <HBox spacing="5.0">
-                            <Label styleClass="label" text="Vicinanze: " />
-                            <Label fx:id="vicinanzeLabel" styleClass="value" text="Scuole, Parchi, Trasporto pubblico" wrapText="true" />
-                        </HBox>
-
-                        <HBox spacing="5.0">
-                            <Label styleClass="label" text="Ulteriori servizi: " />
-                            <Label fx:id="serviziLabel" styleClass="value" text="" wrapText="true" />
-                        </HBox>
-
                         <HBox spacing="5.0">
                             <Label styleClass="label" text="Tipo di inserzione: " />
                             <Label fx:id="tipologiaLabel" styleClass="value" text="" wrapText="true" />
+                        </HBox>
+
+                        <HBox spacing="5.0">
+                            <Label styleClass="label" text="Classe energetica: " />
+                            <Label fx:id="classeEnergeticaLabel" styleClass="value" text="" wrapText="true" />
+                        </HBox>
+
+                        <HBox fx:id="descrizioneHBox" alignment="CENTER_LEFT" maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="5.0">
+                            <Label maxHeight="40.0" minHeight="40.0" prefHeight="40.0" styleClass="label" text="Descrizione: " />
+                            <Label fx:id="descrizioneLabel" alignment="CENTER" styleClass="value" text="Descrizione dell'immobile" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
@@ -89,18 +84,23 @@
                             <Label fx:id="numeroBagniLabel" styleClass="value" text="" wrapText="true" />
                         </HBox>
 
-                        <HBox spacing="5.0">
-                            <Label styleClass="label" text="Classe energetica: " />
-                            <Label fx:id="classeEnergeticaLabel" styleClass="value" text="" wrapText="true" />
-                        </HBox>
-
-                        <HBox spacing="5.0">
+                                 <HBox spacing="5.0">
                             <Label styleClass="label" text="Piano: " />
                             <Label fx:id="pianoLabel" styleClass="value" text="" wrapText="true" />
                         </HBox>
 
+                        <HBox spacing="5.0">
+                            <Label styleClass="label" text="Vicinanze: " />
+                            <Label fx:id="vicinanzeLabel" styleClass="value" text="Scuole, Parchi, Trasporto pubblico" wrapText="true" />
+                        </HBox>
+
+                        <HBox spacing="5.0">
+                            <Label styleClass="label" text="Ulteriori servizi: " />
+                            <Label fx:id="serviziLabel" styleClass="value" text="" wrapText="true" />
+                        </HBox>
+
                     </VBox>
-                </children>
+                
             </HBox>
             <Button fx:id="confermaButton" mnemonicParsing="false" text="Conferma">
                 <padding>
@@ -109,10 +109,13 @@
             </Button>
 
             <HBox alignment="CENTER_LEFT">
-                <children>
+                
                     <Button fx:id="indietroButton" mnemonicParsing="false" text="Indietro" />
-                </children>
+                
+            <padding>
+               <Insets left="15.0" />
+            </padding>
             </HBox>
         </VBox>
-    </children>
+    
 </AnchorPane>

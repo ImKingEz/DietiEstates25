@@ -123,6 +123,87 @@ public class InserimentoInserzioneController extends AbstractController implemen
         createAndPlaceBackButton();
     }
 
+    public void setTitoloTextField(String titolo) {
+        this.titoloTextField.setText(titolo);
+    }
+
+    public void setTipologiaChoiceBox(String tipologia) {
+        this.tipologiaChoiceBox.setValue(tipologia);
+    }
+
+    public void setIndirizzoTextField(String indirizzo) {
+        this.indirizzoTextField.setText(indirizzo);
+    }
+
+    public void setPrezzoTextField(String prezzo) {
+        this.prezzoTextField.setText(prezzo);
+    }
+
+    public void setDescrizioneTextArea(String descrizione) {
+        this.descrizioneTextArea.setText(descrizione);
+    }
+
+    public void setSuperficieTextField(String superficie) {
+        this.superficieTextField.setText(superficie);
+    }
+
+    public void setCamereSpinner(int camere) {
+        this.camereSpinner.getValueFactory().setValue(camere);
+    }
+
+    public void setBagniSpinner(int bagni) {
+        this.bagniSpinner.getValueFactory().setValue(bagni);
+    }
+
+    public void setClasseEnergeticaTextField(String classeEnergetica) {
+        this.classeEnergeticaTextField.setText(classeEnergetica);
+    }
+
+    public void setPianoSpinner(int piano) {
+        this.pianoSpinner.getValueFactory().setValue(piano);
+    }
+
+    public void setAscensoreCheckBox(boolean ascensore) {
+        this.ascensoreCheckBox.setSelected(ascensore);
+    }
+
+    public void setPortineriaCheckBox(boolean portineria) {
+        this.portineriaCheckBox.setSelected(portineria);
+    }
+
+    public void setClimatizzazioneCheckBox(boolean climatizzazione) {
+        this.climatizzazioneCheckBox.setSelected(climatizzazione);
+    }
+
+    public void setSelectedImageList(List<String> imageUrls) {
+        this.selectedImageList.clear();
+
+        // Converti gli URL delle immagini in File e aggiungili alla lista
+        for (String imageUrl : imageUrls) {
+            try {
+                File file = new File(new URL(imageUrl).toURI());
+                this.selectedImageList.add(file);
+            } catch (Exception e) {
+                logger.error("Errore durante la conversione dell'URL in File: {}", e.getMessage());
+            }
+        }
+
+        // Aggiorna le miniature delle immagini
+        updateImageThumbnails();
+    }
+
+    public void setVicinoScuoleCheckBox(boolean vicinoScuole) {
+        this.vicinoScuoleCheckBox.setSelected(vicinoScuole);
+    }
+
+    public void setVicinoParchiCheckBox(boolean vicinoParchi) {
+        this.vicinoParchiCheckBox.setSelected(vicinoParchi);
+    }
+
+    public void setVicinoTrasportoPubblicoCheckBox(boolean vicinoTrasportoPubblico) {
+        this.vicinoTrasportoPubblicoCheckBox.setSelected(vicinoTrasportoPubblico);
+    }
+
     public void setStage(Stage stage) {
         this.currentStage = stage;
     }
@@ -133,7 +214,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     @FXML
     private void handleApriMappaButtonAction(javafx.event.ActionEvent event) {
-        System.out.println("dentro handleApriMappaButtonAction");
         try {
             mapView.setPrefWidth(primaryAnchorPane.getWidth());
             mapView.setPrefHeight(primaryAnchorPane.getHeight());
@@ -216,6 +296,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
                                         } else {
                                             logger.warn("Latitudine e Longitudine non valide, impossibile chiamare getNearbyPlaces");
                                         }
+                                        // Imposta il focus sul logo
+                                        logo.requestFocus();
                                     }
                                 });
                             } else {
@@ -346,7 +428,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         avantiButton.setDisable(true);
     }
 
-    private void checkFormValidity() {
+    public void checkFormValidity() {
         String titolo = titoloTextField.getText().trim();
         String indirizzo = indirizzoTextField.getText().trim();
         String prezzo = prezzoTextField.getText().trim();

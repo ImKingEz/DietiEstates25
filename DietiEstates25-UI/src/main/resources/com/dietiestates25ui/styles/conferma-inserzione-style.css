@@ -1,7 +1,9 @@
-/* Importa gli stili dalla schermata di inserimento (se necessario) */
-@import "inserimento-inserzione-style.css";
-
 /* Stili aggiuntivi specifici per la schermata di conferma */
+
+* {
+    -fx-font-family: "Verdana";
+}
+
 
 .secondaryBackground {
     -fx-background-color: #EAF3FA; /* Colore di sfondo */

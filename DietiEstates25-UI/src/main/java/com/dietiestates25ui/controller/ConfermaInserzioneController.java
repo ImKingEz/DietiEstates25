@@ -114,9 +114,9 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
             // Gestione del piano: se il piano è -1 (interrato) visualizzare "Interrato", altrimenti il numero del piano
             String pianoText = (Immobile.getPiano() == -1) ? "Interrato" : String.valueOf(Immobile.getPiano());
-            pianoLabel.setText(pianoText);
+            pianoLabel.setText("Piano: " + pianoText);
 
-            // Gestione dell'immagine
+            // Gestione dell'immagine: mostra solo la prima immagine
             if (Immobile.getImmaginiUrls() != null && !Immobile.getImmaginiUrls().isEmpty()) {
                 String firstImageUrl = Immobile.getImmaginiUrls().get(0);
                 try {
@@ -159,13 +159,13 @@ public class ConfermaInserzioneController extends AbstractController implements 
     private String getVicinanzeText() {
         StringBuilder vicinanzeText = new StringBuilder();
         if (Immobile.isVicinoScuole()) {
-            vicinanzeText.append("Vicino a scuole, ");
+            vicinanzeText.append("Scuole, ");
         }
         if (Immobile.isVicinoParchi()) {
-            vicinanzeText.append("Vicino a parchi, ");
+            vicinanzeText.append("Parchi, ");
         }
         if (Immobile.isVicinoTrasportoPubblico()) {
-            vicinanzeText.append("Vicino a trasporto pubblico, ");
+            vicinanzeText.append("Trasporto pubblico, ");
         }
 
         if (vicinanzeText.length() > 0) {
@@ -177,7 +177,36 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private void openInserimentoDatiInserzionePage() {
         loadScene("/com/dietiestates25ui/view/inserimento-inserzione-view.fxml",
-                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
+                (fxmlLoader, stage) -> {
+                    InserimentoInserzioneController controller = fxmlLoader.getController();
+                    controller.setTitoloTextField(Immobile.getTitolo());
+                    controller.setTipologiaChoiceBox(Immobile.getTipologia());
+                    controller.setIndirizzoTextField(Immobile.getIndirizzo());
+                    controller.setPrezzoTextField(String.valueOf(Immobile.getPrezzo()));
+                    controller.setDescrizioneTextArea(Immobile.getDescrizione());
+                    controller.setSuperficieTextField(String.valueOf(Immobile.getDimensione()));
+                    controller.setCamereSpinner(Immobile.getNumero_camere());
+                    controller.setBagniSpinner(Immobile.getNumero_bagni());
+                    controller.setClasseEnergeticaTextField(Immobile.getClasseEnergetica());
+                    controller.setPianoSpinner(Immobile.getPiano());
+                    controller.setAscensoreCheckBox(Immobile.isAscensore());
+                    controller.setPortineriaCheckBox(Immobile.isPortineria());
+                    controller.setClimatizzazioneCheckBox(Immobile.isClimatizzazione());
+                    controller.setSelectedImageList(Immobile.getImmaginiUrls());
+                    controller.setVicinoScuoleCheckBox(Immobile.isVicinoScuole());
+                    controller.setVicinoParchiCheckBox(Immobile.isVicinoParchi());
+                    controller.setVicinoTrasportoPubblicoCheckBox(Immobile.isVicinoTrasportoPubblico());
+
+                    controller.setToken(token);
+                    controller.setStage(stage);
+
+                    // Chiamare checkFormValidity() per abilitare il pulsante Avanti
+                    controller.checkFormValidity();
+
+                    // Impostare il focus sul logo
+                    Platform.runLater(() -> controller.logo.requestFocus());
+
+                }, indietroButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
     }
 
     private void salvaImmobile() {
