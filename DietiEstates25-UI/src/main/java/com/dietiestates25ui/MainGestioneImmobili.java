@@ -10,10 +10,10 @@ import java.io.IOException;
 public class MainGestioneImmobili extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/com/dietiestates25ui/view/gestione-immobili-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/com/dietiestates25ui/view/login2-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 
-        scene.getStylesheets().add(getClass().getResource("/com/dietiestates25ui/styles/gestione-immobili-style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/com/dietiestates25ui/styles/login-style.css").toExternalForm());
 
         stage.setTitle("DietiEstates25");
         stage.setScene(scene);

@@ -1,0 +1,7 @@
+ALTER TABLE immobile
+ALTER COLUMN tipo TYPE VARCHAR(255);
+
+ALTER TABLE immobile
+ALTER COLUMN tipo SET DEFAULT 'affitto';
+
+DROP TYPE tipo_vendita;

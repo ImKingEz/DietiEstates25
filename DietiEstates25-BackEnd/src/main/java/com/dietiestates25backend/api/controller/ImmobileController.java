@@ -38,10 +38,17 @@ public class ImmobileController {
         try {
             UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));
             if (jwtService.isTokenValid(token, userDetails)) {
-                Immobile savedImmobile = immobileService.saveImmobile(immobileDTO,userDetails.getUsername());
-                logger.info("Immobile creato con successo con ID: {}", savedImmobile.getId());
-                ApiResponse<Immobile> response = new ApiResponse<>(true, savedImmobile, null);
-                return new ResponseEntity<>(response, HttpStatus.CREATED);
+                ResponseEntity<ApiResponse<Immobile>> response = immobileService.saveImmobile(immobileDTO,userDetails.getUsername());
+                if(response.getStatusCode() == HttpStatus.CREATED){
+                    Immobile savedImmobile = response.getBody().getData();
+                    logger.info("Immobile creato con successo con ID: {}", savedImmobile.getId());
+                    return response;
+                } else {
+                    logger.error("Errore durante la creazione dell'immobile: {}", response.getStatusCode());
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+
             } else {
                 logger.error("createImmobile() failed, token not valid");
                 ApiResponse<Immobile> response = new ApiResponse<>(false, null, "Token non valido");

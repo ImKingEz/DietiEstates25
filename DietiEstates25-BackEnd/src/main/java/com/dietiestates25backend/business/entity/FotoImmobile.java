@@ -19,7 +19,6 @@ public class FotoImmobile {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @ManyToOne
-    @JoinColumn(name = "id_immobile", nullable = false)
-    private Immobile immobile;
+    @Column(name = "id_immobile")
+    private Long idImmobile;
 }

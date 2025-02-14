@@ -32,6 +32,12 @@ public class GestioneImmobiliController extends AbstractController implements In
     @FXML
     private Button tornaLoginButton;
 
+    private String token;  // Variabile per memorizzare il token
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> {
@@ -72,6 +78,7 @@ public class GestioneImmobiliController extends AbstractController implements In
                 (fxmlLoader, stage) -> {
                     InserimentoInserzioneController controller = fxmlLoader.getController();
                     controller.setStage(stage); // Imposta lo Stage!
+                    controller.setToken(token); // Passa il token al InserimentoInserzioneController
                 }, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
     }
 }

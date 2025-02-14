@@ -36,7 +36,7 @@ public class Immobile {
     @Column(name = "dimensioni", nullable = false)
     private double dimensione;
 
-    @Column(name = "numero_camere", nullable = false)
+    @Column(name = "numero_stanze", nullable = false)
     private int numero_stanze;
 
     @Column(name = "numero_bagni", nullable = false)
@@ -72,10 +72,12 @@ public class Immobile {
     @Column(name = "vicino_trasporto_pubblico")
     private boolean vicinoTrasportoPubblico;
 
-    @ElementCollection
-    private List<String> immaginiUrls; // Immagazzina gli URL delle immagini
+//    // Modifica qui per usare la relazione OneToMany con FotoImmobile
+//    @OneToMany(mappedBy = "immobile", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<FotoImmobile> fotoImmobili;
 
+    // Usa ManyToOne per la relazione con AgenteImmobiliare
     //@ManyToOne
-    @JoinColumn(name = "id_agente")
-    private String agente;
+    @Column(name = "id_agente", nullable = false) // Rendi la colonna NOT NULL
+    private Long idAgente; // Assicurati che Utente sia l'entity per AgenteImmobiliare
 }

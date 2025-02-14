@@ -6,6 +6,7 @@ import com.dietiestates25ui.dto.CsrfResponse;
 import com.dietiestates25ui.exception.ApiClientException;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.exception.ServiceUnavailableException;
+import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -119,7 +120,7 @@ public class ImmobileService {
             int statusCode = response.statusCode();
 
             if (statusCode == 201) {
-                ApiResponse<String> apiResponse = handleResponse(response, objectMapper, String.class);
+                ApiResponse<Immobile> apiResponse = handleResponse(response, objectMapper, Immobile.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     logger.info("Immobile salvato correttamente!");
                 } else {
