@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.RegisterAmministratoreController">
+
+   <VBox alignment="CENTER" layoutX="166.0" layoutY="15.0" prefHeight="366.0" prefWidth="282.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+      <VBox alignment="CENTER" prefWidth="1280.0" spacing="15.0" styleClass="secondaryBackground">
+
+         <ImageView fx:id="logo" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+
+            <Image url="@../images/logo2.png" />
+
+         </ImageView>
+         <VBox alignment="CENTER" prefWidth="100.0" spacing="5.0">
+
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="Inserisci i dati per la registrazione dell'account:" textAlignment="CENTER" wrappingWidth="320.5333251953125" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="(I campi che contengono * vanno compilati necessariamente)" />
+
+         </VBox>
+         <VBox alignment="TOP_CENTER" fillWidth="false" styleClass="VBoxField">
+               <VBox alignment="CENTER" spacing="3.0">
+      
+                           <HBox alignment="CENTER" styleClass="HBoxField">
+      
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                     <TextField fx:id="emailTextField" promptText="Email" styleClass="registerField" />
+      
+                           </HBox>
+                  <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox">
+      
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Formato: esempio@email.it" />
+      
+                           </VBox>
+      
+                        </VBox>
+               <VBox alignment="CENTER" spacing="3.0">
+      
+                           <HBox fx:id="passwordHBox" alignment="CENTER">
+      
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*">
+                        <HBox.margin>
+                           <Insets right="5.0" />
+                        </HBox.margin>
+                     </Text>
+                     <PasswordField fx:id="passwordPasswordField" prefWidth="300.0" promptText="Password" />
+                     <Button fx:id="togglePasswordButton" mnemonicParsing="false">
+                        <graphic>
+                           <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+      
+                                       <Image url="@../images/eye_closed.png" />
+      
+                                    </ImageView>
+                        </graphic>
+                        <styleClass>
+                           <String fx:value="togglePasswordButton" />
+                           <String fx:value="generalButton" />
+                        </styleClass>
+                     </Button>
+      
+                           </HBox>
+                  <VBox alignment="CENTER_LEFT" styleClass="tipsVBox">
+      
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Lunghezza ≥ 8 " />
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Caratteri maiuscoli ≥ 1 " />
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Numeri ≥ 1 " />
+      
+                           </VBox>
+      
+                        </VBox>
+         </VBox>
+         <Button fx:id="registraButton" mnemonicParsing="false" styleClass="generalButton" text="Registra" />
+         <HBox>
+
+            <Button fx:id="indietroButton" alignment="CENTER" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" />
+
+            <VBox.margin>
+               <Insets bottom="10.0" left="10.0" />
+            </VBox.margin>
+         </HBox>
+
+         <padding>
+            <Insets top="5.0" />
+         </padding>
+      </VBox>
+
+   </VBox>
+
+</AnchorPane>

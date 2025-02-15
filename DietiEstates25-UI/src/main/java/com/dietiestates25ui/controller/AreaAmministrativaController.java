@@ -46,9 +46,21 @@ public class AreaAmministrativaController extends AbstractController implements 
 
         tornaLoginButton.setOnAction(event -> openLoginAmministratorePage());
 
-        homepageButton.setOnAction(event -> openHomePage());
+        homepageButton.setOnAction(event -> openDashboard(token, homepageButton));
 
         creaAccountAgenteButton.setOnAction(event -> openRegisterAgentePage());
+
+        creaAccountAmministratoreButton.setOnAction(event -> openRegisterAmministratorePage());
+    }
+
+    private void openRegisterAmministratorePage() {
+        loadScene("/com/dietiestates25ui/view/register-amministratore-view.fxml",
+                (fxmlLoader, stage) -> {
+                    RegisterAmministratoreController controller = fxmlLoader.getController();
+                    controller.setStage(stage);
+                    controller.setToken(token);
+                    controller.setAmministratore(amministratore);
+                }, creaAccountAmministratoreButton, "/com/dietiestates25ui/styles/register-amministratore-style.css");
     }
 
     private void openRegisterAgentePage() {
@@ -59,12 +71,6 @@ public class AreaAmministrativaController extends AbstractController implements 
                     controller.setToken(token);
                     controller.setAmministratore(amministratore);
                 }, creaAccountAgenteButton, "/com/dietiestates25ui/styles/register-agente-style.css");
-    }
-
-    private void openHomePage() {
-        loadScene("/com/dietiestates25ui/view/homepage-view.fxml",
-                (fxmlLoader, stage) -> {
-                }, homepageButton, "/com/dietiestates25ui/styles/homepage-style.css");
     }
 
     private void openLoginAmministratorePage() {
