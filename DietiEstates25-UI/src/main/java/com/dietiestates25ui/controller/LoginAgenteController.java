@@ -1,12 +1,9 @@
 package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.AgenteDTO;
-import com.dietiestates25.dto.AmministratoreDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenteImmobiliare;
-import com.dietiestates25ui.model.AgenziaImmobiliare;
-import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.service.AgenteService;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -134,7 +131,7 @@ public class LoginAgenteController extends AbstractController implements Initial
 
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
                 delay.setOnFinished(event -> {
-                    AgenteDTO agenteDTO = null;
+                    AgenteDTO agenteDTO;
                     try {
                         agenteDTO = agenteService.getAgenteDetails(token);
                         agente.setIdAgenzia(agenteDTO.getIdAgenzia());
@@ -142,7 +139,7 @@ public class LoginAgenteController extends AbstractController implements Initial
                         agente.setCognome(agenteDTO.getCognome());
                         agente.setDataDiNascita(agenteDTO.getDataDiNascita());
                         agente.setSesso(agenteDTO.getSesso());
-                        //openAgenteDashboard(token, agente);
+                        openAgenteDashboard(token, agente);
                         logger.info("Dati dell'agente recuperati con successo: {} {} {} {} {}",
                                 agente.getIdAgenzia(), agente.getNome(), agente.getCognome(), agente.getDataDiNascita(), agente.getSesso());
                     } catch (GenericServiceException e) {
@@ -158,13 +155,12 @@ public class LoginAgenteController extends AbstractController implements Initial
         }
     }
 
-    private void openAreaAmministrativaPage(String token, Amministratore admin) {
-        loadScene("/com/dietiestates25ui/view/area-amministrativa-view.fxml",
+    private void openAgenteDashboard(String token, AgenteImmobiliare agente) {
+        loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
                 (fxmlLoader, stage) -> {
-                    AreaAmministrativaController controller = fxmlLoader.getController();
-                    controller.setStage(stage);
-                    controller.setToken(token);
-                    controller.setAmministratore(admin);
-                }, loginButton, "/com/dietiestates25ui/styles/area-amministrativa-style.css");
+//                    AgenteDashboardController controller = fxmlLoader.getController();
+//                    controller.setAgente(agente);
+//                    controller.setToken(token);
+                }, loginButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

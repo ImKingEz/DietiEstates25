@@ -4,16 +4,12 @@ import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.service.AgenziaService;
-import com.dietiestates25ui.service.AmministratoreService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,9 +24,6 @@ public class AreaAmministrativaController extends AbstractController implements 
 
     @FXML
     private Button homepageButton;
-
-    @FXML
-    private ImageView logo;
 
     @FXML
     private HBox profileHBox;
@@ -82,10 +75,6 @@ public class AreaAmministrativaController extends AbstractController implements 
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public void setStage(Stage stage) {
-        this.currentStage = stage;
     }
 
     private void updateProfileHBox() {

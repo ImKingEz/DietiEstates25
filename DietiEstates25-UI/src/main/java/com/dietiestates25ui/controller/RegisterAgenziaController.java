@@ -37,9 +37,6 @@ public class RegisterAgenziaController extends AbstractController implements Ini
     private TextField indirizzoTextField;
 
     @FXML
-    private ImageView logo;
-
-    @FXML
     private TextField nomeTextField;
 
     @FXML
@@ -61,8 +58,8 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     private File selectedLogoFile = null;
 
-    private final int MAX_FILE_SIZE = 2 * 1024 * 1024;
-    private final int MAX_IMAGE_SIZE = 512;
+    private static final int MAX_FILE_SIZE = 2 * 1024 * 1024;
+    private static final int MAX_IMAGE_SIZE = 512;
 
     private AgenziaImmobiliare agenzia = null;
 
@@ -102,7 +99,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     private boolean validateImage(File file) {
         if (file.length() > MAX_FILE_SIZE) {
-            Platform.runLater(() -> showPopup("Errore", "La dimensione del file è troppo grande (max 2MB).", ERROR_ICON));
+            Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "La dimensione del file è troppo grande (max 2MB).", ERROR_ICON));
             return false;
         }
 
@@ -112,18 +109,18 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             double height = image.getHeight();
 
             if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
-                Platform.runLater(() -> showPopup("Errore", "Le dimensioni dell'immagine sono troppo grandi (max " + MAX_IMAGE_SIZE + "x" + MAX_IMAGE_SIZE + ").", ERROR_ICON));
+                Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Le dimensioni dell'immagine sono troppo grandi (max " + MAX_IMAGE_SIZE + "x" + MAX_IMAGE_SIZE + ").", ERROR_ICON));
                 return false;
             }
 
             if (width != height) {
-                Platform.runLater(() -> showPopup("Errore", "L'immagine deve essere quadrata.", ERROR_ICON));
+                Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "L'immagine deve essere quadrata.", ERROR_ICON));
                 return false;
             }
 
         } catch (Exception e) {
             logger.error("Errore durante la validazione dell'immagine: {}", e.getMessage());
-            Platform.runLater(() -> showPopup("Errore", "Errore durante la validazione dell'immagine.", ERROR_ICON));
+            Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Errore durante la validazione dell'immagine.", ERROR_ICON));
             return false;
         }
 
@@ -185,7 +182,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
         logger.info("Nome: {}, Partita IVA: {}, Indirizzo: {}, Email: {}, Telefono: {}", nome, partitaIVA, indirizzo, email, telefono);
 
-        AgenziaImmobiliare agenzia = new AgenziaImmobiliare(nome, partitaIVA, indirizzo, email, telefono, "logo");
+        agenzia = new AgenziaImmobiliare(nome, partitaIVA, indirizzo, email, telefono, "logo");
 
         loadScene("/com/dietiestates25ui/view/agenzia-credentials-view.fxml",
                 (fxmlLoader, stage) -> {

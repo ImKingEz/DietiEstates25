@@ -28,6 +28,8 @@ public abstract class ApiService {
     private static final Logger logger = LoggerFactory.getLogger(ApiService.class); // Use ApiService.class
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_JSON = "application/json";
+    public static final String AUTHORIZATION = "Authorization";
+    public static final String BEARER = "Bearer ";
     public static final String TIMEOUT_ERROR = "Timeout durante la comunicazione con il server. Riprova più tardi.";
     public static final String CONNECTION_ERROR = "Impossibile connettersi al server. Verifica la connessione e riprova.";
     public static final String COMUNICATION_ERROR = "Errore durante la comunicazione con il server. Riprova più tardi.";
@@ -38,10 +40,9 @@ public abstract class ApiService {
 
     private static final CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
 
-    // Crea e configura l'ObjectMapper statico una sola volta
     protected static final ObjectMapper objectMapper = new ObjectMapper();
     static {
-        objectMapper.registerModule(new JavaTimeModule()); // Registra il JavaTimeModule
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     private static final HttpClient client = HttpClient.newBuilder()

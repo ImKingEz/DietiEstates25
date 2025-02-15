@@ -39,9 +39,6 @@ public class RegisterAgenteController extends AbstractController implements Init
     private Button indietroButton;
 
     @FXML
-    private ImageView logo;
-
-    @FXML
     private TextField nomeTextField;
 
     @FXML

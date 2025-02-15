@@ -70,8 +70,6 @@ public class RegisterController extends AbstractController implements Initializa
 
     private UtenteService utenteService;
 
-    private OAuth2Handler oAuth2Handler;
-
     private boolean passwordVisible = false;
 
     @Override

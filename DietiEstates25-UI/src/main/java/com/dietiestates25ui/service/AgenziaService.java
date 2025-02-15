@@ -2,10 +2,7 @@ package com.dietiestates25ui.service;
 
 import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25.dto.ApiResponse;
-import com.dietiestates25ui.exception.ApiClientException;
-import com.dietiestates25ui.exception.AuthenticationException;
-import com.dietiestates25ui.exception.GenericServiceException;
-import com.dietiestates25ui.exception.ServiceUnavailableException;
+import com.dietiestates25ui.exception.*;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
 
 import java.io.File;
@@ -27,6 +24,8 @@ public class AgenziaService extends ApiService {
     private static final Logger logger = LoggerFactory.getLogger(AgenziaService.class);
     private static final String BASE_URL = "http://localhost:8080/api/agenzie";
 
+    static Random random = new Random();
+
     protected static String getBaseUrl() {
         return BASE_URL;
     }
@@ -35,7 +34,6 @@ public class AgenziaService extends ApiService {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + "/" + agenziaId))
-                    .header(CONTENT_TYPE, APPLICATION_JSON)
                     .header("Authorization", "Bearer " + token)
                     .GET()
                     .build();
@@ -43,35 +41,29 @@ public class AgenziaService extends ApiService {
             HttpResponse<String> response = executeRequest(request);
             int statusCode = response.statusCode();
 
-            logger.info("Tentativo di recupero dettagli agenzia con ID: {}. Status code: {}", agenziaId, statusCode);
-
             if (statusCode == 200) {
                 ApiResponse<AgenziaDTO> apiResponse = handleResponse(response, AgenziaDTO.class);
-                if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
-                    logger.info("Dettagli agenzia recuperati con successo per ID: {}.", agenziaId);
-                    return apiResponse.getData();
+                if (apiResponse != null && apiResponse.isSuccess()) {
+                    AgenziaDTO agenziaDTO = apiResponse.getData();
+                    logger.info("Dettagli agenzia recuperati con successo.");
+                    return agenziaDTO;
                 } else {
-                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante il recupero dei dettagli dell'agenzia.";
-                    logger.error("Errore nella risposta durante il recupero dei dettagli dell'agenzia: {}", errorMessage);
+                    String errorMessage =
+                            (apiResponse != null && apiResponse.getMessage() != null)
+                                    ? apiResponse.getMessage()
+                                    : "Impossibile recuperare i dettagli dell'agenzia.";
                     throw new GenericServiceException(errorMessage);
                 }
-            } else if (statusCode == 404) {
-                logger.warn("Agenzia non trovata con ID: {}", agenziaId);
-                throw new ApiClientException("Agenzia non trovata.");
-            } else if (statusCode >= 400 && statusCode < 500) {
-                logClientError(statusCode, response.body());
-                throw new ApiClientException("Errore durante il recupero dei dettagli dell'agenzia: " + statusCode + ". Controlla l'ID dell'agenzia.");
-            } else if (statusCode >= 500) {
-                logServerError(statusCode, response.body());
-                throw new ServiceUnavailableException("Errore del server durante il recupero dei dettagli dell'agenzia. Riprova più tardi.");
             } else {
-                logger.error("Recupero dettagli agenzia fallito per ID: {}. Status code: {}, Response body: {}", agenziaId, statusCode, response.body());
-                throw new GenericServiceException("Recupero dettagli agenzia fallito con status code: " + statusCode);
+                logGetDetailsFailed(statusCode);
+                if (statusCode == 404) {
+                    throw new ResourceNotFoundException("Agenzia non trovata.");
+                }
+                throw new GenericServiceException("Impossibile recuperare i dettagli dell'agenzia: " + statusCode);
             }
 
         } catch (Exception e) {
-            logger.error("Errore generico durante il recupero dei dettagli dell'agenzia con ID: {}: {}", agenziaId, e.getMessage());
-            throw handleGenericException("Errore durante il recupero dei dettagli dell'agenzia: " + e.getMessage(), e);
+            throw handleGenericException(e.getMessage(), e);
         }
     }
 
@@ -139,7 +131,6 @@ public class AgenziaService extends ApiService {
 
     public String generateRandomPassword(int len) {
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        Random random = new Random();
         StringBuilder sb = new StringBuilder();
 
         sb.append((char) (random.nextInt(26) + 'A'));
@@ -167,7 +158,7 @@ public class AgenziaService extends ApiService {
     static class MultipartBodyPublisher {
         private final String boundary;
         private final java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
-        private final String LINE_FEED = "\r\n";
+        private static final String LINE_FEED = "\r\n";
 
         public MultipartBodyPublisher() {
             this.boundary = generateBoundary();
@@ -176,7 +167,6 @@ public class AgenziaService extends ApiService {
         private String generateBoundary() {
             String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             StringBuilder buffer = new StringBuilder();
-            Random random = new Random();
             for (int i = 0; i < 20; i++) {
                 buffer.append(characters.charAt(random.nextInt(characters.length())));
             }
@@ -192,7 +182,7 @@ public class AgenziaService extends ApiService {
                 outputStream.write(value.getBytes());
                 outputStream.write(LINE_FEED.getBytes());
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Error while adding form data part: {}", e.getMessage());
             }
         }
 
@@ -206,7 +196,7 @@ public class AgenziaService extends ApiService {
                 Files.copy(filePath, outputStream);
                 outputStream.write(LINE_FEED.getBytes());
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Error while adding file part: {}", e.getMessage());
             }
         }
 
@@ -214,7 +204,7 @@ public class AgenziaService extends ApiService {
             try {
                 outputStream.write(("--" + boundary + "--" + LINE_FEED).getBytes());
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Error while closing multipart body: {}", e.getMessage());
             }
             return outputStream.toByteArray();
         }

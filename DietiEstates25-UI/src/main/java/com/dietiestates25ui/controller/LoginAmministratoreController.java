@@ -141,7 +141,7 @@ public class LoginAmministratoreController extends AbstractController implements
 
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
                 delay.setOnFinished(event -> {
-                    AmministratoreDTO adminDTO = null;
+                    AmministratoreDTO adminDTO;
                     try {
                         adminDTO = amministratoreService.getAmministratoreDetails(token);
                         admin.setIdAgenzia(adminDTO.getIdAgenzia());

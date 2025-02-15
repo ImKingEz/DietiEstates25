@@ -3,7 +3,6 @@ package com.dietiestates25ui.service;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25.dto.LoginResponse;
-import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.ApiClientException;
 import com.dietiestates25ui.exception.AuthenticationException;
 import com.dietiestates25ui.exception.GenericServiceException;
@@ -37,7 +36,7 @@ public class AgenteService extends ApiService {
                     HttpRequest.newBuilder()
                             .uri(URI.create(getBaseUrl() + "/register"))
                             .header(CONTENT_TYPE, APPLICATION_JSON)
-                            .header("Authorization", "Bearer " + token)
+                            .header(AUTHORIZATION, BEARER + token)
                             .header(csrfTokenHeaderName, csrfTokenValue)
                             .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                             .build();
@@ -84,7 +83,7 @@ public class AgenteService extends ApiService {
                     HttpRequest.newBuilder()
                             .uri(URI.create(getBaseUrl() + "/update"))
                             .header(CONTENT_TYPE, APPLICATION_JSON)
-                            .header("Authorization", "Bearer " + token)
+                            .header(AUTHORIZATION, BEARER + token)
                             .header(csrfTokenHeaderName, csrfTokenValue)
                             .PUT(HttpRequest.BodyPublishers.ofString(jsonBody))
                             .build();
@@ -158,7 +157,7 @@ public class AgenteService extends ApiService {
                     case 401:
                         throw new AuthenticationException("Credenziali non valide. Controlla email e password.");
                     case 404:
-                        throw new ResourceNotFoundException("Utente non trovato. Controlla email e password.");
+                        throw new ResourceNotFoundException("Agente non trovato. Controlla email e password.");
                     default:
                         throw new GenericServiceException("Login fallito: (" + statusCode + ")");
                 }
@@ -174,7 +173,7 @@ public class AgenteService extends ApiService {
             HttpRequest request =
                     HttpRequest.newBuilder()
                             .uri(URI.create(getBaseUrl() + "/me"))
-                            .header("Authorization", "Bearer " + token)
+                            .header(AUTHORIZATION, BEARER + token)
                             .GET()
                             .build();
 
@@ -185,21 +184,21 @@ public class AgenteService extends ApiService {
                 ApiResponse<AgenteDTO> apiResponse = handleResponse(response, AgenteDTO.class);
                 if (apiResponse != null && apiResponse.isSuccess()) {
                     AgenteDTO agenteDTO = apiResponse.getData();
-                    logger.info("Dettagli utente recuperati con successo.");
+                    logger.info("Dettagli agente recuperati con successo.");
                     return agenteDTO;
                 } else {
                     String errorMessage =
                             (apiResponse != null && apiResponse.getMessage() != null)
                                     ? apiResponse.getMessage()
-                                    : "Impossibile recuperare i dettagli dell'utente.";
+                                    : "Impossibile recuperare i dettagli dell'agente.";
                     throw new GenericServiceException(errorMessage);
                 }
             } else {
                 logGetDetailsFailed(statusCode);
                 if (statusCode == 404) {
-                    throw new ResourceNotFoundException("Utente non trovato.");
+                    throw new ResourceNotFoundException("Agente non trovato.");
                 }
-                throw new GenericServiceException("Impossibile recuperare i dettagli dell'utente: " + statusCode);
+                throw new GenericServiceException("Impossibile recuperare i dettagli dell'agente: " + statusCode);
             }
 
         } catch (Exception e) {
