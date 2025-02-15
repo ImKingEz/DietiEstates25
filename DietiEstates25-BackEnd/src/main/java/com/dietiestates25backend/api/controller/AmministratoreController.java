@@ -6,7 +6,6 @@ import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.RegisterAmministratoreDTO;
 import com.dietiestates25backend.api.dto.LoginDTO;
 import com.dietiestates25backend.business.service.AmministratoreService;
-import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -87,7 +87,6 @@ public class AgenteService {
         agente.setPassword(passwordEncoder.encode(registerAgenteDTO.getPassword()));
 
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
-        logger.debug("Agente salvato con ID: {}", savedAgente.getId());
 
         logger.debug("Ending registraAgente with agente: {}", savedAgente.getEmail());
         return new AgenteDTO(savedAgente.getIdAgenzia(), savedAgente.getNome(), savedAgente.getCognome(), savedAgente.getDataDiNascita(), savedAgente.getSesso(), savedAgente.getEmail());
@@ -111,9 +110,8 @@ public class AgenteService {
         agente.setPassword(passwordEncoder.encode(registerAgenteDTO.getPassword()));
 
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
-        logger.debug("Agente salvato con ID: {}", savedAgente.getId());
 
-        logger.debug("Ending registraAgente with agente: {}", savedAgente.getEmail());
+        logger.debug("Ending updateAgente with agente: {}", savedAgente.getEmail());
         return new AgenteDTO(savedAgente.getIdAgenzia(), savedAgente.getNome(), savedAgente.getCognome(), savedAgente.getDataDiNascita(), savedAgente.getSesso(), savedAgente.getEmail());
     }
 

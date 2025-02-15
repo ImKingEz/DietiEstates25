@@ -142,7 +142,7 @@ public class AgenziaService {
 
         AgenziaImmobiliare agenzia = agenziaOptional.get();
 
-        AgenziaDTO agenziaDTO = new AgenziaDTO(
+        return new AgenziaDTO(
                 agenzia.getNome(),
                 agenzia.getPartitaIva(),
                 agenzia.getIndirizzo(),
@@ -150,7 +150,5 @@ public class AgenziaService {
                 agenzia.getTelefono(),
                 agenzia.getLogo()
         );
-
-        return agenziaDTO;
     }
 }

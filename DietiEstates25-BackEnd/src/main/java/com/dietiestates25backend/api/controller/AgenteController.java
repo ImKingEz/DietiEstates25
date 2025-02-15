@@ -6,7 +6,6 @@ import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.LoginDTO;
 import com.dietiestates25backend.api.dto.RegisterAgenteDTO;
 import com.dietiestates25backend.business.service.AgenteService;
-import com.dietiestates25backend.business.service.JwtService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +25,10 @@ public class AgenteController {
     private static final Logger logger = LoggerFactory.getLogger(AgenteController.class);
 
     private final AgenteService agenteService;
-    private final JwtService jwtService;
 
     @Autowired
-    public AgenteController(AgenteService agenteService, JwtService jwtService) {
+    public AgenteController(AgenteService agenteService) {
         this.agenteService = agenteService;
-        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")

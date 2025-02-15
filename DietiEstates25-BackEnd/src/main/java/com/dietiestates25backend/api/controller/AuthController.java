@@ -6,8 +6,6 @@ import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.*;
 import com.dietiestates25backend.business.entity.Utente;
 import com.dietiestates25backend.business.service.AuthService;
-import com.dietiestates25backend.business.service.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +24,10 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthService authService;
-    private final JwtService jwtService;
 
     @Autowired
-    public AuthController(AuthService authService, JwtService jwtService) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -90,7 +86,7 @@ public class AuthController {
     @PreAuthorize("hasRole('ROLE_UTENTE')")
     public ResponseEntity<ApiResponse<UtenteDTO>> updateUtente(
             @RequestBody UpdateUtenteDTO updateUtenteDTO,
-            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader, HttpServletRequest request) {
+            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader) {
         logger.debug("updateUtente() called with user: {}", updateUtenteDTO);
 
         if (csrfTokenHeader == null ) {
