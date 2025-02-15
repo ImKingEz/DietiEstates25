@@ -18,7 +18,7 @@ public class AgenteImmobiliare {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "id_agenzia")
+    @Column(name = "id_agenzia", nullable = false)
     private Long idAgenzia;
 
     @Column(name = "nome", nullable = false)

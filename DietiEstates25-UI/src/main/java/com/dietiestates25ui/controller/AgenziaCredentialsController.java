@@ -43,9 +43,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
     private Button indietroButton;
 
     @FXML
-    private ImageView logo;
-
-    @FXML
     private HBox passwordHBox;
 
     @FXML

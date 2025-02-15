@@ -21,7 +21,7 @@ public class Amministratore {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "id_agenzia")
+    @Column(name = "id_agenzia", nullable = false)
     private Long idAgenzia;
 
     public Amministratore(String email, String password) {
