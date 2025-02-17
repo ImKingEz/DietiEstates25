@@ -1,4 +1,5 @@
 /* Stili aggiuntivi specifici per la schermata di conferma */
+@import "global-style.css";
 
 * {
     -fx-font-family: "Verdana";

@@ -1,4 +1,6 @@
 /* Stili generali */
+@import "global-style.css";
+
 * {
     -fx-font-family: "Verdana";
 }
