@@ -110,8 +110,14 @@ public class AgenziaService {
             return "";
         }
 
+        String originalFileName = null;
+        String logoFileName = logo.getOriginalFilename();
+        if (logoFileName != null) {
+            originalFileName = StringUtils.cleanPath(logoFileName);
+        } else {
+            return "";
+        }
         String fileExtension = "";
-        String originalFileName = StringUtils.cleanPath(logo.getOriginalFilename());
         int dotIndex = originalFileName.lastIndexOf('.');
         if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
             fileExtension = originalFileName.substring(dotIndex);

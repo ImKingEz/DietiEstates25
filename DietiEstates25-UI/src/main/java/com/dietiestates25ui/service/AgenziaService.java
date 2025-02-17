@@ -14,7 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Random;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +25,6 @@ public class AgenziaService extends ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(AgenziaService.class);
     private static final String BASE_URL = "http://localhost:8080/api/agenzie";
-
-    static Random random = new Random();
 
     protected static String getBaseUrl() {
         return BASE_URL;
@@ -131,6 +131,7 @@ public class AgenziaService extends ApiService {
 
     public String generateRandomPassword(int len) {
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom(); // Usa SecureRandom
         StringBuilder sb = new StringBuilder();
 
         sb.append((char) (random.nextInt(26) + 'A'));
@@ -141,11 +142,11 @@ public class AgenziaService extends ApiService {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
 
-        List<Character> charList = new java.util.ArrayList<>();
+        List<Character> charList = new ArrayList<>();
         for (char c : sb.toString().toCharArray()) {
             charList.add(c);
         }
-        java.util.Collections.shuffle(charList);
+        Collections.shuffle(charList, random);
 
         StringBuilder shuffledPassword = new StringBuilder();
         for (char c : charList) {
@@ -165,6 +166,7 @@ public class AgenziaService extends ApiService {
         }
 
         private String generateBoundary() {
+            SecureRandom random = new SecureRandom();
             String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             StringBuilder buffer = new StringBuilder();
             for (int i = 0; i < 20; i++) {
