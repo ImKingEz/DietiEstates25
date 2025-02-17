@@ -1,9 +1,10 @@
 package com.dietiestates25ui.service;
 
 import com.dietiestates25.dto.AgenziaDTO;
-import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25ui.exception.*;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,58 +14,23 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 public class AgenziaService extends ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(AgenziaService.class);
     private static final String BASE_URL = "http://localhost:8080/api/agenzie";
 
-    protected static String getBaseUrl() {
+    @Override
+    protected String getBaseUrl() {
         return BASE_URL;
     }
 
     public AgenziaDTO getAgenziaDetails(Long agenziaId, String token) throws GenericServiceException {
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(getBaseUrl() + "/" + agenziaId))
-                    .header("Authorization", "Bearer " + token)
-                    .GET()
-                    .build();
-
-            HttpResponse<String> response = executeRequest(request);
-            int statusCode = response.statusCode();
-
-            if (statusCode == 200) {
-                ApiResponse<AgenziaDTO> apiResponse = handleResponse(response, AgenziaDTO.class);
-                if (apiResponse != null && apiResponse.isSuccess()) {
-                    AgenziaDTO agenziaDTO = apiResponse.getData();
-                    logger.info("Dettagli agenzia recuperati con successo.");
-                    return agenziaDTO;
-                } else {
-                    String errorMessage =
-                            (apiResponse != null && apiResponse.getMessage() != null)
-                                    ? apiResponse.getMessage()
-                                    : "Impossibile recuperare i dettagli dell'agenzia.";
-                    throw new GenericServiceException(errorMessage);
-                }
-            } else {
-                logGetDetailsFailed(statusCode);
-                if (statusCode == 404) {
-                    throw new ResourceNotFoundException("Agenzia non trovata.");
-                }
-                throw new GenericServiceException("Impossibile recuperare i dettagli dell'agenzia: " + statusCode);
-            }
-
-        } catch (Exception e) {
-            throw handleGenericException(e.getMessage(), e);
-        }
+        return executeAndHandle("/" + agenziaId, "GET", null, token, AgenziaDTO.class);
     }
 
     public void registerAgenzia(AgenziaImmobiliare agenzia, File logoFile, String password) throws GenericServiceException {
@@ -97,32 +63,10 @@ public class AgenziaService extends ApiService {
             HttpResponse<String> response = executeRequest(request);
             int statusCode = response.statusCode();
 
-            if (statusCode == 201) {
-                ApiResponse<AgenziaDTO> apiResponse =
-                        handleResponse(response, AgenziaDTO.class);
-                        handleResponse(response, AgenziaDTO.class);
-                if (apiResponse != null && apiResponse.isSuccess()) {
-                    return;
-                } else {
-                    String errorMessage =
-                            (apiResponse != null && apiResponse.getMessage() != null)
-                                    ? apiResponse.getMessage()
-                                    : "Errore sconosciuto durante la registrazione.";
-                    throw new GenericServiceException(errorMessage);
-                }
-            } else if (statusCode == 409) {
-                logEmailAlreadyInUse(response);
-                throw new AuthenticationException("Email già in uso. Inserisci un'altra email.");
-            } else if (statusCode >= 400 && statusCode < 500) {
-                logClientError(statusCode, response.body());
-                throw new ApiClientException(
-                        "Errore durante la registrazione: " + statusCode + ". Controlla i dati inseriti.");
-            } else if (statusCode >= 500) {
-                logServerError(statusCode, response.body());
-                throw new ServiceUnavailableException("Errore del server durante la registrazione. Riprova più tardi.");
+            if (statusCode != 201) {
+                handleErrorResponse(statusCode, response);
+                throw new GenericServiceException("Registrazione fallita con status code: " + statusCode);
             }
-
-            throw new GenericServiceException("Registrazione fallita con status code: " + statusCode);
 
         } catch (Exception e) {
             throw handleGenericException(e.getMessage(), e);
@@ -154,6 +98,23 @@ public class AgenziaService extends ApiService {
         }
 
         return shuffledPassword.toString();
+    }
+
+    @Override
+    protected void handleErrorResponse(int statusCode, HttpResponse<String> response) throws AuthenticationException, ApiClientException, ServiceUnavailableException {
+        switch (statusCode) {
+            case 409:
+                logEmailAlreadyInUse(response);
+                throw new AuthenticationException("Email già in uso. Inserisci un'altra email.");
+            default:
+                if (statusCode >= 400 && statusCode < 500) {
+                    logClientError(statusCode, response.body());
+                    throw new ApiClientException("Errore del client: " + statusCode);
+                } else if (statusCode >= 500) {
+                    logServerError(statusCode, response.body());
+                    throw new ServiceUnavailableException("Errore del server.");
+                }
+        }
     }
 
     static class MultipartBodyPublisher {

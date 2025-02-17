@@ -80,6 +80,7 @@ public abstract class AbstractController {
 
     protected void createAndPlaceBackButton() {
         providerBackButton = new Button("Torna indietro");
+        providerBackButton.getStyleClass().add("generalButton");
         providerBackButton.setVisible(false);
         providerBackButton.setOnAction(e -> hideWebView());
         AnchorPane.setBottomAnchor(providerBackButton, 10.0);

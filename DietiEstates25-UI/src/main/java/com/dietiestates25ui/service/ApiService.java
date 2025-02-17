@@ -2,11 +2,9 @@ package com.dietiestates25ui.service;
 
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25ui.dto.CsrfResponse;
-import com.dietiestates25ui.exception.ApiClientException;
-import com.dietiestates25ui.exception.GenericServiceException;
-import com.dietiestates25ui.exception.ServiceUnavailableException;
+import com.dietiestates25ui.exception.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule; // Importa il JavaTimeModule
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,7 @@ import java.net.http.HttpResponse;
 
 public abstract class ApiService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApiService.class); // Use ApiService.class
+    private static final Logger logger = LoggerFactory.getLogger(ApiService.class);
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_JSON = "application/json";
     public static final String AUTHORIZATION = "Authorization";
@@ -41,6 +39,7 @@ public abstract class ApiService {
     private static final CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
 
     protected static final ObjectMapper objectMapper = new ObjectMapper();
+
     static {
         objectMapper.registerModule(new JavaTimeModule());
     }
@@ -49,9 +48,7 @@ public abstract class ApiService {
             .cookieHandler(cookieManager)
             .build();
 
-    private static String getBaseUrl() {
-        return null;
-    }
+    protected abstract String getBaseUrl();
 
     public static void fetchCsrfToken() throws ServiceUnavailableException {
         try {
@@ -84,7 +81,64 @@ public abstract class ApiService {
         }
     }
 
-    protected <T> ApiResponse<T> handleResponse(HttpResponse<String> response,  Class<T> dataType) throws ApiClientException {
+    protected <T, DTO> DTO executeAndHandle(String path, String method, Object body, String token, Class<DTO> dtoClass) throws GenericServiceException {
+        try {
+            fetchCsrfToken();
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                    .uri(URI.create(getBaseUrl() + path))
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
+                    .header(csrfTokenHeaderName, csrfTokenValue);
+
+            if (token != null && !token.isEmpty()) {
+                requestBuilder.header(AUTHORIZATION, BEARER + token);
+            }
+
+            HttpRequest request;
+            String jsonBody;
+            switch (method.toUpperCase()) {
+                case "POST":
+                    jsonBody = objectMapper.writeValueAsString(body);
+                    requestBuilder.POST(HttpRequest.BodyPublishers.ofString(jsonBody));
+                    break;
+                case "PUT":
+                    jsonBody = objectMapper.writeValueAsString(body);
+                    requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(jsonBody));
+                    break;
+                case "GET":
+                    requestBuilder.GET();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Metodo HTTP non supportato: " + method);
+            }
+
+            request = requestBuilder.build();
+
+            HttpResponse<String> response = executeRequest(request);
+            int statusCode = response.statusCode();
+
+            if (statusCode >= 200 && statusCode < 300) {
+                ApiResponse<DTO> apiResponse = handleResponse(response, dtoClass);
+                if (apiResponse != null && apiResponse.isSuccess()) {
+                    return apiResponse.getData(); // Restituisci il DTO estratto
+                } else {
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto.";
+                    throw new GenericServiceException(errorMessage);
+                }
+            } else {
+                // Gestione errori centralizzata
+                handleErrorResponse(statusCode, response);
+                throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
+            }
+
+        } catch (Exception e) {
+            throw handleGenericException(e.getMessage(), e);
+        }
+    }
+
+    // Metodo astratto per la gestione centralizzata degli errori
+    protected abstract void handleErrorResponse(int statusCode, HttpResponse<String> response) throws AuthenticationException, ApiClientException, ServiceUnavailableException, ResourceNotFoundException;
+
+    protected <T> ApiResponse<T> handleResponse(HttpResponse<String> response, Class<T> dataType) throws ApiClientException {
         try {
             Type type = new ParameterizedType() {
                 @NotNull
@@ -132,32 +186,37 @@ public abstract class ApiService {
         return response;
     }
 
-
     protected GenericServiceException handleGenericException(String message, Exception e) {
         logUnexpectedException(e);
         return new GenericServiceException(message, e);
     }
 
-
+    // **CORREZIONE**: Passa l'istanza di ApiService per accedere a getBaseUrl()
     private static void logConnectException(ConnectException e) {
-        logger.error("Errore di connessione al server: {}. Messaggio: {}", getBaseUrl(), e.getMessage());
+        //logger.error("Errore di connessione al server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
+        logger.error("Errore di connessione al server. Messaggio: {}", e.getMessage());
     }
 
     private static void logTimeoutException(SocketTimeoutException e) {
-        logger.error("Timeout durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage());
+        //logger.error("Timeout durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
+        logger.error("Timeout durante la comunicazione con il server. Messaggio: {}", e.getMessage());
     }
 
     private static void logIOException(IOException e) {
-        logger.error("Errore di I/O durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage());
+        // logger.error("Errore di I/O durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
+        logger.error("Errore di I/O durante la comunicazione con il server. Messaggio: {}", e.getMessage());
     }
 
     private static void logInterruptedException(InterruptedException e) {
-        logger.error("Operazione interrotta durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage());
+        //logger.error("Operazione interrotta durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
+        logger.error("Operazione interrotta durante la comunicazione con il server. Messaggio: {}", e.getMessage());
     }
 
     private static void logUnexpectedException(Exception e) {
-        logger.error("Errore inatteso durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage());
+        //logger.error("Errore inatteso durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
+        logger.error("Errore inatteso durante la comunicazione con il server. Messaggio: {}", e.getMessage());
     }
+
 
     protected static void logEmailAlreadyInUse(HttpResponse<String> response) {
         if (logger.isWarnEnabled()) {
@@ -200,5 +259,4 @@ public abstract class ApiService {
             logger.warn("Impossibile recuperare i dettagli dell'utente. Status code: {}", statusCode);
         }
     }
-
 }
