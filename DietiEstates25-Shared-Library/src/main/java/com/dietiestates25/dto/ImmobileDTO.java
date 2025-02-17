@@ -30,4 +30,25 @@ public class ImmobileDTO {
     private boolean vicinoParchi;
     private boolean vicinoTrasportoPubblico;
     private List<String> immaginiUrls;
+
+    public ImmobileDTO(String titolo, String tipologia, String indirizzo, double prezzo, String descrizione, double dimensione, int numero_camere, int numero_bagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico) {
+        this.titolo = titolo;
+        this.tipologia = tipologia;
+        this.indirizzo = indirizzo;
+        this.prezzo = prezzo;
+        this.descrizione = descrizione;
+        this.dimensione = dimensione;
+        this.numero_camere = numero_camere;
+        this.numero_bagni = numero_bagni;
+        this.classeEnergetica = classeEnergetica;
+        this.piano = piano;
+        this.ascensore = ascensore;
+        this.portineria = portineria;
+        this.climatizzazione = climatizzazione;
+        this.latitudine = latitudine;
+        this.longitudine = longitudine;
+        this.vicinoScuole = vicinoScuole;
+        this.vicinoParchi = vicinoParchi;
+        this.vicinoTrasportoPubblico = vicinoTrasportoPubblico;
+    }
 }

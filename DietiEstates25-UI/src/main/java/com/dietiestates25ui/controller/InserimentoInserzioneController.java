@@ -39,6 +39,11 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class InserimentoInserzioneController extends AbstractController implements Initializable {
 
@@ -330,16 +335,16 @@ public class InserimentoInserzioneController extends AbstractController implemen
         }
     }
 
-    private void populateMap(String address) {
-        if (mapView != null && mapView.isVisible() && mapInitialized && address != null && !address.isEmpty()) {
-            WebEngine webEngine = mapView.getEngine();  //Ottieni l'istanza locale
-
-            if (webEngine != null) { //Verifica che webEngine non sia NULL prima di chiamare executeScript
-                String script = "geocodeAddress('" + address + "');";  // Richiama la funzione Javascript
-                Platform.runLater(() -> webEngine.executeScript(script));
-            }
-        }
-    }
+//    private void populateMap(String address) {
+//        if (mapView != null && mapView.isVisible() && mapInitialized && address != null && !address.isEmpty()) {
+//            WebEngine webEngine = mapView.getEngine();  //Ottieni l'istanza locale
+//
+//            if (webEngine != null) { //Verifica che webEngine non sia NULL prima di chiamare executeScript
+//                String script = "geocodeAddress('" + address + "');";  // Richiama la funzione Javascript
+//                Platform.runLater(() -> webEngine.executeScript(script));
+//            }
+//        }
+//    }
 
     private void setupChoiceBox() {
         tipologiaChoiceBox.setItems(FXCollections.observableArrayList("Affitto", "Vendita"));
@@ -381,29 +386,34 @@ public class InserimentoInserzioneController extends AbstractController implemen
         double fixedImageSize = 50;
 
         for (File file : selectedImageList) {
-            Image image = new Image(file.toURI().toString());
-            ImageView imageView = new ImageView(image);
+            try {
+                Image image = new Image(file.toURI().toString());
+                ImageView imageView = new ImageView(image);
 
-            imageView.setFitWidth(fixedImageSize);
-            imageView.setFitHeight(fixedImageSize);
-            imageView.setPreserveRatio(true);
+                imageView.setFitWidth(fixedImageSize);
+                imageView.setFitHeight(fixedImageSize);
+                imageView.setPreserveRatio(true);
 
-            Button deleteButton = new Button("X");
-            deleteButton.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-padding: 0px; -fx-font-size: 8px;");
+                Button deleteButton = new Button("X");
+                deleteButton.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-padding: 0px; -fx-font-size: 8px;");
 
-            deleteButton.setOnAction(e -> {
-                logo.requestFocus();
-                selectedImageList.remove(file);
-                immaginiFlowPane.getChildren().remove(imageView.getParent());
-                checkFormValidity();
-            });
+                deleteButton.setOnAction(e -> {
+                    logo.requestFocus();
+                    selectedImageList.remove(file);
+                    immaginiFlowPane.getChildren().remove(imageView.getParent());
+                    checkFormValidity();
+                });
 
-            VBox imageContainer = new VBox(imageView, deleteButton);
-            imageContainer.setAlignment(Pos.CENTER);
+                VBox imageContainer = new VBox(imageView, deleteButton);
+                imageContainer.setAlignment(Pos.CENTER);
 
-            immaginiFlowPane.getChildren().add(imageContainer);
+                immaginiFlowPane.getChildren().add(imageContainer);
+            } catch (Exception e) {
+                logger.error("Error loading image", e);
+            }
         }
     }
+
 
     private void openGestioneImmobiliPage() {
         loadScene("/com/dietiestates25ui/view/gestione-immobili-view.fxml",
@@ -582,6 +592,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
                 (fxmlLoader, stage) -> {
                     ConfermaInserzioneController controller = fxmlLoader.getController();
                     controller.setImmobile(Immobile);
+                    controller.setSelectedImageList(selectedImageList);
                     controller.setToken(token);
                     controller.setStage(stage);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");

@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Table(name = "immobile")
 @Data
@@ -22,7 +20,7 @@ public class Immobile {
     private String titolo;
 
     @Column(name = "tipo", nullable = false)
-    private String tipo; // "Affitto" o "Vendita"
+    private String tipologia; // "Affitto" o "Vendita"
 
     @Column(name = "indirizzo", nullable = false)
     private String indirizzo;
@@ -37,7 +35,7 @@ public class Immobile {
     private double dimensione;
 
     @Column(name = "numero_stanze", nullable = false)
-    private int numero_stanze;
+    private int numero_camere;
 
     @Column(name = "numero_bagni", nullable = false)
     private int numero_bagni;
@@ -80,4 +78,26 @@ public class Immobile {
     //@ManyToOne
     @Column(name = "id_agente", nullable = false) // Rendi la colonna NOT NULL
     private Long idAgente; // Assicurati che Utente sia l'entity per AgenteImmobiliare
+
+    public Immobile(String titolo, String tipologia, String indirizzo, double prezzo, String descrizione, double dimensione, int numero_camere, int numero_bagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico, Long idAgente) {
+        this.titolo = titolo;
+        this.tipologia = tipologia;
+        this.indirizzo = indirizzo;
+        this.prezzo = prezzo;
+        this.descrizione = descrizione;
+        this.dimensione = dimensione;
+        this.numero_camere = numero_camere;
+        this.numero_bagni = numero_bagni;
+        this.classeEnergetica = classeEnergetica;
+        this.piano = piano;
+        this.ascensore = ascensore;
+        this.portineria = portineria;
+        this.climatizzazione = climatizzazione;
+        this.latitudine = latitudine;
+        this.longitudine = longitudine;
+        this.vicinoScuole = vicinoScuole;
+        this.vicinoParchi = vicinoParchi;
+        this.vicinoTrasportoPubblico = vicinoTrasportoPubblico;
+        this.idAgente = idAgente;
+    }
 }

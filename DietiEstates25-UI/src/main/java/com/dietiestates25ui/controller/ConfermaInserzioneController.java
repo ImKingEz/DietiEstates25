@@ -7,6 +7,7 @@ import com.dietiestates25ui.service.ImmobileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
@@ -68,6 +70,8 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private String token;
 
+    private List<File> selectedImageList;
+
     private ImmobileService immobileService = new ImmobileService(); // Crea un'istanza di ImmobileService
 
     public void setImmobile(Immobile Immobile) {
@@ -76,6 +80,10 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public void setSelectedImageList(List<File> selectedImageList) {
+        this.selectedImageList = selectedImageList;
     }
 
     @Override
@@ -114,7 +122,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
             // Gestione del piano: se il piano è -1 (interrato) visualizzare "Interrato", altrimenti il numero del piano
             String pianoText = (Immobile.getPiano() == -1) ? "Interrato" : String.valueOf(Immobile.getPiano());
-            pianoLabel.setText("Piano: " + pianoText);
+            pianoLabel.setText(pianoText);
 
             // Gestione dell'immagine: mostra solo la prima immagine
             if (Immobile.getImmaginiUrls() != null && !Immobile.getImmaginiUrls().isEmpty()) {
@@ -211,46 +219,25 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private void salvaImmobile() {
         try {
-            ImmobileService.fetchCsrfToken();
-            ImmobileDTO immobileDTO = convertToDTO(Immobile);
-            immobileService.salvaImmobile(immobileDTO, token);
+            logger.debug("salvaImmobile() method called");
+            //ImmobileService.fetchCsrfToken();
+
+            logger.debug("Immobile.getTitolo(): {}", Immobile.getTitolo());
+            logger.debug("Immobile.getTipologia(): {}", Immobile.getTipologia());
+            // Logga tutti gli altri campi dell'oggetto Immobile
+            logger.debug("Token: {}", token);
+            logger.debug("selectedImageList.size(): {}", selectedImageList.size());
+
+            immobileService.salvaImmobile(Immobile, token, selectedImageList);
             showPopup("Successo", "Immobile salvato correttamente!", SUCCESS_ICON);
             logger.info("Immobile salvato correttamente!");
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
             delay.setOnFinished(event -> openGestioneImmobiliPage());
             delay.play();
 
-
         } catch (Exception e) {
-            Platform.runLater(() -> {
-                showPopup("Errore", "Errore durante il salvataggio dell'immobile: " + e.getMessage(), ERROR_ICON);
-                logger.error("Errore durante il salvataggio dell'immobile: {}", e.getMessage());
-            });
+            // ...
         }
-    }
-
-    private ImmobileDTO convertToDTO(Immobile immobile) {
-        ImmobileDTO immobileDTO = new ImmobileDTO();
-        immobileDTO.setTitolo(immobile.getTitolo());
-        immobileDTO.setTipologia(immobile.getTipologia());
-        immobileDTO.setIndirizzo(immobile.getIndirizzo());
-        immobileDTO.setPrezzo(immobile.getPrezzo());
-        immobileDTO.setDescrizione(immobile.getDescrizione());
-        immobileDTO.setDimensione(immobile.getDimensione());
-        immobileDTO.setNumero_camere(immobile.getNumero_camere());
-        immobileDTO.setNumero_bagni(immobile.getNumero_bagni());
-        immobileDTO.setClasseEnergetica(immobile.getClasseEnergetica());
-        immobileDTO.setPiano(immobile.getPiano());
-        immobileDTO.setAscensore(immobile.isAscensore());
-        immobileDTO.setPortineria(immobile.isPortineria());
-        immobileDTO.setClimatizzazione(immobile.isClimatizzazione());
-        immobileDTO.setLatitudine(immobile.getLatitudine());
-        immobileDTO.setLongitudine(immobile.getLongitudine());
-        immobileDTO.setVicinoScuole(immobile.isVicinoScuole());
-        immobileDTO.setVicinoParchi(immobile.isVicinoParchi());
-        immobileDTO.setVicinoTrasportoPubblico(immobile.isVicinoTrasportoPubblico());
-        immobileDTO.setImmaginiUrls(immobile.getImmaginiUrls());
-        return immobileDTO;
     }
 
     private void openGestioneImmobiliPage() {
