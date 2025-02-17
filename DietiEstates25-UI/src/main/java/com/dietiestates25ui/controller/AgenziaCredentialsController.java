@@ -10,11 +10,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +20,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class AgenziaCredentialsController extends AbstractController implements Initializable {
@@ -37,25 +32,13 @@ public class AgenziaCredentialsController extends AbstractController implements 
     private TextField emailTextField;
 
     @FXML
-    private ImageView eyeImageView;
-
-    @FXML
     private Button indietroButton;
-
-    @FXML
-    private HBox passwordHBox;
-
-    @FXML
-    private PasswordField passwordPasswordField;
 
     @FXML
     private Button confermaButton;
 
     @FXML
     private Button togglePasswordButton;
-
-    @FXML
-    private TextField passwordTextField;
 
     @FXML
     private Button generaButton;
@@ -80,8 +63,8 @@ public class AgenziaCredentialsController extends AbstractController implements 
 
         indietroButton.setOnAction(event -> openRegisterAgenziaPage());
 
-        passwordTextFieldInitializer();
-        togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
+        passwordTextFieldInitializer("registerField");
+        togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
 
         disableGeneraButtonOnPasswordInsertion();
 
@@ -114,35 +97,6 @@ public class AgenziaCredentialsController extends AbstractController implements 
         } else {
             logger.error("Agenzia is null");
         }
-    }
-
-    private void passwordTextFieldInitializer() {
-        passwordTextField = new TextField();
-        passwordTextField.setPromptText(passwordPasswordField.getPromptText());
-        passwordTextField.managedProperty().bind(passwordTextField.visibleProperty());
-        passwordTextField.setVisible(false);
-        passwordTextField.textProperty().bindBidirectional(passwordPasswordField.textProperty());
-    }
-
-    private void togglePasswordVisibility() {
-        passwordVisible = !passwordVisible;
-
-        if (passwordVisible) {
-            passwordHBox.getChildren().remove(passwordPasswordField);
-            passwordHBox.getChildren().addFirst(passwordTextField);
-            passwordTextField.setPrefWidth(passwordPasswordField.getWidth());
-
-            passwordTextField.setVisible(true);
-
-            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_open.png"))));
-        } else {
-            passwordHBox.getChildren().remove(passwordTextField);
-            passwordHBox.getChildren().addFirst(passwordPasswordField);
-
-            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_closed.png"))));
-            passwordTextField.setVisible(false);
-        }
-
     }
 
     private void openRegisterAgenziaPage() {

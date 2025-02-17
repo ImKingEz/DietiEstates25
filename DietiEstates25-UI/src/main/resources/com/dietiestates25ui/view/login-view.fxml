@@ -32,7 +32,7 @@
                   <Insets />
                </HBox.margin>
             </PasswordField>
-            <Button fx:id="togglePasswordButton" mnemonicParsing="false">
+            <Button fx:id="togglePasswordButton" mnemonicParsing="false" styleClass="togglePasswordButton">
                <graphic>
                   <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
 

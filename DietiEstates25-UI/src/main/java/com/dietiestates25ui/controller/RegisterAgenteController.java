@@ -9,9 +9,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -19,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class RegisterAgenteController extends AbstractController implements Initializable {
@@ -33,19 +29,10 @@ public class RegisterAgenteController extends AbstractController implements Init
     private TextField emailTextField;
 
     @FXML
-    private ImageView eyeImageView;
-
-    @FXML
     private Button indietroButton;
 
     @FXML
     private TextField nomeTextField;
-
-    @FXML
-    private HBox passwordHBox;
-
-    @FXML
-    private PasswordField passwordPasswordField;
 
     @FXML
     private Button registraButton;
@@ -68,8 +55,6 @@ public class RegisterAgenteController extends AbstractController implements Init
     @FXML
     private MenuItem nonBinarioMenuItem;
 
-    private TextField passwordTextField;
-
     private boolean passwordVisible = false;
 
     private String token;
@@ -89,8 +74,8 @@ public class RegisterAgenteController extends AbstractController implements Init
 
         registraButton.setOnAction(event -> registraAgente());
 
-        passwordTextFieldInitializer();
-        togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
+        passwordTextFieldInitializer("registerField");
+        togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
 
         maschioMenuItem.setOnAction(event -> impostaSesso("Maschio"));
         femminaMenuItem.setOnAction(event -> impostaSesso("Femmina"));
@@ -125,34 +110,6 @@ public class RegisterAgenteController extends AbstractController implements Init
         });
 
         dataDatePicker.setShowWeekNumbers(false);
-    }
-
-    private void passwordTextFieldInitializer() {
-        passwordTextField = new TextField();
-        passwordTextField.setPromptText(passwordPasswordField.getPromptText());
-        passwordTextField.managedProperty().bind(passwordTextField.visibleProperty());
-        passwordTextField.setVisible(false);
-        passwordTextField.prefWidthProperty().bind(passwordPasswordField.widthProperty());
-        passwordTextField.textProperty().bindBidirectional(passwordPasswordField.textProperty());
-    }
-
-    private void togglePasswordVisibility() {
-        passwordVisible = !passwordVisible;
-
-        if (passwordVisible) {
-            passwordHBox.getChildren().remove(passwordPasswordField);
-            passwordHBox.getChildren().add(1, passwordTextField);
-
-            passwordTextField.setVisible(true);
-
-            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_open.png"))));
-        } else {
-            passwordHBox.getChildren().remove(passwordTextField);
-            passwordHBox.getChildren().add(1, passwordPasswordField);
-
-            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_closed.png"))));
-            passwordTextField.setVisible(false);
-        }
     }
 
     private void updateRegistraButton() {

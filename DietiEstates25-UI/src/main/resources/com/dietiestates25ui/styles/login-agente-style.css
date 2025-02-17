@@ -25,22 +25,32 @@ Button:pressed {
 }
 
 .loginField {
-    -fx-max-width: 300;
-    -fx-min-width: 300;
+    -fx-max-width: 285;
+    -fx-pref-width: 285;
     -fx-max-height: 25;
     -fx-min-height: 25;
 }
 
 #passwordHBox {
-    -fx-max-width: 300;
-    -fx-min-width: 300;
+    -fx-max-width: 285;
+    -fx-min-width: 285;
     -fx-max-height: 25;
     -fx-min-height: 25;
 }
 
-#togglePasswordButton {
+#passwordPasswordField {
+    -fx-pref-width: 285;
     -fx-max-height: 25;
     -fx-min-height: 25;
+}
+
+.togglePasswordButton {
+    -fx-max-height: 25;
+    -fx-min-height: 25;
+    -fx-pref-height: 25;
+    -fx-pref-width: 25;
     -fx-max-width: 25;
     -fx-min-width: 25;
+    -fx-border-radius: 0px 3px 3px 0px;
+    -fx-background-radius: 0px 3px 3px 0px;
 }

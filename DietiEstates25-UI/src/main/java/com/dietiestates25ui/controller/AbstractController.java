@@ -9,6 +9,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public abstract class AbstractController {
 
@@ -54,6 +57,18 @@ public abstract class AbstractController {
 
     @FXML
     protected Button providerBackButton;
+    
+    @FXML
+    protected TextField passwordTextField;
+    
+    @FXML
+    protected HBox passwordHBox;
+    
+    @FXML
+    protected PasswordField passwordPasswordField;
+    
+    @FXML
+    protected ImageView eyeImageView;
 
     public Stage getCurrentStage() {
         return currentStage;
@@ -191,6 +206,36 @@ public abstract class AbstractController {
 
     @FunctionalInterface
     public interface SceneConfigurator {
-        void configure(FXMLLoader fxmlLoader, Stage stage); // Modificato per includere Stage
+        void configure(FXMLLoader fxmlLoader, Stage stage);
+    }
+    
+    protected void passwordTextFieldInitializer(String classOfTextField) {
+        passwordTextField = new TextField();
+        passwordTextField.getStyleClass().add(classOfTextField);
+        passwordTextField.setPromptText(passwordPasswordField.getPromptText());
+        passwordTextField.managedProperty().bind(passwordTextField.visibleProperty());
+        passwordTextField.setVisible(false);
+        passwordTextField.textProperty().bindBidirectional(passwordPasswordField.textProperty());
+    }
+
+    protected boolean togglePasswordVisibility(boolean passwordVisible) {
+        passwordVisible = !passwordVisible;
+        if (passwordVisible) {
+            if (!passwordHBox.getChildren().contains(passwordTextField)) {
+                passwordHBox.getChildren().remove(passwordPasswordField);
+                passwordHBox.getChildren().addFirst(passwordTextField);
+                passwordTextField.setPrefWidth(passwordPasswordField.getWidth());
+            }
+            passwordTextField.setVisible(true);
+            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_open.png"))));
+        } else {
+            if (!passwordHBox.getChildren().contains(passwordPasswordField)) {
+                passwordHBox.getChildren().remove(passwordTextField);
+                passwordHBox.getChildren().addFirst(passwordPasswordField);
+            }
+            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_closed.png"))));
+            passwordTextField.setVisible(false);
+        }
+        return passwordVisible;
     }
 }

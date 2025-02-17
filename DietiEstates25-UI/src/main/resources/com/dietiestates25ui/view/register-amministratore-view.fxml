@@ -46,30 +46,34 @@
       
                         </VBox>
                <VBox alignment="CENTER" spacing="3.0">
-      
-                           <HBox fx:id="passwordHBox" alignment="CENTER">
-      
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*">
-                        <HBox.margin>
-                           <Insets right="5.0" />
-                        </HBox.margin>
-                     </Text>
-                     <PasswordField fx:id="passwordPasswordField" prefWidth="300.0" promptText="Password" />
-                     <Button fx:id="togglePasswordButton" mnemonicParsing="false">
-                        <graphic>
-                           <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
-      
-                                       <Image url="@../images/eye_closed.png" />
-      
-                                    </ImageView>
-                        </graphic>
-                        <styleClass>
-                           <String fx:value="togglePasswordButton" />
-                           <String fx:value="generalButton" />
-                        </styleClass>
-                     </Button>
-      
-                           </HBox>
+               <HBox alignment="CENTER" styleClass="HBoxField">
+                  <children>
+         
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Text>
+            
+                                 <HBox fx:id="passwordHBox" alignment="CENTER">
+                           <PasswordField fx:id="passwordPasswordField" prefWidth="300.0" promptText="Password" />
+                           <Button fx:id="togglePasswordButton" mnemonicParsing="false">
+                              <graphic>
+                                 <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+            
+                                             <Image url="@../images/eye_closed.png" />
+            
+                                          </ImageView>
+                              </graphic>
+                              <styleClass>
+                                 <String fx:value="togglePasswordButton" />
+                                 <String fx:value="generalButton" />
+                              </styleClass>
+                           </Button>
+            
+                                 </HBox>
+                  </children>
+               </HBox>
                   <VBox alignment="CENTER_LEFT" styleClass="tipsVBox">
       
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Lunghezza ≥ 8 " />

@@ -9,18 +9,13 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class RegisterController extends AbstractController implements Initializable {
@@ -40,9 +35,6 @@ public class RegisterController extends AbstractController implements Initializa
     private TextField nomeTextField;
 
     @FXML
-    private PasswordField passwordPasswordField;
-
-    @FXML
     private Button registratiButton;
 
     @FXML
@@ -59,14 +51,6 @@ public class RegisterController extends AbstractController implements Initializa
 
     @FXML
     private Button togglePasswordButton;
-
-    @FXML
-    private ImageView eyeImageView;
-
-    @FXML
-    private HBox passwordHBox;
-
-    private TextField passwordTextField;
 
     private UtenteService utenteService;
 
@@ -91,39 +75,8 @@ public class RegisterController extends AbstractController implements Initializa
 
         actionButtonProvider();
 
-        passwordTextFieldInitializer();
-        togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
-    }
-
-    private void passwordTextFieldInitializer() {
-        passwordTextField = new TextField();
-        passwordTextField.setPromptText(passwordPasswordField.getPromptText());
-        passwordTextField.managedProperty().bind(passwordTextField.visibleProperty());
-        passwordTextField.setVisible(false);
-        passwordTextField.prefWidthProperty().bind(passwordPasswordField.widthProperty());
-        passwordTextField.textProperty().bindBidirectional(passwordPasswordField.textProperty());
-    }
-
-    private void togglePasswordVisibility() {
-        passwordVisible = !passwordVisible;
-
-        if (passwordVisible) {
-            // Mostra la password
-            passwordHBox.getChildren().remove(passwordPasswordField);
-            passwordHBox.getChildren().add(1, passwordTextField);
-
-            passwordTextField.setVisible(true);
-
-            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_open.png"))));
-        } else {
-            // Nascondi la password
-
-            passwordHBox.getChildren().remove(passwordTextField);
-            passwordHBox.getChildren().add(1, passwordPasswordField);
-
-            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_closed.png"))));
-            passwordTextField.setVisible(false);
-        }
+        passwordTextFieldInitializer("registerField");
+        togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
     }
 
     private void updateWebView(OAuth2Handler oAuth2Handler) {
