@@ -13,9 +13,9 @@
 
 <AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.ConfermaInserzioneController">
     
-        <VBox alignment="CENTER" prefHeight="720.0" prefWidth="1280.0" spacing="20.0" styleClass="secondaryBackground">
+        <VBox alignment="CENTER" prefWidth="1280.0" spacing="20.0" styleClass="secondaryBackground">
             <padding>
-                <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                <Insets bottom="10.0" top="10.0" />
             </padding>
             <ImageView fx:id="logo" fitHeight="163.0" fitWidth="251.0" pickOnBounds="true" preserveRatio="true">
                 
@@ -102,19 +102,14 @@
                     </VBox>
                 
             </HBox>
-            <Button fx:id="confermaButton" mnemonicParsing="false" text="Conferma">
-                <padding>
-                    <Insets top="59.0" />
-                </padding>
-            </Button>
+            <Button fx:id="confermaButton" mnemonicParsing="false" text="Conferma" />
 
             <HBox alignment="CENTER_LEFT">
                 
-                    <Button fx:id="indietroButton" mnemonicParsing="false" text="Indietro" />
-                
-            <padding>
-               <Insets left="15.0" />
-            </padding>
+                    <Button fx:id="indietroButton" mnemonicParsing="false" text="Torna indietro" />
+         <VBox.margin>
+            <Insets left="10.0" />
+         </VBox.margin>
             </HBox>
         </VBox>
     

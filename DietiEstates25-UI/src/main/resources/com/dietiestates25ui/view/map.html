@@ -46,7 +46,10 @@
     var marker;
     var selectedLongitude;
     var selectedLatitude;
-    var defaultZoom = 13; //Zoom di partenza
+    var targetZoom = 15; // Zoom desiderato al click
+
+    // Coordinate del centro dell'Italia (approssimative)
+    var italyCenter = ol.proj.fromLonLat([12.5674, 41.8719]);
 
     function initMap() {
         map = new ol.Map({
@@ -57,8 +60,10 @@
                 })
             ],
             view: new ol.View({
-                center: ol.proj.fromLonLat([14.2681, 40.8529]),
-                zoom: defaultZoom //Usa lo zoom di partenza
+                center: italyCenter,  // Centra sulla'Italia
+                zoom: 6,             // Zoom per visualizzare l'intera Italia
+                minZoom: 5,          // Zoom minimo consentito (opzionale)
+                maxZoom: 18           // Zoom massimo consentito (opzionale)
             })
         });
 
@@ -103,12 +108,12 @@
     }
 
     function zoomToLocation(longitude, latitude) {
-        var coordinate = ol.proj.fromLonLat([longitude, latitude]);
-        map.getView().setCenter(coordinate);
-        //Verifica se lo zoom attuale è uguale a quello di default
-        if(map.getView().getZoom() === defaultZoom){
-            map.getView().setZoom(15); //Zoom solo se non si è zoommati
-        }
+        var currentZoom = map.getView().getZoom(); // Ottieni lo zoom corrente
+        var newZoom = targetZoom; // Imposta il target zoom
+
+        map.getView().setCenter(ol.proj.fromLonLat([longitude, latitude]));
+        map.getView().setZoom(newZoom);
+
     }
 
     function addConfirmationOverlay() {
