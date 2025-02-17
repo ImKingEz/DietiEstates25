@@ -25,7 +25,7 @@
          </ImageView>
          <VBox alignment="CENTER" prefWidth="100.0" spacing="5.0">
 
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 18;" text="Inserisci i dati per la registrazione dell'account:" textAlignment="CENTER" wrappingWidth="320.5333251953125" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Inserisci i dati per la registrazione dell'account:" textAlignment="CENTER" wrappingWidth="320.5333251953125" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="(I campi che contengono * vanno compilati necessariamente)" />
 
          </VBox>
@@ -66,8 +66,8 @@
                                           </ImageView>
                               </graphic>
                               <styleClass>
-                                 <String fx:value="togglePasswordButton" />
                                  <String fx:value="generalButton" />
+                                 <String fx:value="togglePasswordButton" />
                               </styleClass>
                            </Button>
             

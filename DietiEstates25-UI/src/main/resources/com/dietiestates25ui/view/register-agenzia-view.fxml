@@ -23,7 +23,7 @@
             </ImageView>
             <VBox alignment="CENTER" prefWidth="100.0" spacing="5.0">
 
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 16;" text="Inserisci i dati per la registrazione dell'agenzia:" wrappingWidth="384.53338623046875" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Inserisci i dati per la registrazione dell'agenzia:" textAlignment="CENTER" wrappingWidth="433.33343505859375" />
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="(I campi che contengono * vanno compilati necessariamente)" />
 
             </VBox>
@@ -87,7 +87,7 @@
             <VBox alignment="CENTER" prefWidth="350.0" spacing="3.0">
                 <HBox alignment="CENTER" prefHeight="30.0" prefWidth="1280.0" spacing="10.0">
                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*Inserisci il logo:" />
-                    <Button fx:id="selezionaImmaginiButton" mnemonicParsing="false" prefWidth="122.0" text="Seleziona file" />
+                    <Button fx:id="selezionaImmaginiButton" mnemonicParsing="false" prefWidth="122.0" styleClass="generalButton" text="Seleziona file" />
                 </HBox>
                 <FlowPane fx:id="immaginiFlowPane" alignment="CENTER" hgap="5.0" maxWidth="100.0" prefWrapLength="280.0" vgap="5.0">
                     <padding>
@@ -98,10 +98,10 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Dimensione massima: 512x512" wrappingWidth="229.07733154296875" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Proporzione: 1:1 (quadrato)" wrappingWidth="229.07733154296875" />
             </VBox>
-            <Button fx:id="proseguiButton" mnemonicParsing="false" text="Prosegui" />
+            <Button fx:id="proseguiButton" mnemonicParsing="false" styleClass="generalButton" text="Prosegui" />
             <HBox prefWidth="200.0">
 
-                <Button fx:id="indietroButton" alignment="CENTER" mnemonicParsing="false" text="Torna indietro" />
+                <Button fx:id="indietroButton" alignment="CENTER" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" />
 
                 <VBox.margin>
                     <Insets bottom="10.0" left="10.0" />

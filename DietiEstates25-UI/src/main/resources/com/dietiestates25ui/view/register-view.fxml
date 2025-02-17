@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.PasswordField?>
@@ -25,7 +26,7 @@
          </ImageView>
          <VBox alignment="CENTER" prefWidth="100.0" spacing="5.0">
 
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 16;" text="Inserisci i dati per la registrazione:" wrappingWidth="301.33331298828125" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Inserisci i dati per la registrazione:" textAlignment="CENTER" wrappingWidth="320.53338623046875" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="(I campi che contengono * vanno compilati necessariamente)" />
 
          </VBox>
@@ -74,7 +75,7 @@
       
                   <HBox fx:id="passwordHBox" alignment="CENTER">
                      <PasswordField fx:id="passwordPasswordField" prefWidth="300.0" promptText="Password" />
-                     <Button fx:id="togglePasswordButton" mnemonicParsing="false" styleClass="togglePasswordButton">
+                     <Button fx:id="togglePasswordButton" mnemonicParsing="false">
                         <graphic>
                            <ImageView fx:id="eyeImageView" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
       
@@ -82,6 +83,10 @@
       
                            </ImageView>
                         </graphic>
+                        <styleClass>
+                           <String fx:value="generalButton" />
+                           <String fx:value="togglePasswordButton" />
+                        </styleClass>
                      </Button>
       
                   </HBox>
@@ -96,13 +101,13 @@
             </VBox>
 
          </VBox>
-         <Button fx:id="registratiButton" mnemonicParsing="false" text="Registrati" />
+         <Button fx:id="registratiButton" mnemonicParsing="false" styleClass="generalButton" text="Registrati" />
          <VBox alignment="CENTER" prefHeight="70.0" prefWidth="1280.0" spacing="8.0">
 
             <Text fx:id="textContinuaCon" strokeType="OUTSIDE" strokeWidth="0.0" text="Oppure continua con" textAlignment="CENTER" />
             <HBox alignment="CENTER" prefHeight="33.0" prefWidth="1280.0" spacing="40.0">
 
-               <Button fx:id="googleButton" mnemonicParsing="false" text="Google">
+               <Button fx:id="googleButton" mnemonicParsing="false" styleClass="generalButton" text="Google">
                   <graphic>
                      <ImageView fitHeight="20.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
 
@@ -111,7 +116,7 @@
                      </ImageView>
                   </graphic>
                </Button>
-               <Button fx:id="facebookButton" mnemonicParsing="false" text="Facebook">
+               <Button fx:id="facebookButton" mnemonicParsing="false" styleClass="generalButton" text="Facebook">
                   <graphic>
                      <ImageView fitHeight="18.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
 
@@ -120,7 +125,7 @@
                      </ImageView>
                   </graphic>
                </Button>
-               <Button fx:id="githubButton" mnemonicParsing="false" text="GitHub">
+               <Button fx:id="githubButton" mnemonicParsing="false" styleClass="generalButton" text="GitHub">
                   <graphic>
                      <ImageView fitHeight="19.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
 
@@ -135,7 +140,7 @@
          </VBox>
          <HBox prefHeight="100.0" prefWidth="200.0">
 
-            <Button fx:id="indietroButton" alignment="CENTER" mnemonicParsing="false" text="Torna indietro" />
+            <Button fx:id="indietroButton" alignment="CENTER" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" />
 
             <VBox.margin>
                <Insets bottom="10.0" left="10.0" />

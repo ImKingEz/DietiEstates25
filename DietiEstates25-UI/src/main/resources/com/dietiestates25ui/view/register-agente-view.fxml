@@ -108,8 +108,8 @@
                                        </ImageView>
                                     </graphic>
                                     <styleClass>
-                                       <String fx:value="togglePasswordButton" />
                                        <String fx:value="generalButton" />
+                                       <String fx:value="togglePasswordButton" />
                                     </styleClass>
                                  </Button>
                   
