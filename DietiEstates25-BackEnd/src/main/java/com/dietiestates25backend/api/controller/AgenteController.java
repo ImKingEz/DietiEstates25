@@ -7,8 +7,6 @@ import com.dietiestates25backend.api.dto.LoginDTO;
 import com.dietiestates25backend.api.dto.RegisterAgenteDTO;
 import com.dietiestates25backend.business.service.AgenteService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -20,9 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/agenti")
-public class AgenteController {
-
-    private static final Logger logger = LoggerFactory.getLogger(AgenteController.class);
+public class AgenteController extends BaseController {
 
     private final AgenteService agenteService;
 
@@ -36,63 +32,57 @@ public class AgenteController {
             @RequestBody @Valid LoginDTO loginDTO,
             @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader
     ) {
-        logger.debug("loginAgente() called with email: {}", loginDTO.getEmail());
+        String email = loginDTO.getEmail();
+        logger.debug("loginAgente() called with email: {}", email);
         logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader);
 
         try {
-            String token = agenteService.loginAgente(loginDTO.getEmail(), loginDTO.getPassword(), csrfTokenHeader);
+            String token = agenteService.loginAgente(email, loginDTO.getPassword(), csrfTokenHeader);
             LoginResponse loginResponse = new LoginResponse(token);
-            logger.debug("loginUser() successful for agente: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(true, loginResponse, null);
-            return ResponseEntity.ok(response);
+            logger.debug("loginUser() successful for agente: {}", email);
+            return successResponse(loginResponse);
         } catch (AuthenticationException ex) {
-            logger.error("loginUser() failed, authentication error for agente: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Credenziali non valide");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            logger.error("loginUser() failed, authentication error for agente: {}", email);
+            return new ResponseEntity<>(new ApiResponse<>(false, null, "Credenziali non valide"), HttpStatus.UNAUTHORIZED);
         } catch (Exception ex){
             logger.error("loginUser() failed with error: {}", ex.getMessage());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito : " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Login fallito", "Agente");
         }
     }
 
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('WRITE_AGENTE')")
     public ResponseEntity<ApiResponse<AgenteDTO>> registerAgente(@RequestBody @Valid RegisterAgenteDTO registerAgenteDTO) {
-        logger.debug("registerAgente() called with registerAgenteDTO: {}", registerAgenteDTO.getEmail());
+        String email = registerAgenteDTO.getEmail();
+        logger.debug("registerAgente() called with registerAgenteDTO: {}", email);
         try {
             AgenteDTO agenteDTO = agenteService.registraAgente(registerAgenteDTO);
             logger.debug("registerAgente() successful with agente: {}", agenteDTO.getEmail());
-            ApiResponse<AgenteDTO> response = new ApiResponse<>(true, agenteDTO, null);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return successResponse(agenteDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {
-            logger.error("registerAgente() failed, email already registered: {}", registerAgenteDTO.getEmail());
-            ApiResponse<AgenteDTO> response = new ApiResponse<>(false, null, "Email già in uso");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            logger.error("registerAgente() failed, email already registered: {}", email);
+            return handleDataIntegrityViolation(ex, "Agente");
         } catch (Exception ex) {
             logger.error("registerAgente() failed with error: {}", ex.getMessage());
-            ApiResponse<AgenteDTO> response = new ApiResponse<>(false, null, "Errore durante la registrazione: " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Errore durante la registrazione", "Agente");
         }
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('WRITE_AGENTE')")
     public ResponseEntity<ApiResponse<AgenteDTO>> updateAgente(@RequestBody @Valid RegisterAgenteDTO registerAgenteDTO) {
-        logger.debug("updateAgente() called with registerAgenteDTO: {}", registerAgenteDTO.getEmail());
+        String email = registerAgenteDTO.getEmail();
+        logger.debug("updateAgente() called with registerAgenteDTO: {}", email);
         try {
             AgenteDTO agenteDTO = agenteService.registraAgente(registerAgenteDTO);
             logger.debug("updateAgente() successful with agente: {}", agenteDTO.getEmail());
-            ApiResponse<AgenteDTO> response = new ApiResponse<>(true, agenteDTO, null);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            return successResponse(agenteDTO);
         } catch (DataIntegrityViolationException ex) {
-            logger.error("updateAgente() failed, email already registered: {}", registerAgenteDTO.getEmail());
-            ApiResponse<AgenteDTO> response = new ApiResponse<>(false, null, "Email già in uso");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            logger.error("updateAgente() failed, email already registered: {}", email);
+            return handleDataIntegrityViolation(ex, "Agente");
         } catch (Exception ex) {
             logger.error("updateAgente() failed with error: {}", ex.getMessage());
-            ApiResponse<AgenteDTO> response = new ApiResponse<>(false, null, "Errore durante la registrazione: " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Errore durante la registrazione", "Agente");
         }
     }
 
@@ -104,12 +94,10 @@ public class AgenteController {
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
             AgenteDTO agenteDTO = agenteService.getAgenteDetails(userEmail);
             logger.debug("getUserDetails() successful for agente: {}", userEmail);
-            ApiResponse<AgenteDTO> response = new ApiResponse<>(true, agenteDTO, null);
-            return ResponseEntity.ok(response);
+            return successResponse(agenteDTO);
         } catch (Exception ex) {
             logger.error("getUserDetails() failed with error: {}", ex.getMessage());
-            ApiResponse<AgenteDTO> response = new ApiResponse<>(false, null, "Errore nel recupero dei dettagli dell'agente: " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'agente", "Agente");
         }
     }
 }

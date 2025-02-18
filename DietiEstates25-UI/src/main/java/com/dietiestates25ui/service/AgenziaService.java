@@ -102,18 +102,18 @@ public class AgenziaService extends ApiService {
 
     @Override
     protected void handleErrorResponse(int statusCode, HttpResponse<String> response) throws AuthenticationException, ApiClientException, ServiceUnavailableException {
-        switch (statusCode) {
-            case 409:
-                logEmailAlreadyInUse(response);
-                throw new AuthenticationException("Email già in uso. Inserisci un'altra email.");
-            default:
-                if (statusCode >= 400 && statusCode < 500) {
-                    logClientError(statusCode, response.body());
-                    throw new ApiClientException("Errore del client: " + statusCode);
-                } else if (statusCode >= 500) {
-                    logServerError(statusCode, response.body());
-                    throw new ServiceUnavailableException("Errore del server.");
-                }
+        if (statusCode == 409) {
+            logEmailAlreadyInUse(response);
+            throw new AuthenticationException("Email già in uso. Inserisci un'altra email.");
+        } else if (statusCode >= 400 && statusCode < 500) {
+            logClientError(statusCode, response.body());
+            throw new ApiClientException("Errore del client: " + statusCode);
+        } else if (statusCode >= 500) {
+            logServerError(statusCode, response.body());
+            throw new ServiceUnavailableException("Errore del server.");
+        } else {
+            logGenericException(statusCode, response.body());
+            throw new ApiClientException(response.body());
         }
     }
 

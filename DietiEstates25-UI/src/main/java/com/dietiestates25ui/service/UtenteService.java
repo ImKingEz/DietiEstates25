@@ -37,7 +37,7 @@ public class UtenteService extends ApiService {
     }
 
     public void updateUtente(Utente user, String token) throws GenericServiceException {
-        Map<String, String> updateData = null;
+        Map<String, String> updateData;
         if (user.getCitta() != null) {
             updateData = Map.of("nome", user.getNome(), "cognome", user.getCognome(), "citta", user.getCitta());
         } else {
@@ -70,6 +70,9 @@ public class UtenteService extends ApiService {
                 } else if (statusCode >= 500) {
                     logServerError(statusCode, response.body());
                     throw new ServiceUnavailableException("Errore del server.");
+                } else {
+                    logGenericException(statusCode, response.body());
+                    throw new ApiClientException(response.body());
                 }
         }
     }

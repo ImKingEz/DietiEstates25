@@ -77,14 +77,7 @@ public class AgenteService {
             throw new DataIntegrityViolationException("Email già in uso nella tabella degli amministratori");
         }
 
-        AgenteImmobiliare agente = new AgenteImmobiliare();
-        agente.setIdAgenzia(registerAgenteDTO.getIdAgenzia());
-        agente.setNome(registerAgenteDTO.getNome());
-        agente.setCognome(registerAgenteDTO.getCognome());
-        agente.setDataDiNascita(registerAgenteDTO.getDataDiNascita());
-        agente.setSesso(registerAgenteDTO.getSesso());
-        agente.setEmail(registerAgenteDTO.getEmail());
-        agente.setPassword(passwordEncoder.encode(registerAgenteDTO.getPassword()));
+        AgenteImmobiliare agente = new AgenteImmobiliare(registerAgenteDTO.getIdAgenzia(), registerAgenteDTO.getNome(), registerAgenteDTO.getCognome(), registerAgenteDTO.getDataDiNascita(), registerAgenteDTO.getSesso(), registerAgenteDTO.getEmail(), registerAgenteDTO.getPassword());
 
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
 
@@ -100,14 +93,7 @@ public class AgenteService {
             throw new DataIntegrityViolationException("Email già in uso");
         }
 
-        AgenteImmobiliare agente = new AgenteImmobiliare();
-        agente.setIdAgenzia(registerAgenteDTO.getIdAgenzia());
-        agente.setNome(registerAgenteDTO.getNome());
-        agente.setCognome(registerAgenteDTO.getCognome());
-        agente.setDataDiNascita(registerAgenteDTO.getDataDiNascita());
-        agente.setSesso(registerAgenteDTO.getSesso());
-        agente.setEmail(registerAgenteDTO.getEmail());
-        agente.setPassword(passwordEncoder.encode(registerAgenteDTO.getPassword()));
+        AgenteImmobiliare agente = new AgenteImmobiliare(registerAgenteDTO.getIdAgenzia(), registerAgenteDTO.getNome(), registerAgenteDTO.getCognome(), registerAgenteDTO.getDataDiNascita(), registerAgenteDTO.getSesso(), registerAgenteDTO.getEmail(), registerAgenteDTO.getPassword());
 
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
 

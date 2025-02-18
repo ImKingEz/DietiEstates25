@@ -6,8 +6,6 @@ import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.RegisterAmministratoreDTO;
 import com.dietiestates25backend.api.dto.LoginDTO;
 import com.dietiestates25backend.business.service.AmministratoreService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -21,9 +19,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/admin")
-public class AmministratoreController {
-
-    private static final Logger logger = LoggerFactory.getLogger(AmministratoreController.class);
+public class AmministratoreController extends BaseController {
 
     private final AmministratoreService amministratoreService;
 
@@ -34,16 +30,15 @@ public class AmministratoreController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AmministratoreDTO>> registerAdmin(@RequestBody @Valid RegisterAmministratoreDTO registerDTO) {
-        logger.debug("registerAdmin() called with registerDTO: {}", registerDTO.getEmail());
+        String email = registerDTO.getEmail();
+        logger.debug("registerAdmin() called with registerDTO: {}", email);
         try {
             AmministratoreDTO amministratoreDTO = amministratoreService.registraAmministratore(registerDTO);
             logger.debug("registerAdmin() successful with admin: {}", amministratoreDTO.getEmail());
-            ApiResponse<AmministratoreDTO> response = new ApiResponse<>(true, amministratoreDTO, null);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return successResponse(amministratoreDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {
-            logger.error("registerAdmin() failed, email already registered: {}", registerDTO.getEmail());
-            ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, "Email già in uso");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            logger.error("registerAdmin() failed, email already registered: {}", email);
+            return handleDataIntegrityViolation(ex, "Amministratore");
         } catch (IllegalArgumentException ex) {
             logger.error("registerAdmin() failed, agency not found: {}", registerDTO.getIdAgenzia());
             ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, ex.getMessage());
@@ -56,23 +51,21 @@ public class AmministratoreController {
             @RequestBody @Valid LoginDTO loginDTO,
             @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader
     ) {
-        logger.debug("loginAdmin() called with email: {}", loginDTO.getEmail());
+        String email = loginDTO.getEmail();
+        logger.debug("loginAdmin() called with email: {}", email);
         logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader);
 
         try {
-            String token = amministratoreService.loginAmministratore(loginDTO.getEmail(), loginDTO.getPassword(), csrfTokenHeader);
+            String token = amministratoreService.loginAmministratore(email, loginDTO.getPassword(), csrfTokenHeader);
             LoginResponse loginResponse = new LoginResponse(token);
-            logger.debug("loginAdmin() successful for admin: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(true, loginResponse, null);
-            return ResponseEntity.ok(response);
+            logger.debug("loginAdmin() successful for admin: {}", email);
+            return successResponse(loginResponse);
         } catch (AuthenticationException ex) {
-            logger.error("loginAdmin() failed, authentication error for admin: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Credenziali non valide");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            logger.error("loginAdmin() failed, authentication error for admin: {}", email);
+            return new ResponseEntity<>(new ApiResponse<>(false, null, "Credenziali non valide"), HttpStatus.UNAUTHORIZED);
         }  catch (Exception ex){
             logger.error("loginAdmin() failed with error: {}", ex.getMessage());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito : " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Login fallito", "Amministratore");
         }
     }
 
@@ -84,13 +77,11 @@ public class AmministratoreController {
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
             AmministratoreDTO amministratoreDTO = amministratoreService.getAmministratoreDetails(userEmail);
             logger.debug("getAdminDetails() successful for admin: {}", userEmail);
-            ApiResponse<AmministratoreDTO> response = new ApiResponse<>(true, amministratoreDTO, null);
-            return ResponseEntity.ok(response);
+            return successResponse(amministratoreDTO);
 
         } catch (Exception ex) {
             logger.error("getAdminDetails() failed with error: {}", ex.getMessage());
-            ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, "Errore nel recupero dei dettagli dell'amministratore: " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'amministratore", "Amministratore");
         }
     }
 }

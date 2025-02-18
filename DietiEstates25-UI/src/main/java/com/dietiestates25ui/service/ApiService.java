@@ -81,7 +81,7 @@ public abstract class ApiService {
         }
     }
 
-    protected <T, DTO> DTO executeAndHandle(String path, String method, Object body, String token, Class<DTO> dtoClass) throws GenericServiceException {
+    protected <D> D executeAndHandle(String path, String method, Object body, String token, Class<D> dtoClass) throws GenericServiceException {
         try {
             fetchCsrfToken();
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
@@ -117,15 +117,14 @@ public abstract class ApiService {
             int statusCode = response.statusCode();
 
             if (statusCode >= 200 && statusCode < 300) {
-                ApiResponse<DTO> apiResponse = handleResponse(response, dtoClass);
+                ApiResponse<D> apiResponse = handleResponse(response, dtoClass);
                 if (apiResponse != null && apiResponse.isSuccess()) {
-                    return apiResponse.getData(); // Restituisci il DTO estratto
+                    return apiResponse.getData();
                 } else {
                     String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto.";
                     throw new GenericServiceException(errorMessage);
                 }
             } else {
-                // Gestione errori centralizzata
                 handleErrorResponse(statusCode, response);
                 throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
             }
@@ -135,7 +134,6 @@ public abstract class ApiService {
         }
     }
 
-    // Metodo astratto per la gestione centralizzata degli errori
     protected abstract void handleErrorResponse(int statusCode, HttpResponse<String> response) throws AuthenticationException, ApiClientException, ServiceUnavailableException, ResourceNotFoundException;
 
     protected <T> ApiResponse<T> handleResponse(HttpResponse<String> response, Class<T> dataType) throws ApiClientException {
@@ -191,29 +189,29 @@ public abstract class ApiService {
         return new GenericServiceException(message, e);
     }
 
-    // **CORREZIONE**: Passa l'istanza di ApiService per accedere a getBaseUrl()
+    protected static void logGenericException(int statusCode, String responseBody) {
+        if (logger.isErrorEnabled()) {
+            logger.error("Errore generico durante la comunicazione con il server: {}, Response body: {}", statusCode, responseBody);
+        }
+    }
+
     private static void logConnectException(ConnectException e) {
-        //logger.error("Errore di connessione al server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
         logger.error("Errore di connessione al server. Messaggio: {}", e.getMessage());
     }
 
     private static void logTimeoutException(SocketTimeoutException e) {
-        //logger.error("Timeout durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
         logger.error("Timeout durante la comunicazione con il server. Messaggio: {}", e.getMessage());
     }
 
     private static void logIOException(IOException e) {
-        // logger.error("Errore di I/O durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
         logger.error("Errore di I/O durante la comunicazione con il server. Messaggio: {}", e.getMessage());
     }
 
     private static void logInterruptedException(InterruptedException e) {
-        //logger.error("Operazione interrotta durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
         logger.error("Operazione interrotta durante la comunicazione con il server. Messaggio: {}", e.getMessage());
     }
 
     private static void logUnexpectedException(Exception e) {
-        //logger.error("Errore inatteso durante la comunicazione con il server: {}. Messaggio: {}", getBaseUrl(), e.getMessage()); // Errore!
         logger.error("Errore inatteso durante la comunicazione con il server. Messaggio: {}", e.getMessage());
     }
 

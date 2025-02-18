@@ -64,8 +64,10 @@ public class AgenteService extends ApiService {
                 } else if (statusCode >= 500) {
                     logServerError(statusCode, response.body());
                     throw new ServiceUnavailableException("Errore del server.");
+                } else {
+                    logGenericException(statusCode, response.body());
+                    throw new ApiClientException(response.body());
                 }
-                break;
         }
     }
 }

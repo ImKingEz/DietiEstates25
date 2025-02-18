@@ -7,8 +7,6 @@ import com.dietiestates25backend.api.dto.*;
 import com.dietiestates25backend.business.entity.Utente;
 import com.dietiestates25backend.business.service.AuthService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -20,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
-public class AuthController {
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+public class AuthController extends BaseController {
 
     private final AuthService authService;
 
@@ -32,28 +29,26 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UtenteDTO>> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
-        logger.debug("registerUser() called with registerDTO: {}", registerDTO.getEmail());
+        String email = registerDTO.getEmail();
+        logger.debug("registerUser() called with registerDTO: {}", email);
         Utente utente = new Utente(
                 registerDTO.getNome(),
                 registerDTO.getCognome(),
                 registerDTO.getCitta(),
-                registerDTO.getEmail(),
+                email,
                 registerDTO.getPassword()
         );
 
         try {
             UtenteDTO utenteDTO = authService.registraUtente(utente);
             logger.debug("registerUser() successful with user: {}", utenteDTO.getEmail());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return successResponse(utenteDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {
-            logger.error("registerUser() failed, email already registered: {}", registerDTO.getEmail());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Email già in uso");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            logger.error("registerUser() failed, email already registered: {}", email);
+            return handleDataIntegrityViolation(ex, "Utente");
         } catch (Exception ex) {
             logger.error("registerUser() failed with error: {}", ex.getMessage());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore durante la registrazione : " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Errore durante la registrazione", "Utente");
         }
     }
 
@@ -62,23 +57,21 @@ public class AuthController {
             @RequestBody @Valid LoginDTO loginDTO,
             @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader
     ) {
-        logger.debug("loginUser() called with email: {}", loginDTO.getEmail());
+        String email = loginDTO.getEmail();
+        logger.debug("loginUser() called with email: {}", email);
         logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader);
 
         try {
-            String token = authService.loginUtente(loginDTO.getEmail(), loginDTO.getPassword(), csrfTokenHeader);
+            String token = authService.loginUtente(email, loginDTO.getPassword(), csrfTokenHeader);
             LoginResponse loginResponse = new LoginResponse(token);
-            logger.debug("loginUser() successful for user: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(true, loginResponse, null);
-            return ResponseEntity.ok(response);
+            logger.debug("loginUser() successful for user: {}", email);
+            return successResponse(loginResponse);
         } catch (AuthenticationException ex) {
-            logger.error("loginUser() failed, authentication error for user: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Credenziali non valide");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            logger.error("loginUser() failed, authentication error for user: {}", email);
+            return new ResponseEntity<>(new ApiResponse<>(false, null, "Credenziali non valide"), HttpStatus.UNAUTHORIZED);
         } catch (Exception ex){
             logger.error("loginUser() failed with error: {}", ex.getMessage());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito : " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Login fallito", "Utente");
         }
     }
 
@@ -98,13 +91,11 @@ public class AuthController {
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
             UtenteDTO utenteDTO = authService.updateUtente(updateUtenteDTO, userEmail);
             logger.debug("updateUtente() successful for user: {}", userEmail);
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return successResponse(utenteDTO);
 
         } catch (Exception ex) {
             logger.error("updateUtente() failed with error: {}", ex.getMessage());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore durante l'aggiornamento dell'utente: " + ex.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleGenericException(ex, "Errore durante l'aggiornamento dell'utente", "Utente");
         }
     }
 
@@ -117,13 +108,11 @@ public class AuthController {
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
             UtenteDTO utenteDTO = authService.getUtenteDetails(userEmail);
             logger.debug("getUserDetails() successful for user: {}", userEmail);
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
-            return ResponseEntity.ok(response);
+            return successResponse(utenteDTO);
 
         } catch (Exception ex) {
             logger.error("getUserDetails() failed with error: {}", ex.getMessage());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore nel recupero dei dettagli dell'utente: " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'utente", "Utente");
         }
     }
 }

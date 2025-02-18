@@ -5,8 +5,6 @@ import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25backend.api.dto.RegisterAgenziaDTO;
 import com.dietiestates25backend.business.service.AgenziaService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -17,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/agenzie")
-public class AgenziaController {
-
-    private static final Logger logger = LoggerFactory.getLogger(AgenziaController.class);
+public class AgenziaController extends BaseController {
 
     private final AgenziaService agenziaService;
 
