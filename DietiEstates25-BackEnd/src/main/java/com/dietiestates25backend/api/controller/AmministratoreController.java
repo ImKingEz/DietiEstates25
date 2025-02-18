@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/admin")
 public class AmministratoreController extends BaseController {
 
+    public static final String ENTITY_TYPE = "Amministratore";
     private final AmministratoreService amministratoreService;
 
     @Autowired
@@ -38,7 +39,7 @@ public class AmministratoreController extends BaseController {
             return successResponse(amministratoreDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {
             logger.error("registerAdmin() failed, email already registered: {}", email);
-            return handleDataIntegrityViolation(ex, "Amministratore");
+            return handleDataIntegrityViolation(ex, ENTITY_TYPE);
         } catch (IllegalArgumentException ex) {
             logger.error("registerAdmin() failed, agency not found: {}", registerDTO.getIdAgenzia());
             ApiResponse<AmministratoreDTO> response = new ApiResponse<>(false, null, ex.getMessage());
@@ -65,7 +66,7 @@ public class AmministratoreController extends BaseController {
             return new ResponseEntity<>(new ApiResponse<>(false, null, "Credenziali non valide"), HttpStatus.UNAUTHORIZED);
         }  catch (Exception ex){
             logger.error("loginAdmin() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Login fallito", "Amministratore");
+            return handleGenericException(ex, "Login fallito", ENTITY_TYPE);
         }
     }
 
@@ -81,7 +82,7 @@ public class AmministratoreController extends BaseController {
 
         } catch (Exception ex) {
             logger.error("getAdminDetails() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'amministratore", "Amministratore");
+            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'amministratore", ENTITY_TYPE);
         }
     }
 }

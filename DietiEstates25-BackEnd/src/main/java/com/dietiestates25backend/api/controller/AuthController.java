@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 public class AuthController extends BaseController {
 
+    public static final String ENTITY_TYPE = "Utente";
     private final AuthService authService;
 
     @Autowired
@@ -37,10 +38,10 @@ public class AuthController extends BaseController {
             return successResponse(utenteDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {
             logger.error("registerUser() failed, email already registered: {}", email);
-            return handleDataIntegrityViolation(ex, "Utente");
+            return handleDataIntegrityViolation(ex, ENTITY_TYPE);
         } catch (Exception ex) {
             logger.error("registerUser() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Errore durante la registrazione", "Utente");
+            return handleGenericException(ex, "Errore durante la registrazione", ENTITY_TYPE);
         }
     }
 
@@ -63,7 +64,7 @@ public class AuthController extends BaseController {
             return new ResponseEntity<>(new ApiResponse<>(false, null, "Credenziali non valide"), HttpStatus.UNAUTHORIZED);
         } catch (Exception ex){
             logger.error("loginUser() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Login fallito", "Utente");
+            return handleGenericException(ex, "Login fallito", ENTITY_TYPE);
         }
     }
 
@@ -87,7 +88,7 @@ public class AuthController extends BaseController {
 
         } catch (Exception ex) {
             logger.error("updateUtente() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Errore durante l'aggiornamento dell'utente", "Utente");
+            return handleGenericException(ex, "Errore durante l'aggiornamento dell'utente", ENTITY_TYPE);
         }
     }
 
@@ -104,7 +105,7 @@ public class AuthController extends BaseController {
 
         } catch (Exception ex) {
             logger.error("getUserDetails() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'utente", "Utente");
+            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'utente", ENTITY_TYPE);
         }
     }
 }
