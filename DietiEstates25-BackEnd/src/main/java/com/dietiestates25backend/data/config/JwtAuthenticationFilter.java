@@ -1,5 +1,6 @@
 package com.dietiestates25backend.data.config;
 
+import com.dietiestates25backend.business.service.CustomUserDetailsService;
 import com.dietiestates25backend.business.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,11 +25,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger loggerJwtAuthFilter = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtService jwtService;
-
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtService jwtService, CustomUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
@@ -44,7 +44,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             loggerJwtAuthFilter.debug("No or invalid authorization header");
-            loggerJwtAuthFilter.debug("No or invalid authorization header. Header value: {}", authHeader); //AGGIUNGI QUESTO LOG
             return;
         }
 
@@ -52,10 +51,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         loggerJwtAuthFilter.debug("Extracted jwt : {}", jwt);
         userEmail = jwtService.extractUsername(jwt);
         loggerJwtAuthFilter.debug("Extracted userEmail : {}", userEmail);
+
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-            loggerJwtAuthFilter.debug("Retrieved user details : {}", userDetails);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            UserDetails userDetails = null;
+            try {
+                userDetails = userDetailsService.loadUserByUsername(userEmail);
+                loggerJwtAuthFilter.debug("Retrieved user details : {}", userDetails);
+            } catch (UsernameNotFoundException e) {
+                loggerJwtAuthFilter.error("User not found: {}", userEmail);
+            }
+
+            if (userDetails != null && jwtService.isTokenValid(jwt, userDetails)) {
                 loggerJwtAuthFilter.debug("Token is valid, creating authentication object");
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

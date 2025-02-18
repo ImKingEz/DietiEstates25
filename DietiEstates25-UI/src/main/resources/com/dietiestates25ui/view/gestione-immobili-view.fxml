@@ -58,13 +58,13 @@
                      </VBox.margin>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="Gestione immobili" textAlignment="CENTER" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Salve agente cosa desidera fare oggi?" textAlignment="CENTER" wrappingWidth="353.33331298828125" />
-                        <Button fx:id="caricaImmobileButton" mnemonicParsing="false" text="Carica un nuovo immobile" />
-                        <Button fx:id="offerteButton" mnemonicParsing="false" text="Offerte" />
-                        <Button fx:id="inserzioniButton" mnemonicParsing="false" text="Inserzioni caricate" />
-                        <Button fx:id="statisticheButton" mnemonicParsing="false" text="Statistiche inserzioni" />
-                        <Button fx:id="homepageButton" mnemonicParsing="false" text="Vai alla Homepage" />
+                        <Button fx:id="caricaImmobileButton" mnemonicParsing="false" styleClass="generalButton" text="Carica un nuovo immobile" />
+                        <Button fx:id="offerteButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Offerte" />
+                        <Button fx:id="inserzioniButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Inserzioni caricate" />
+                        <Button fx:id="statisticheButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Statistiche inserzioni" />
+                        <Button fx:id="homepageButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Vai alla Homepage" />
                   <HBox alignment="CENTER_LEFT">
-                              <Button fx:id="tornaLoginButton" mnemonicParsing="false" text="Torna all'area login" />
+                              <Button fx:id="tornaLoginButton" mnemonicParsing="false" styleClass="generalButton" text="Torna all'area login" />
                      <VBox.margin>
                         <Insets bottom="10.0" left="10.0" />
                      </VBox.margin>

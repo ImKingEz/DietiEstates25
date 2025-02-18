@@ -30,7 +30,7 @@
 
             <HBox alignment="CENTER_LEFT" maxHeight="320.0" maxWidth="1202.0" minHeight="320.0" minWidth="900.0" prefHeight="320.0" prefWidth="1202.0" spacing="50.0" styleClass="section">
                 
-                    <ImageView fx:id="immobileImageView" fitHeight="308.0" fitWidth="343.0" pickOnBounds="true" preserveRatio="true" styleClass="image-frame">
+                    <ImageView fx:id="immobileImageView" fitHeight="280.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" styleClass="image-frame">
                         <HBox.margin>
                             <Insets right="20.0" />
                         </HBox.margin>
@@ -40,73 +40,73 @@
                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                         </padding>
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Titolo: " />
-                            <Label fx:id="titoloLabel" styleClass="value" text="Villetta di Posillipo" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Titolo: " />
+                            <Label fx:id="titoloLabel" styleClass="valoriCaratteristicheImmobileText" text="Villetta di Posillipo" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Indirizzo: " />
-                            <Label fx:id="indirizzoLabel" styleClass="value" text="Via Posillipo, 57" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Indirizzo: " />
+                            <Label fx:id="indirizzoLabel" styleClass="valoriCaratteristicheImmobileText" text="Via Posillipo, 57" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Prezzo: " />
-                            <Label fx:id="prezzoLabel" styleClass="value" text="€800.000" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Prezzo: " />
+                            <Label fx:id="prezzoLabel" styleClass="valoriCaratteristicheImmobileText" text="€800.000" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Superficie: " />
-                            <Label fx:id="superficieLabel" styleClass="value" text="120 mq" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Superficie: " />
+                            <Label fx:id="superficieLabel" styleClass="valoriCaratteristicheImmobileText" text="120 mq" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Tipo di inserzione: " />
-                            <Label fx:id="tipologiaLabel" styleClass="value" text="" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Tipo di inserzione: " />
+                            <Label fx:id="tipologiaLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Classe energetica: " />
-                            <Label fx:id="classeEnergeticaLabel" styleClass="value" text="" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Classe energetica: " />
+                            <Label fx:id="classeEnergeticaLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
                         </HBox>
 
                         <HBox fx:id="descrizioneHBox" alignment="CENTER_LEFT" maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="5.0">
-                            <Label maxHeight="40.0" minHeight="40.0" prefHeight="40.0" styleClass="label" text="Descrizione: " />
-                            <Label fx:id="descrizioneLabel" alignment="CENTER" styleClass="value" text="Descrizione dell'immobile" wrapText="true" />
+                            <Label maxHeight="40.0" minHeight="40.0" prefHeight="40.0" styleClass="caratteristicheImmobileText" text="Descrizione: " />
+                            <Label fx:id="descrizioneLabel" alignment="CENTER" styleClass="valoriCaratteristicheImmobileText" text="Descrizione dell'immobile" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Numero camere: " />
-                            <Label fx:id="numeroCamereLabel" styleClass="value" text="" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Numero camere: " />
+                            <Label fx:id="numeroCamereLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Numero bagni: " />
-                            <Label fx:id="numeroBagniLabel" styleClass="value" text="" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Numero bagni: " />
+                            <Label fx:id="numeroBagniLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
                         </HBox>
 
                                  <HBox spacing="5.0">
-                            <Label styleClass="label" text="Piano: " />
-                            <Label fx:id="pianoLabel" styleClass="value" text="" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Piano: " />
+                            <Label fx:id="pianoLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Vicinanze: " />
-                            <Label fx:id="vicinanzeLabel" styleClass="value" text="Scuole, Parchi, Trasporto pubblico" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Vicinanze: " />
+                            <Label fx:id="vicinanzeLabel" styleClass="valoriCaratteristicheImmobileText" text="Scuole, Parchi, Trasporto pubblico" wrapText="true" />
                         </HBox>
 
                         <HBox spacing="5.0">
-                            <Label styleClass="label" text="Ulteriori servizi: " />
-                            <Label fx:id="serviziLabel" styleClass="value" text="" wrapText="true" />
+                            <Label styleClass="caratteristicheImmobileText" text="Ulteriori servizi: " />
+                            <Label fx:id="serviziLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
                         </HBox>
 
                     </VBox>
                 
             </HBox>
-            <Button fx:id="confermaButton" mnemonicParsing="false" text="Conferma" />
+            <Button fx:id="confermaButton" mnemonicParsing="false" styleClass="generalButton" text="Conferma" />
 
             <HBox alignment="CENTER_LEFT">
                 
-                    <Button fx:id="indietroButton" mnemonicParsing="false" text="Torna indietro" />
+                    <Button fx:id="indietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" />
          <VBox.margin>
             <Insets left="10.0" />
          </VBox.margin>

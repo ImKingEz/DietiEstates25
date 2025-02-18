@@ -20,7 +20,7 @@ public class Immobile {
     private String titolo;
 
     @Column(name = "tipo", nullable = false)
-    private String tipologia; // "Affitto" o "Vendita"
+    private String tipologia;
 
     @Column(name = "indirizzo", nullable = false)
     private String indirizzo;
@@ -35,10 +35,10 @@ public class Immobile {
     private double dimensione;
 
     @Column(name = "numero_stanze", nullable = false)
-    private int numero_camere;
+    private int numeroCamere;
 
     @Column(name = "numero_bagni", nullable = false)
-    private int numero_bagni;
+    private int numeroBagni;
 
     @Column(name = "classe_energetica")
     private String classeEnergetica;
@@ -70,24 +70,18 @@ public class Immobile {
     @Column(name = "vicino_trasporto_pubblico")
     private boolean vicinoTrasportoPubblico;
 
-//    // Modifica qui per usare la relazione OneToMany con FotoImmobile
-//    @OneToMany(mappedBy = "immobile", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<FotoImmobile> fotoImmobili;
+    @Column(name = "id_agente", nullable = false)
+    private Long idAgente;
 
-    // Usa ManyToOne per la relazione con AgenteImmobiliare
-    //@ManyToOne
-    @Column(name = "id_agente", nullable = false) // Rendi la colonna NOT NULL
-    private Long idAgente; // Assicurati che Utente sia l'entity per AgenteImmobiliare
-
-    public Immobile(String titolo, String tipologia, String indirizzo, double prezzo, String descrizione, double dimensione, int numero_camere, int numero_bagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico, Long idAgente) {
+    public Immobile(String titolo, String tipologia, String indirizzo, double prezzo, String descrizione, double dimensione, int numeroCamere, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico, Long idAgente) {
         this.titolo = titolo;
         this.tipologia = tipologia;
         this.indirizzo = indirizzo;
         this.prezzo = prezzo;
         this.descrizione = descrizione;
         this.dimensione = dimensione;
-        this.numero_camere = numero_camere;
-        this.numero_bagni = numero_bagni;
+        this.numeroCamere = numeroCamere;
+        this.numeroBagni = numeroBagni;
         this.classeEnergetica = classeEnergetica;
         this.piano = piano;
         this.ascensore = ascensore;

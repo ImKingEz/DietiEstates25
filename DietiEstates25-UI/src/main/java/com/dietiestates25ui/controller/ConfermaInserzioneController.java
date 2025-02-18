@@ -1,13 +1,9 @@
 package com.dietiestates25ui.controller;
 
-import com.dietiestates25.dto.ApiResponse;
-import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25ui.model.Immobile;
 import com.dietiestates25ui.service.ImmobileService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -20,16 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ConfermaInserzioneController extends AbstractController implements Initializable {
 
@@ -66,7 +57,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
     @FXML
     private Label pianoLabel;  // NUOVA ETICHETTA
 
-    private Immobile Immobile;
+    private Immobile immobile;
 
     private String token;
 
@@ -74,8 +65,8 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private ImmobileService immobileService = new ImmobileService(); // Crea un'istanza di ImmobileService
 
-    public void setImmobile(Immobile Immobile) {
-        this.Immobile = Immobile;
+    public void setImmobile(Immobile immobile) {
+        this.immobile = immobile;
     }
 
     public void setToken(String token) {
@@ -99,34 +90,34 @@ public class ConfermaInserzioneController extends AbstractController implements 
     }
 
     private void mostraDettagliImmobile() {
-        if (Immobile != null) {
-            titoloLabel.setText(Immobile.getTitolo());
-            indirizzoLabel.setText(Immobile.getIndirizzo());
+        if (immobile != null) {
+            titoloLabel.setText(immobile.getTitolo());
+            indirizzoLabel.setText(immobile.getIndirizzo());
             // Formatta il prezzo con il simbolo dell'euro
             NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.ITALY);
-            prezzoLabel.setText(currencyFormatter.format(Immobile.getPrezzo()));
+            prezzoLabel.setText(currencyFormatter.format(immobile.getPrezzo()));
 
             // Formatta la superficie con "mq"
-            superficieLabel.setText(String.format("%.2f mq", Immobile.getDimensione()));
-            descrizioneLabel.setText(Immobile.getDescrizione());
+            superficieLabel.setText(String.format("%.2f mq", immobile.getDimensione()));
+            descrizioneLabel.setText(immobile.getDescrizione());
             vicinanzeLabel.setText(getVicinanzeText());
 
             // Gestione dei servizi aggiuntivi
             String serviziText = getServiziText();
             serviziLabel.setText(serviziText);
 
-            tipologiaLabel.setText(Immobile.getTipologia());
-            numeroCamereLabel.setText(String.valueOf(Immobile.getNumero_camere()));
-            numeroBagniLabel.setText(String.valueOf(Immobile.getNumero_bagni()));
-            classeEnergeticaLabel.setText(Immobile.getClasseEnergetica());
+            tipologiaLabel.setText(immobile.getTipologia());
+            numeroCamereLabel.setText(String.valueOf(immobile.getNumeroCamere()));
+            numeroBagniLabel.setText(String.valueOf(immobile.getNumeroBagni()));
+            classeEnergeticaLabel.setText(immobile.getClasseEnergetica());
 
             // Gestione del piano: se il piano è -1 (interrato) visualizzare "Interrato", altrimenti il numero del piano
-            String pianoText = (Immobile.getPiano() == -1) ? "Interrato" : String.valueOf(Immobile.getPiano());
+            String pianoText = (immobile.getPiano() == -1) ? "Interrato" : String.valueOf(immobile.getPiano());
             pianoLabel.setText(pianoText);
 
             // Gestione dell'immagine: mostra solo la prima immagine
-            if (Immobile.getImmaginiUrls() != null && !Immobile.getImmaginiUrls().isEmpty()) {
-                String firstImageUrl = Immobile.getImmaginiUrls().get(0);
+            if (immobile.getImmaginiUrls() != null && !immobile.getImmaginiUrls().isEmpty()) {
+                String firstImageUrl = immobile.getImmaginiUrls().get(0);
                 try {
                     Image image = new Image(firstImageUrl);
                     immobileImageView.setImage(image);
@@ -147,13 +138,13 @@ public class ConfermaInserzioneController extends AbstractController implements 
     private String getServiziText() {
         StringBuilder serviziText = new StringBuilder();
 
-        if (Immobile.isAscensore()) {
+        if (immobile.isAscensore()) {
             serviziText.append("Ascensore, ");
         }
-        if (Immobile.isPortineria()) {
+        if (immobile.isPortineria()) {
             serviziText.append("Portineria, ");
         }
-        if (Immobile.isClimatizzazione()) {
+        if (immobile.isClimatizzazione()) {
             serviziText.append("Climatizzazione, ");
         }
 
@@ -166,13 +157,13 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private String getVicinanzeText() {
         StringBuilder vicinanzeText = new StringBuilder();
-        if (Immobile.isVicinoScuole()) {
+        if (immobile.isVicinoScuole()) {
             vicinanzeText.append("Scuole, ");
         }
-        if (Immobile.isVicinoParchi()) {
+        if (immobile.isVicinoParchi()) {
             vicinanzeText.append("Parchi, ");
         }
-        if (Immobile.isVicinoTrasportoPubblico()) {
+        if (immobile.isVicinoTrasportoPubblico()) {
             vicinanzeText.append("Trasporto pubblico, ");
         }
 
@@ -187,31 +178,29 @@ public class ConfermaInserzioneController extends AbstractController implements 
         loadScene("/com/dietiestates25ui/view/inserimento-inserzione-view.fxml",
                 (fxmlLoader, stage) -> {
                     InserimentoInserzioneController controller = fxmlLoader.getController();
-                    controller.setTitoloTextField(Immobile.getTitolo());
-                    controller.setTipologiaChoiceBox(Immobile.getTipologia());
-                    controller.setIndirizzoTextField(Immobile.getIndirizzo());
-                    controller.setPrezzoTextField(String.valueOf(Immobile.getPrezzo()));
-                    controller.setDescrizioneTextArea(Immobile.getDescrizione());
-                    controller.setSuperficieTextField(String.valueOf(Immobile.getDimensione()));
-                    controller.setCamereSpinner(Immobile.getNumero_camere());
-                    controller.setBagniSpinner(Immobile.getNumero_bagni());
-                    controller.setClasseEnergeticaTextField(Immobile.getClasseEnergetica());
-                    controller.setPianoSpinner(Immobile.getPiano());
-                    controller.setAscensoreCheckBox(Immobile.isAscensore());
-                    controller.setPortineriaCheckBox(Immobile.isPortineria());
-                    controller.setClimatizzazioneCheckBox(Immobile.isClimatizzazione());
-                    controller.setSelectedImageList(Immobile.getImmaginiUrls());
-                    controller.setVicinoScuoleCheckBox(Immobile.isVicinoScuole());
-                    controller.setVicinoParchiCheckBox(Immobile.isVicinoParchi());
-                    controller.setVicinoTrasportoPubblicoCheckBox(Immobile.isVicinoTrasportoPubblico());
+                    controller.setTitoloTextField(immobile.getTitolo());
+                    controller.setTipologiaChoiceBox(immobile.getTipologia());
+                    controller.setIndirizzoTextField(immobile.getIndirizzo());
+                    controller.setPrezzoTextField(String.valueOf(immobile.getPrezzo()));
+                    controller.setDescrizioneTextArea(immobile.getDescrizione());
+                    controller.setSuperficieTextField(String.valueOf(immobile.getDimensione()));
+                    controller.setCamereSpinner(immobile.getNumeroCamere());
+                    controller.setBagniSpinner(immobile.getNumeroBagni());
+                    controller.setClasseEnergeticaTextField(immobile.getClasseEnergetica());
+                    controller.setPianoSpinner(immobile.getPiano());
+                    controller.setAscensoreCheckBox(immobile.isAscensore());
+                    controller.setPortineriaCheckBox(immobile.isPortineria());
+                    controller.setClimatizzazioneCheckBox(immobile.isClimatizzazione());
+                    controller.setSelectedImageList(immobile.getImmaginiUrls());
+                    controller.setVicinoScuoleCheckBox(immobile.isVicinoScuole());
+                    controller.setVicinoParchiCheckBox(immobile.isVicinoParchi());
+                    controller.setVicinoTrasportoPubblicoCheckBox(immobile.isVicinoTrasportoPubblico());
 
                     controller.setToken(token);
                     controller.setStage(stage);
 
-                    // Chiamare checkFormValidity() per abilitare il pulsante Avanti
                     controller.checkFormValidity();
 
-                    // Impostare il focus sul logo
                     Platform.runLater(() -> controller.logo.requestFocus());
 
                 }, indietroButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
@@ -219,24 +208,16 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private void salvaImmobile() {
         try {
-            logger.debug("salvaImmobile() method called");
-            //ImmobileService.fetchCsrfToken();
-
-            logger.debug("Immobile.getTitolo(): {}", Immobile.getTitolo());
-            logger.debug("Immobile.getTipologia(): {}", Immobile.getTipologia());
-            // Logga tutti gli altri campi dell'oggetto Immobile
-            logger.debug("Token: {}", token);
-            logger.debug("selectedImageList.size(): {}", selectedImageList.size());
-
-            immobileService.salvaImmobile(Immobile, token, selectedImageList);
-            showPopup("Successo", "Immobile salvato correttamente!", SUCCESS_ICON);
-            logger.info("Immobile salvato correttamente!");
+            immobileService.salvaImmobile(immobile, token, selectedImageList);
+            showPopup("Successo", "immobile salvato correttamente!", SUCCESS_ICON);
+            logger.info("immobile salvato correttamente!");
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
             delay.setOnFinished(event -> openGestioneImmobiliPage());
             delay.play();
 
         } catch (Exception e) {
-            // ...
+            showPopup("Errore", "Errore durante il salvataggio dell'immobile", ERROR_ICON);
+            logger.error("Errore durante il salvataggio dell'immobile: {}", e.getMessage());
         }
     }
 

@@ -1,6 +1,5 @@
 package com.dietiestates25ui.controller;
 
-import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,25 +9,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -38,16 +30,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 public class InserimentoInserzioneController extends AbstractController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(InserimentoInserzioneController.class);
+
+    private static final int GEOAPIFY_RADIUS = 500;
+    public static final String FEATURES_GEOAPIFY = "features";
+    public static final String CATEGORIES_GEOAPIFY = "categories";
 
     @FXML
     private TextField titoloTextField;
@@ -59,10 +49,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private Button apriMappaButton;
     @FXML
     private WebView mapView;
-
     @FXML
-    private Button mapBackButton; // il nuovo bottone torna indietro
-
+    private Button mapBackButton;
     @FXML
     private TextField prezzoTextField;
     @FXML
@@ -99,32 +87,31 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private CheckBox vicinoTrasportoPubblicoCheckBox;
 
     private final ObservableList<File> selectedImageList = FXCollections.observableArrayList();
+    
     private double latitudine;
     private double longitudine;
-
-    private boolean mapInitialized = false;  // Flag per verificare se la mappa è stata inizializzata
 
     private String token;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Inizializza gli elementi FXML
+        //focus sul logo
+        
         apriMappaButton.setOnAction(this::handleApriMappaButtonAction);
+        
         indietroButton.setOnAction(event -> openGestioneImmobiliPage());
-        mapBackButton.setOnAction(event -> handleMapBackButtonAction());
+        
+        mapBackButton.setOnAction(event -> hideMapView());
 
         setupChoiceBox();
         setupSpinners();
+        
         selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
 
         updateAvantiButtonState();
 
-        // Listener sull'indirizzoTextField (chiamato solo se la mappa è inizializzata)
-        indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            // Se la mappa non è visible, non fare nulla.
-        });
+        indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> {});
 
-        //Inizializza e posiziona il bottone "Torna indietro"
         createAndPlaceBackButton();
     }
 
@@ -182,8 +169,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     public void setSelectedImageList(List<String> imageUrls) {
         this.selectedImageList.clear();
-
-        // Converti gli URL delle immagini in File e aggiungili alla lista
         for (String imageUrl : imageUrls) {
             try {
                 File file = new File(new URL(imageUrl).toURI());
@@ -192,8 +177,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
                 logger.error("Errore durante la conversione dell'URL in File: {}", e.getMessage());
             }
         }
-
-        // Aggiorna le miniature delle immagini
         updateImageThumbnails();
     }
 
@@ -209,10 +192,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         this.vicinoTrasportoPubblicoCheckBox.setSelected(vicinoTrasportoPubblico);
     }
 
-    public void setStage(Stage stage) {
-        this.currentStage = stage;
-    }
-
     public void setToken(String token) {
         this.token = token;
     }
@@ -223,128 +202,106 @@ public class InserimentoInserzioneController extends AbstractController implemen
             mapView.setPrefWidth(primaryAnchorPane.getWidth());
             mapView.setPrefHeight(primaryAnchorPane.getHeight());
 
-            //Rendi visibile sia la WebView che il bottone di ritorno
             mapView.setVisible(true);
             mapBackButton.setVisible(true);
 
-            // Forza un aggiornamento del layout
             primaryAnchorPane.applyCss();
             primaryAnchorPane.layout();
 
-            System.out.println("prima di initializeMap");
+            logger.info("prima di initializeMap");
             initializeMap();
         } catch (Exception e) {
             logger.error("Errore nel metodo handleApriMappaButtonAction: {}", e.getMessage(), e);
-            showPopup("Errore", "Errore durante l'apertura della mappa: " + e.getMessage(), ERROR_ICON);
+            showPopup(POPUP_ERROR_TITLE, "Errore durante l'apertura della mappa: " + e.getMessage(), ERROR_ICON);
         }
     }
 
     @FXML
-    private void handleMapBackButtonAction() {
+    private void hideMapView() {
         mapView.setVisible(false);
         mapBackButton.setVisible(false);
     }
 
     private void initializeMap() {
-        System.out.println("dentro initializeMap");
-        if (mapView != null) {
-            WebEngine webEngine = mapView.getEngine();
+        logger.info("Inizio inizializzazione mappa.");
 
-            // Listener per quando la pagina web è completamente caricata
-            webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue == Worker.State.SUCCEEDED) {
-                    System.out.println("Pagina web caricata correttamente!");
-                    mapInitialized = true;  // Set the flag
+        if (mapView == null) {
+            logger.error("WebView mapView è null. Controllare il file FXML.");
+            return; // Esci dal metodo se mapView è null
+        }
 
-                    //Inizializza il comportamento per l'alert di javascript SOLO quando la mappa è caricata
-                    webEngine.setOnAlert(event -> {
-                        String data = event.getData();
-                        try {
-                            String[] parts = data.split("\\|");
+        WebEngine webEngine = mapView.getEngine();
 
-                            if (parts.length == 3) {
-                                // Ottieni l'indirizzo
-                                String address = parts[0];
+        // Listener per lo stato di caricamento della pagina web
+        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> handleWebEngineStateChange(newValue, webEngine));
 
-                                // Controllo aggiuntivo: verifica se l'indirizzo contiene solo una parola
-                                if (address.split("\\s+").length <= 1) {
-                                    Platform.runLater(() -> {
-                                        showPopup("Attenzione", "L'indirizzo restituito non è valido", ERROR_ICON);
-                                        mapView.setVisible(false);
-                                        mapBackButton.setVisible(false);
-                                    });
-                                    return; // Esci dal listener, non elaborare ulteriormente
-                                }
+        webEngine.setJavaScriptEnabled(true);
+        webEngine.load(getClass().getResource("/com/dietiestates25ui/view/map.html").toExternalForm());
+        logger.info("Caricamento pagina mappa: /com/dietiestates25ui/view/map.html");
+    }
 
-                                //Ottieni latitudine e longitudine
-                                double lat = Double.parseDouble(parts[1]);
-                                double lng = Double.parseDouble(parts[2]);
-
-                                Platform.runLater(() -> {
-                                    if (address.equals("Indirizzo non identificato per questo punto") || address.equals("Errore di connessione")) { //Verifica il messaggio di errore
-                                        showPopup("Attenzione", address, ERROR_ICON); //Mostra il popup
-                                        mapView.setVisible(false);
-                                        mapBackButton.setVisible(false);
-                                    } else {
-                                        //Imposta i valori nei textfield
-                                        indirizzoTextField.setText(address);
-                                        mapView.setVisible(false); //Chiudi la webview
-                                        mapBackButton.setVisible(false); //Nascondi il bottone
-                                        //Salva latitudine e longitudine
-                                        this.latitudine = lat;
-                                        this.longitudine = lng;
-                                        logger.info("Latitudine: {}, Longitudine: {}", this.latitudine, this.longitudine);
-
-                                        //Chiama getNearbyPlaces solo se hai latitudine e longitudine
-                                        if (latitudine != 0 && longitudine != 0) {
-                                            getNearbyPlaces(address);
-                                        } else {
-                                            logger.warn("Latitudine e Longitudine non valide, impossibile chiamare getNearbyPlaces");
-                                        }
-                                        // Imposta il focus sul logo
-                                        logo.requestFocus();
-                                    }
-                                });
-                            } else {
-                                Platform.runLater(() -> showPopup("Errore", "Formato dati ricevuto dalla mappa non valido.", ERROR_ICON));
-                            }
-                        } catch (Exception e) {
-                            logger.error("Errore durante l'elaborazione dei dati ricevuti dalla mappa: {}", e.getMessage(), e);
-                            Platform.runLater(() -> showPopup("Errore", "Errore durante l'elaborazione dei dati ricevuti dalla mappa: " + e.getMessage(), ERROR_ICON));
-                        }
-                    });
-
-                    // Esegui Javascript per forzare il resize dopo il caricamento
-                    //String script = "if (typeof map !== 'undefined') { map.invalidateSize(); map.fitBounds([[40.8529 - 0.1, 14.2681 - 0.1], [40.8529 + 0.1, 14.2681 + 0.1]]); console.log('invalidateSize() executed'); } else { console.error('map is undefined'); }";
-                    //webEngine.executeScript(script);
-
-                } else if (newValue == Worker.State.FAILED) {
-                    System.err.println("Errore durante il caricamento della pagina web: " + webEngine.getLoadWorker().getMessage());
-                }
-            });
-
-            // Abilita la comunicazione tra Java e JavaScript
-            webEngine.setJavaScriptEnabled(true);
-
-            // Carica la pagina HTML che contiene la mappa
-            webEngine.load(getClass().getResource("/com/dietiestates25ui/view/map.html").toExternalForm());
-
-
-        } else {
-            logger.error("WebView mapView is null. Check FXML file.");
+    private void handleWebEngineStateChange(Worker.State newValue, WebEngine webEngine) {
+        if (newValue == Worker.State.SUCCEEDED) {
+            webEngine.setOnAlert(event -> handleMapAlert(event.getData()));
+        } else if (newValue == Worker.State.FAILED) {
+            Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Errore durante il caricamento della mappa: " + webEngine.getLoadWorker().getMessage(), ERROR_ICON));
         }
     }
 
-//    private void populateMap(String address) {
-//        if (mapView != null && mapView.isVisible() && mapInitialized && address != null && !address.isEmpty()) {
-//            WebEngine webEngine = mapView.getEngine();  //Ottieni l'istanza locale
-//
-//            if (webEngine != null) { //Verifica che webEngine non sia NULL prima di chiamare executeScript
-//                String script = "geocodeAddress('" + address + "');";  // Richiama la funzione Javascript
-//                Platform.runLater(() -> webEngine.executeScript(script));
-//            }
-//        }
-//    }
+    private void handleMapAlert(String data) {
+        try {
+            String[] parts = data.split("\\|");
+
+            if (parts.length != 3) {
+                logger.warn("Formato dati ricevuto dalla mappa non valido: {}", data);
+                Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Formato dati ricevuto dalla mappa non valido.", ERROR_ICON));
+                return;
+            }
+
+            String address = parts[0];
+            double lat = Double.parseDouble(parts[1]);
+            double lng = Double.parseDouble(parts[2]);
+
+            if (address.split("\\s+").length <= 1) {
+                logger.warn("L'indirizzo restituito non è valido: {}", address);
+                Platform.runLater(() -> {
+                    showPopup(POPUP_ERROR_TITLE, "L'indirizzo restituito non è valido", ERROR_ICON);
+                    hideMapView();
+                });
+                return;
+            }
+
+            Platform.runLater(() -> processMapData(address, lat, lng));
+
+        } catch (NumberFormatException e) {
+            logger.error("Errore durante la conversione dei dati numerici ricevuti dalla mappa: {}", e.getMessage());
+            Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Errore durante l'elaborazione dei dati ricevuti dalla mappa: Formato numerico non valido.", ERROR_ICON));
+
+        } catch (Exception e) {
+            logger.error("Errore durante l'elaborazione dei dati ricevuti dalla mappa: {}", e.getMessage(), e);
+            Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Errore durante l'elaborazione dei dati ricevuti dalla mappa: " + e.getMessage(), ERROR_ICON));
+        }
+    }
+
+    private void processMapData(String address, double lat, double lng) {
+        if (address.equals("Indirizzo non identificato per questo punto") || address.equals("Errore di connessione")) {
+            logger.warn("Errore ricevuto dalla mappa: {}", address);
+            showPopup(POPUP_ERROR_TITLE, address, ERROR_ICON);
+            hideMapView();
+        } else {
+            indirizzoTextField.setText(address);
+            hideMapView();
+            this.latitudine = lat;
+            this.longitudine = lng;
+
+            if (latitudine != 0 && longitudine != 0) {
+                getNearbyPlaces(address);
+            } else {
+                logger.warn("Latitudine e Longitudine non valide, impossibile chiamare getNearbyPlaces");
+            }
+            logo.requestFocus();
+        }
+    }
 
     private void setupChoiceBox() {
         tipologiaChoiceBox.setItems(FXCollections.observableArrayList("Affitto", "Vendita"));
@@ -368,7 +325,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
             selectedImageList.addAll(newFiles);
 
             if (selectedImageList.size() > 5) {
-                Platform.runLater(() -> showPopup("Attenzione", "Puoi selezionare al massimo 5 immagini.", ERROR_ICON));
+                Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Puoi selezionare al massimo 5 immagini.", ERROR_ICON));
 
                 while (selectedImageList.size() > 5) {
                     selectedImageList.remove(selectedImageList.size() - 1);
@@ -460,10 +417,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
             Double.parseDouble(superficie);
             isSuperficieValid = true;
         } catch (NumberFormatException e) {
-            // Superficie non valido
+            // Superficie non valida
         }
 
-        boolean requiredFieldsFilled = !titolo.isEmpty() && !indirizzo.isEmpty() && !descrizione.isEmpty() && isPrezzoValid && isSuperficieValid && !classeEnergetica.isEmpty() && (selectedImageList.size() > 0) && tipologia != null;
+        boolean requiredFieldsFilled = !titolo.isEmpty() && !indirizzo.isEmpty() && !descrizione.isEmpty() && isPrezzoValid && isSuperficieValid && !classeEnergetica.isEmpty() && (!selectedImageList.isEmpty()) && tipologia != null;
         boolean isMaxImagesSelected = selectedImageList.size() <= 5;
 
         avantiButton.setDisable(!requiredFieldsFilled || !isMaxImagesSelected);
@@ -472,92 +429,109 @@ public class InserimentoInserzioneController extends AbstractController implemen
     }
 
     private void getNearbyPlaces(String address) {
-        logger.info("Chiamata a getNearbyPlaces per l'indirizzo: {}", address);
-        if (address == null || address.isEmpty()) {
+        logger.info("Ricerca luoghi di interesse nelle vicinanze per l'indirizzo: {}", address);
+
+        if (isNullOrEmpty(address)) {
             logger.warn("Indirizzo vuoto o nullo. Impossibile chiamare l'API Geoapify.");
             return;
         }
 
-        if (latitudine == 0 || longitudine == 0) {
-            logger.warn("Latitudine o Longitudine non settate a valori diversi da 0. Impossibile chiamare l'API Geoapify.");
+        if (!isValidCoordinates(latitudine, longitudine)) {
+            logger.warn("Latitudine o Longitudine non valide. Impossibile chiamare l'API Geoapify.");
             return;
         }
+
         String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac"; // Replace with your actual API key
-        String encodedAddress = address.replace(" ", "%20");
-        String url = "https://api.geoapify.com/v2/places?categories=education.school,leisure.park,public_transport&filter=circle:" +
-                longitudine + "," + latitudine + ",1000&limit=3&apiKey=" + apiKey;
+        String url = buildGeoapifyUrl(longitudine, latitudine, apiKey);
 
-        logger.info("URL chiamata API Geoapify: {}", url); // Stampa l'URL completo
+        logger.info("URL chiamata API Geoapify: {}", url);
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .build();
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(this::processGeoapifyResponse)
+                    .exceptionally(this::handleGeoapifyError);
+        }
+    }
 
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(responseBody -> {
-                    logger.info("Risposta completa dall'API Geoapify: {}", responseBody); // Stampa la risposta completa
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
 
-                    boolean hasSchool = false;
-                    boolean hasPark = false;
-                    boolean hasPublicTransport = false;
+    private boolean isValidCoordinates(double latitude, double longitude) {
+        return latitude != 0 && longitude != 0;
+    }
 
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        JsonNode root = mapper.readTree(responseBody);
+    private String buildGeoapifyUrl(double longitude, double latitude, String apiKey) {
+        return String.format("https://api.geoapify.com/v2/places?categories=education.school,leisure.park,public_transport&filter=circle:%f,%f,%d&limit=3&apiKey=%s",
+                longitude, latitude, GEOAPIFY_RADIUS, apiKey);
+    }
 
-                        if (root.has("features") && root.get("features").isArray()) {
-                            for (JsonNode feature : root.get("features")) {
-                                JsonNode properties = feature.get("properties");
-                                if (properties != null && properties.has("categories")) {
-                                    JsonNode categories = properties.get("categories");
-                                    for (JsonNode categoryNode : categories) {
-                                        String category = categoryNode.asText();
-                                        switch (category) {
-                                            case "education.school":
-                                                hasSchool = true;
-                                                break;
-                                            case "leisure.park":
-                                                hasPark = true;
-                                                break;
-                                            case "public_transport":
-                                                hasPublicTransport = true;
-                                                break;
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            logger.warn("Nessun 'features' trovato nella risposta API o 'features' non è un array.");
-                        }
-                    } catch (Exception e) {
-                        Platform.runLater(() -> {
-                            showPopup("Errore", "Errore durante l'elaborazione della risposta dell'API di Geoapify: " + e.getMessage(), ERROR_ICON);
-                            logger.error("Errore durante l'elaborazione della risposta dell'API di Geoapify: {}", e.getMessage());
-                        });
-                        return; // Esci dalla lambda in caso di errore
+    private void processGeoapifyResponse(String responseBody) {
+        logger.info("Risposta completa dall'API Geoapify: {}", responseBody);
+
+        boolean hasSchool = false;
+        boolean hasPark = false;
+        boolean hasPublicTransport = false;
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(responseBody);
+
+            if (root.has(FEATURES_GEOAPIFY) && root.get(FEATURES_GEOAPIFY).isArray()) {
+                for (JsonNode feature : root.get(FEATURES_GEOAPIFY)) {
+                    JsonNode properties = feature.get("properties");
+                    if (properties != null && properties.has(CATEGORIES_GEOAPIFY)) {
+                        hasSchool |= containsCategory(properties.get(CATEGORIES_GEOAPIFY), "education.school");
+                        hasPark |= containsCategory(properties.get(CATEGORIES_GEOAPIFY), "leisure.park");
+                        hasPublicTransport |= containsCategory(properties.get(CATEGORIES_GEOAPIFY), "public_transport");
                     }
+                }
+            } else {
+                logger.warn("Nessun 'features' trovato nella risposta API o 'features' non è un array.");
+            }
+        } catch (IOException e) {
+            Platform.runLater(() -> {
+                showPopup(POPUP_ERROR_TITLE, "Errore durante l'elaborazione della risposta dell'API di Geoapify: " + e.getMessage(), ERROR_ICON);
+                logger.error("Errore durante l'elaborazione della risposta dell'API di Geoapify: {}", e.getMessage());
+            });
+            return;
+        }
 
-                    final boolean finalHasSchool = hasSchool;
-                    final boolean finalHasPark = hasPark;
-                    final boolean finalHasPublicTransport = hasPublicTransport;
+        final boolean finalHasSchool = hasSchool;
+        final boolean finalHasPark = hasPark;
+        final boolean finalHasPublicTransport = hasPublicTransport;
 
-                    Platform.runLater(() -> {
-                        vicinoScuoleCheckBox.setSelected(finalHasSchool);
-                        vicinoParchiCheckBox.setSelected(finalHasPark);
-                        vicinoTrasportoPubblicoCheckBox.setSelected(finalHasPublicTransport);
-                    });
+        Platform.runLater(() -> {
+            vicinoScuoleCheckBox.setSelected(finalHasSchool);
+            vicinoParchiCheckBox.setSelected(finalHasPark);
+            vicinoTrasportoPubblicoCheckBox.setSelected(finalHasPublicTransport);
+        });
 
-                    logger.info("Vicino a scuole: {}, Vicino a parchi: {}, Vicino a trasporto pubblico: {}", hasSchool, hasPark, hasPublicTransport);
-                })
-                .exceptionally(e -> {
-                    Platform.runLater(() -> {
-                        showPopup("Errore", "Errore durante la chiamata all'API di Geoapify: " + e.getMessage(), ERROR_ICON);
-                        logger.error("Errore durante la chiamata all'API di Geoapify: {}", e.getMessage());
-                    });
-                    return null;
-                });
+        logger.info("Vicino a scuole: {}, Vicino a parchi: {}, Vicino a trasporto pubblico: {}", hasSchool, hasPark, hasPublicTransport);
+    }
+
+    private boolean containsCategory(JsonNode categories, String categoryToFind) {
+        if (categories == null || !categories.isArray()) {
+            return false;
+        }
+        for (JsonNode categoryNode : categories) {
+            if (categoryToFind.equals(categoryNode.asText())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Void handleGeoapifyError(Throwable e) {
+        Platform.runLater(() -> {
+            showPopup(POPUP_ERROR_TITLE, "Errore durante la chiamata all'API di Geoapify: " + e.getMessage(), ERROR_ICON);
+            logger.error("Errore durante la chiamata all'API di Geoapify: {}", e.getMessage());
+        });
+        return null;
     }
 
     @FXML
@@ -566,41 +540,35 @@ public class InserimentoInserzioneController extends AbstractController implemen
     }
 
     private void openConfermaInserzionePage() {
-        Immobile Immobile = new Immobile();
-        Immobile.setTitolo(titoloTextField.getText());
-        Immobile.setTipologia(tipologiaChoiceBox.getValue());
-        Immobile.setIndirizzo(indirizzoTextField.getText());
-        Immobile.setPrezzo(Double.parseDouble(prezzoTextField.getText()));
-        Immobile.setDescrizione(descrizioneTextArea.getText());
-        Immobile.setDimensione(Double.parseDouble(superficieTextField.getText()));
-        Immobile.setNumero_camere(camereSpinner.getValue());
-        Immobile.setNumero_bagni(bagniSpinner.getValue());
-        Immobile.setClasseEnergetica(classeEnergeticaTextField.getText());
-        Immobile.setPiano(pianoSpinner.getValue());
-        Immobile.setAscensore(ascensoreCheckBox.isSelected());
-        Immobile.setPortineria(portineriaCheckBox.isSelected());
-        Immobile.setClimatizzazione(climatizzazioneCheckBox.isSelected());
+        Immobile immobile = new Immobile();
+        immobile.setTitolo(titoloTextField.getText());
+        immobile.setTipologia(tipologiaChoiceBox.getValue());
+        immobile.setIndirizzo(indirizzoTextField.getText());
+        immobile.setPrezzo(Double.parseDouble(prezzoTextField.getText()));
+        immobile.setDescrizione(descrizioneTextArea.getText());
+        immobile.setDimensione(Double.parseDouble(superficieTextField.getText()));
+        immobile.setNumeroCamere(camereSpinner.getValue());
+        immobile.setNumeroBagni(bagniSpinner.getValue());
+        immobile.setClasseEnergetica(classeEnergeticaTextField.getText());
+        immobile.setPiano(pianoSpinner.getValue());
+        immobile.setAscensore(ascensoreCheckBox.isSelected());
+        immobile.setPortineria(portineriaCheckBox.isSelected());
+        immobile.setClimatizzazione(climatizzazioneCheckBox.isSelected());
         List<String> imageUrls = selectedImageList.stream().map(file -> file.toURI().toString()).toList();
-        Immobile.setImmaginiUrls(imageUrls);
-        Immobile.setLatitudine(latitudine);
-        Immobile.setLongitudine(longitudine);
-        Immobile.setVicinoScuole(vicinoScuoleCheckBox.isSelected());
-        Immobile.setVicinoParchi(vicinoParchiCheckBox.isSelected());
-        Immobile.setVicinoTrasportoPubblico(vicinoTrasportoPubblicoCheckBox.isSelected());
+        immobile.setImmaginiUrls(imageUrls);
+        immobile.setLatitudine(latitudine);
+        immobile.setLongitudine(longitudine);
+        immobile.setVicinoScuole(vicinoScuoleCheckBox.isSelected());
+        immobile.setVicinoParchi(vicinoParchiCheckBox.isSelected());
+        immobile.setVicinoTrasportoPubblico(vicinoTrasportoPubblicoCheckBox.isSelected());
 
         loadScene("/com/dietiestates25ui/view/conferma-inserzione-view.fxml",
                 (fxmlLoader, stage) -> {
                     ConfermaInserzioneController controller = fxmlLoader.getController();
-                    controller.setImmobile(Immobile);
+                    controller.setImmobile(immobile);
                     controller.setSelectedImageList(selectedImageList);
                     controller.setToken(token);
                     controller.setStage(stage);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");
-    }
-
-    @FXML
-    private void handleMapBackButtonAction(javafx.event.ActionEvent event) {
-        mapView.setVisible(false);
-        mapBackButton.setVisible(false);
     }
 }

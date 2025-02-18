@@ -13,8 +13,8 @@ public class Immobile {
     private double prezzo;
     private String descrizione;
     private double dimensione;
-    private int numero_camere;
-    private int numero_bagni;
+    private int numeroCamere;
+    private int numeroBagni;
     private String classeEnergetica;
     private Integer piano;
     private boolean ascensore;
@@ -78,20 +78,20 @@ public class Immobile {
         this.dimensione = dimensione;
     }
 
-    public int getNumero_camere() {
-        return numero_camere;
+    public int getNumeroCamere() {
+        return numeroCamere;
     }
 
-    public void setNumero_camere(int numero_camere) {
-        this.numero_camere = numero_camere;
+    public void setNumeroCamere(int numeroCamere) {
+        this.numeroCamere = numeroCamere;
     }
 
-    public int getNumero_bagni() {
-        return numero_bagni;
+    public int getNumeroBagni() {
+        return numeroBagni;
     }
 
-    public void setNumero_bagni(int numero_bagni) {
-        this.numero_bagni = numero_bagni;
+    public void setNumeroBagni(int numeroBagni) {
+        this.numeroBagni = numeroBagni;
     }
 
     public String getClasseEnergetica() {

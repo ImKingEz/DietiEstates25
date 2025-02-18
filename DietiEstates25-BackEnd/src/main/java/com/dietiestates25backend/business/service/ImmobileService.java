@@ -13,102 +13,106 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 
 @Service
 public class ImmobileService {
 
     private static final Logger logger = LoggerFactory.getLogger(ImmobileService.class);
 
-    @Autowired
-    private ImmobileRepository immobileRepository;
+
+    private final ImmobileRepository immobileRepository;
+
+
+    private final FotoImmobileRepository fotoImmobileRepository;
 
     @Autowired
-    private FotoImmobileRepository fotoImmobileRepository;
+    public ImmobileService(ImmobileRepository immobileRepository, FotoImmobileRepository fotoImmobileRepository) {
+        this.immobileRepository = immobileRepository;
+        this.fotoImmobileRepository = fotoImmobileRepository;
+    }
 
     @Transactional
-    public ImmobileDTO saveImmobile(RegisterImmobileDTO registerImmobileDTO) {
+    public ImmobileDTO saveImmobile(RegisterImmobileDTO registerImmobileDTO) throws IOException {
         logger.debug("saveImmobile() called with registerImmobileDTO: {}", registerImmobileDTO);
 
         try {
-            logger.debug("Creating Immobile entity...");
-            Immobile immobile = new Immobile(
-                    registerImmobileDTO.getTitolo(),
-                    registerImmobileDTO.getTipologia(),
-                    registerImmobileDTO.getIndirizzo(),
-                    registerImmobileDTO.getPrezzo(),
-                    registerImmobileDTO.getDescrizione(),
-                    registerImmobileDTO.getDimensione(),
-                    registerImmobileDTO.getNumero_camere(),
-                    registerImmobileDTO.getNumero_bagni(),
-                    registerImmobileDTO.getClasseEnergetica(),
-                    registerImmobileDTO.getPiano(),
-                    registerImmobileDTO.isAscensore(),
-                    registerImmobileDTO.isPortineria(),
-                    registerImmobileDTO.isClimatizzazione(),
-                    registerImmobileDTO.getLatitudine(),
-                    registerImmobileDTO.getLongitudine(),
-                    registerImmobileDTO.isVicinoScuole(),
-                    registerImmobileDTO.isVicinoParchi(),
-                    registerImmobileDTO.isVicinoTrasportoPubblico(),
-                    1L
-            );
-            logger.debug("Immobile entity created: {}", immobile);
+            Immobile immobile = setImmobile(registerImmobileDTO);
 
-            logger.debug("Saving Immobile entity...");
             Immobile savedImmobile = immobileRepository.save(immobile);
-            logger.debug("Immobile entity saved: {}", savedImmobile);
 
             if (registerImmobileDTO.getImmaginiUrls() != null) {
-                logger.debug("Processing images...");
-                int numero_immagine = 0;
-                for (MultipartFile file : registerImmobileDTO.getImmaginiUrls()) {
-                    logger.debug("Processing image: {}", file.getOriginalFilename());
-                    String logoPath = saveLogo(file, savedImmobile.getId(), numero_immagine);
-                    logger.debug("Logo path: {}", logoPath);
-
-                    FotoImmobile fotoImmobile = new FotoImmobile();
-                    fotoImmobile.setUrl(logoPath);
-                    fotoImmobile.setIdImmobile(savedImmobile.getId());
-                    fotoImmobileRepository.save(fotoImmobile);
-                    logger.debug("FotoImmobile saved: {}", fotoImmobile);
-                    numero_immagine++;
-                }
+                setAndSaveFotoImmobile(registerImmobileDTO, savedImmobile);
             } else {
                 logger.warn("No images received for immobile ID: {}", savedImmobile.getId());
             }
 
-            ImmobileDTO immobileDTO = convertToDTO(savedImmobile);
-            logger.debug("ImmobileDTO converted: {}", immobileDTO);
-            return immobileDTO;
+            return convertToDTO(savedImmobile);
 
         } catch (Exception e) {
-            logger.error("Errore durante il salvataggio dell'immobile: ", e);
-            throw new RuntimeException("Errore durante il salvataggio dell'immobile: " + e.getMessage(), e);
+            throw new IOException("Errore durante il salvataggio dell'immobile: " + e.getMessage(), e);
         } finally {
             logger.debug("saveImmobile() completed");
         }
     }
 
-    private String saveLogo(MultipartFile logo, Long immobileId, int numero_immagine) throws IOException {
-        if (logo == null || logo.isEmpty()) {
-            logger.warn("Logo is null or empty, returning empty string");
+    private void setAndSaveFotoImmobile(RegisterImmobileDTO registerImmobileDTO, Immobile savedImmobile) throws IOException {
+        int numeroImmagine = 0;
+        for (MultipartFile file : registerImmobileDTO.getImmaginiUrls()) {
+            logger.debug("Processing image: {}", file.getOriginalFilename());
+            String imagePath = saveImage(file, savedImmobile.getId(), numeroImmagine);
+            logger.debug("image path: {}", imagePath);
+
+            FotoImmobile fotoImmobile = new FotoImmobile();
+            fotoImmobile.setUrl(imagePath);
+            fotoImmobile.setIdImmobile(savedImmobile.getId());
+            fotoImmobileRepository.save(fotoImmobile);
+            logger.debug("FotoImmobile saved: {}", fotoImmobile);
+            numeroImmagine++;
+        }
+    }
+
+    private static Immobile setImmobile(RegisterImmobileDTO registerImmobileDTO) {
+        return new Immobile(
+                registerImmobileDTO.getTitolo(),
+                registerImmobileDTO.getTipologia(),
+                registerImmobileDTO.getIndirizzo(),
+                registerImmobileDTO.getPrezzo(),
+                registerImmobileDTO.getDescrizione(),
+                registerImmobileDTO.getDimensione(),
+                registerImmobileDTO.getNumero_camere(),
+                registerImmobileDTO.getNumero_bagni(),
+                registerImmobileDTO.getClasseEnergetica(),
+                registerImmobileDTO.getPiano(),
+                registerImmobileDTO.isAscensore(),
+                registerImmobileDTO.isPortineria(),
+                registerImmobileDTO.isClimatizzazione(),
+                registerImmobileDTO.getLatitudine(),
+                registerImmobileDTO.getLongitudine(),
+                registerImmobileDTO.isVicinoScuole(),
+                registerImmobileDTO.isVicinoParchi(),
+                registerImmobileDTO.isVicinoTrasportoPubblico(),
+                1L
+        );
+    }
+
+    private String saveImage(MultipartFile image, Long immobileId, int numeroImmagine) throws IOException {
+        if (image == null || image.isEmpty()) {
+            logger.warn("image is null or empty, returning empty string");
             return "";
         }
 
         String fileExtension = "";
-        String originalFileName = StringUtils.cleanPath(logo.getOriginalFilename());
+        String originalFileName = StringUtils.cleanPath(image.getOriginalFilename());
         int dotIndex = originalFileName.lastIndexOf('.');
         if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
             fileExtension = originalFileName.substring(dotIndex);
         }
-        String fileName = "image_" + numero_immagine + "_" + immobileId + fileExtension;
+        String fileName = "image_" + numeroImmagine + "_" + immobileId + fileExtension;
         Path uploadDir = Paths.get("uploads/foto_immobili");
 
         try {
@@ -117,25 +121,24 @@ public class ImmobileService {
                 logger.info("Created directory: {}", uploadDir.toAbsolutePath());
             }
             Path targetLocation = uploadDir.resolve(fileName);
-            Files.copy(logo.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            logger.info("Saved logo to: {}", targetLocation.toAbsolutePath());
+            Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            logger.info("Saved image to: {}", targetLocation.toAbsolutePath());
             return "/uploads/foto_immobili/" + fileName;
         } catch (IOException e) {
-            logger.error("Could not save logo: ", e);
-            throw new IOException("Could not save logo: " + e.getMessage(), e); // Lancia l'eccezione
+            throw new IOException("Could not save image: " + e.getMessage(), e); // Lancia l'eccezione
         }
     }
 
     private ImmobileDTO convertToDTO(Immobile savedImmobile) {
-        ImmobileDTO immobileDTO = new ImmobileDTO(
+        return new ImmobileDTO(
                 savedImmobile.getTitolo(),
                 savedImmobile.getTipologia(),
                 savedImmobile.getIndirizzo(),
                 savedImmobile.getPrezzo(),
                 savedImmobile.getDescrizione(),
                 savedImmobile.getDimensione(),
-                savedImmobile.getNumero_camere(),
-                savedImmobile.getNumero_bagni(),
+                savedImmobile.getNumeroCamere(),
+                savedImmobile.getNumeroBagni(),
                 savedImmobile.getClasseEnergetica(),
                 savedImmobile.getPiano(),
                 savedImmobile.isAscensore(),
@@ -147,6 +150,5 @@ public class ImmobileService {
                 savedImmobile.isVicinoParchi(),
                 savedImmobile.isVicinoTrasportoPubblico()
         );
-        return immobileDTO;
     }
 }

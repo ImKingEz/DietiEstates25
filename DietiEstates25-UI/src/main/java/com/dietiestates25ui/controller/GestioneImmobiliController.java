@@ -32,7 +32,7 @@ public class GestioneImmobiliController extends AbstractController implements In
     @FXML
     private Button tornaLoginButton;
 
-    private String token;  // Variabile per memorizzare il token
+    private String token;
 
     public void setToken(String token) {
         this.token = token;
