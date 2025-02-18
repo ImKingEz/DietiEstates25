@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterDTO {
+public class RegisterUtenteDTO {
     @NotBlank(message = "Nome non può essere vuoto")
     private String nome;
     @NotBlank(message = "Cognome non può essere vuoto")

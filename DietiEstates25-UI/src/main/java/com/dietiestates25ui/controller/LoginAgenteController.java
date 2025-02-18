@@ -75,6 +75,7 @@ public class LoginAgenteController extends AbstractController implements Initial
     }
 
     private void loginAgente() {
+        Platform.runLater(logo::requestFocus);
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
         AgenteImmobiliare agente = new AgenteImmobiliare(email, password);
@@ -83,6 +84,9 @@ public class LoginAgenteController extends AbstractController implements Initial
             if (token != null) {
                 showPopup("Login effettuato con successo", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
+
+                tornaIndietroButton.setDisable(true);
+                loginButton.setDisable(true);
 
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
                 delay.setOnFinished(event -> {

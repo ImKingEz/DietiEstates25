@@ -1,6 +1,7 @@
 package com.dietiestates25backend.business.service;
 
 import com.dietiestates25.dto.UtenteDTO;
+import com.dietiestates25backend.api.dto.RegisterUtenteDTO;
 import com.dietiestates25backend.business.entity.Utente;
 import com.dietiestates25backend.data.repository.AgenteRepository;
 import com.dietiestates25backend.data.repository.AmministratoreRepository;
@@ -43,29 +44,36 @@ public class AuthService {
     }
 
     @Transactional
-    public UtenteDTO registraUtente(Utente user) {
-        logger.debug("Starting registerUtente with user: {}", user.getEmail());
-        String emailLowerCase = user.getEmail().toLowerCase();
-        user.setEmail(emailLowerCase);
-        if (userRepository.existsByEmail(user.getEmail())) {
-            logger.error("Email already registered in utente: {}", user.getEmail());
+    public UtenteDTO registraUtente(RegisterUtenteDTO userDTO) {
+        logger.debug("Starting registerUtente with user: {}", userDTO.getEmail());
+        String emailLowerCase = userDTO.getEmail().toLowerCase();
+        userDTO.setEmail(emailLowerCase);
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            logger.error("Email already registered in utente: {}", userDTO.getEmail());
             throw new DataIntegrityViolationException("Email già in uso nella tabella degli utenti");
         }
-        if (agenteRepository.existsByEmail(user.getEmail())) {
-            logger.error("Email already registered in agente: {}", user.getEmail());
+        if (agenteRepository.existsByEmail(userDTO.getEmail())) {
+            logger.error("Email already registered in agente: {}", userDTO.getEmail());
             throw new DataIntegrityViolationException("Email già in uso nella tabella degli agenti");
         }
-        if (amministratoreRepository.existsByEmail(user.getEmail())) {
-            logger.error("Email already registered in amministratore: {}", user.getEmail());
+        if (amministratoreRepository.existsByEmail(userDTO.getEmail())) {
+            logger.error("Email already registered in amministratore: {}", userDTO.getEmail());
             throw new DataIntegrityViolationException("Email già in uso nella tabella degli amministratori");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+        Utente user;
+        if (userDTO.getCitta() == null) {
+            user = new Utente(userDTO.getNome(), userDTO.getCognome(), userDTO.getEmail(), userDTO.getPassword());
+        } else {
+            user = new Utente(userDTO.getNome(), userDTO.getCognome(), userDTO.getCitta(), userDTO.getEmail(), userDTO.getPassword());
+        }
+
         Utente savedUser = userRepository.save(user);
-        logger.debug("User saved: {}", savedUser.getId());
-        UtenteDTO utenteDTO = new UtenteDTO(savedUser.getNome(), savedUser.getCognome(), savedUser.getCitta(), savedUser.getEmail());
-        logger.debug("Ending registerUtente with user: {}", utenteDTO.getEmail());
-        return utenteDTO;
+
+        logger.debug("Ending registerUtente with user: {}", userDTO.getEmail());
+        return new UtenteDTO(savedUser.getNome(), savedUser.getCognome(), savedUser.getCitta(), savedUser.getEmail());
     }
 
     @Transactional(readOnly = true)

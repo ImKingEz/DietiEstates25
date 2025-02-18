@@ -142,6 +142,9 @@ public class RegisterController extends AbstractController implements Initializa
             logger.info("Registrazione effettuata con successo.");
             registratiButton.setDisable(true);
             indietroButton.setDisable(true);
+            googleButton.setDisable(true);
+            facebookButton.setDisable(true);
+            githubButton.setDisable(true);
             showPopup("Registrazione completata!", "Reindirizzamento al login...", SUCCESS_ICON);
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
             delay.setOnFinished(event -> openLoginPage());

@@ -28,19 +28,11 @@ public class AuthController extends BaseController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UtenteDTO>> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
+    public ResponseEntity<ApiResponse<UtenteDTO>> registerUser(@RequestBody @Valid RegisterUtenteDTO registerDTO) {
         String email = registerDTO.getEmail();
         logger.debug("registerUser() called with registerDTO: {}", email);
-        Utente utente = new Utente(
-                registerDTO.getNome(),
-                registerDTO.getCognome(),
-                registerDTO.getCitta(),
-                email,
-                registerDTO.getPassword()
-        );
-
         try {
-            UtenteDTO utenteDTO = authService.registraUtente(utente);
+            UtenteDTO utenteDTO = authService.registraUtente(registerDTO);
             logger.debug("registerUser() successful with user: {}", utenteDTO.getEmail());
             return successResponse(utenteDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {

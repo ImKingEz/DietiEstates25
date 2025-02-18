@@ -121,6 +121,7 @@ public class LoginController extends AbstractController implements Initializable
     }
 
     private void loginUtente() {
+        Platform.runLater(logo::requestFocus);
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
         Utente user = new Utente(email, password);
@@ -129,6 +130,12 @@ public class LoginController extends AbstractController implements Initializable
             if (token != null) {
                 showPopup("Login effettuato con successo", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
+                googleButton.setDisable(true);
+                facebookButton.setDisable(true);
+                githubButton.setDisable(true);
+                registratiButton.setDisable(true);
+                loginButton.setDisable(true);
+                agenziaImmobiliareButton.setDisable(true);
 
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
                 delay.setOnFinished(event -> openDashboard(token, loginButton));

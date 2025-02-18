@@ -81,6 +81,7 @@ public class AccountCompletionController extends AbstractController implements I
 
         try {
             utenteService.updateUtente(utente, token);
+            salvaButton.setDisable(true);
             handleUtenteDetails(token);
         } catch (Exception e) {
             logAndShowUpdateError(e);
