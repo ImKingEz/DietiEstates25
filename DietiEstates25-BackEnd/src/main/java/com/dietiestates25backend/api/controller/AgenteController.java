@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/agenti")
 public class AgenteController extends BaseController {
 
+    public static final String ENTITY_TYPE = "Agente";
     private final AgenteService agenteService;
 
     @Autowired
@@ -46,7 +47,7 @@ public class AgenteController extends BaseController {
             return new ResponseEntity<>(new ApiResponse<>(false, null, "Credenziali non valide"), HttpStatus.UNAUTHORIZED);
         } catch (Exception ex){
             logger.error("loginUser() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Login fallito", "Agente");
+            return handleGenericException(ex, "Login fallito", ENTITY_TYPE);
         }
     }
 
@@ -61,10 +62,10 @@ public class AgenteController extends BaseController {
             return successResponse(agenteDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {
             logger.error("registerAgente() failed, email already registered: {}", email);
-            return handleDataIntegrityViolation(ex, "Agente");
+            return handleDataIntegrityViolation(ex, ENTITY_TYPE);
         } catch (Exception ex) {
             logger.error("registerAgente() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Errore durante la registrazione", "Agente");
+            return handleGenericException(ex, "Errore durante la registrazione", ENTITY_TYPE);
         }
     }
 
@@ -79,10 +80,10 @@ public class AgenteController extends BaseController {
             return successResponse(agenteDTO);
         } catch (DataIntegrityViolationException ex) {
             logger.error("updateAgente() failed, email already registered: {}", email);
-            return handleDataIntegrityViolation(ex, "Agente");
+            return handleDataIntegrityViolation(ex, ENTITY_TYPE);
         } catch (Exception ex) {
             logger.error("updateAgente() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Errore durante la registrazione", "Agente");
+            return handleGenericException(ex, "Errore durante la registrazione", ENTITY_TYPE);
         }
     }
 
@@ -97,7 +98,7 @@ public class AgenteController extends BaseController {
             return successResponse(agenteDTO);
         } catch (Exception ex) {
             logger.error("getUserDetails() failed with error: {}", ex.getMessage());
-            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'agente", "Agente");
+            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'agente", ENTITY_TYPE);
         }
     }
 }

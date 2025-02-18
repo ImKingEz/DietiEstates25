@@ -45,6 +45,8 @@ public class AuthService {
     @Transactional
     public UtenteDTO registraUtente(Utente user) {
         logger.debug("Starting registerUtente with user: {}", user.getEmail());
+        String emailLowerCase = user.getEmail().toLowerCase();
+        user.setEmail(emailLowerCase);
         if (userRepository.existsByEmail(user.getEmail())) {
             logger.error("Email already registered in utente: {}", user.getEmail());
             throw new DataIntegrityViolationException("Email già in uso nella tabella degli utenti");
@@ -69,7 +71,8 @@ public class AuthService {
     @Transactional(readOnly = true)
     public String loginUtente(String email, String password, String csrfToken) throws BadCredentialsException {
         logger.debug("Starting loginUtente with email: {}", email);
-        Utente user = userRepository.findByEmail(email).orElseThrow(() -> new BadCredentialsException("User not found"));
+        String emailLowerCase = email.toLowerCase();
+        Utente user = userRepository.findByEmail(emailLowerCase).orElseThrow(() -> new BadCredentialsException("User not found"));
         logger.debug("User retrieved from database: {}", user.getEmail());
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -90,8 +93,8 @@ public class AuthService {
     @Transactional
     public UtenteDTO updateUtente(UpdateUtenteDTO updateUtenteDTO, String email) throws EntityNotFoundException {
         logger.debug("Starting updateUtente with email: {}", email);
-        Utente user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        String emailLowerCase = email.toLowerCase();
+        Utente user = userRepository.findByEmail(emailLowerCase).orElseThrow(() -> new EntityNotFoundException("User not found"));
         logger.debug("User retrieved from database: {}", user.getEmail());
         user.setNome(updateUtenteDTO.getNome());
         user.setCognome(updateUtenteDTO.getCognome());
@@ -104,7 +107,8 @@ public class AuthService {
     }
 
     public UtenteDTO getUtenteDetails(String email){
-        Utente utente = userRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Utente not found with email: " + email));
+        String emailLowerCase = email.toLowerCase();
+        Utente utente = userRepository.findByEmail(emailLowerCase).orElseThrow(()->new EntityNotFoundException("Utente not found with email: " + email));
         return new UtenteDTO(utente.getNome(), utente.getCognome(), utente.getCitta(), utente.getEmail());
     }
 

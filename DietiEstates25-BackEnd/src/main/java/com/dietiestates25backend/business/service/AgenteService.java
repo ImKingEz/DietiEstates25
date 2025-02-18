@@ -43,7 +43,8 @@ public class AgenteService {
     @Transactional(readOnly = true)
     public String loginAgente(String email, String password, String csrfToken) throws BadCredentialsException {
         logger.debug("Starting loginAgente with email: {}", email);
-        AgenteImmobiliare agente = agenteRepository.findByEmail(email).orElseThrow(() -> new BadCredentialsException("Agente not found"));
+        String emailLowerCase = email.toLowerCase();
+        AgenteImmobiliare agente = agenteRepository.findByEmail(emailLowerCase).orElseThrow(() -> new BadCredentialsException("Agente not found"));
         logger.debug("Agente retrieved from database: {}", agente.getEmail());
 
         if (!passwordEncoder.matches(password, agente.getPassword())) {
@@ -64,6 +65,8 @@ public class AgenteService {
     @Transactional
     public AgenteDTO registraAgente(RegisterAgenteDTO registerAgenteDTO) {
         logger.debug("Starting registraAgente with email: {}", registerAgenteDTO.getEmail());
+        String emailLowerCase = registerAgenteDTO.getEmail().toLowerCase();
+        registerAgenteDTO.setEmail(emailLowerCase);
         if (agenteRepository.existsByEmail(registerAgenteDTO.getEmail())) {
             logger.error("Email already registered in agente: {}", registerAgenteDTO.getEmail());
             throw new DataIntegrityViolationException("Email già in uso nella tabella degli agenti");
@@ -87,7 +90,8 @@ public class AgenteService {
 
     public AgenteDTO updateAgente(RegisterAgenteDTO registerAgenteDTO) {
         logger.debug("Starting updateAgente with email: {}", registerAgenteDTO.getEmail());
-
+        String emailLowerCase = registerAgenteDTO.getEmail().toLowerCase();
+        registerAgenteDTO.setEmail(emailLowerCase);
         if (agenteRepository.existsByEmail(registerAgenteDTO.getEmail())) {
             logger.error("Email già registrata: {}", registerAgenteDTO.getEmail());
             throw new DataIntegrityViolationException("Email già in uso");
@@ -103,7 +107,8 @@ public class AgenteService {
 
     @Transactional(readOnly = true)
     public AgenteDTO getAgenteDetails(String email){
-        AgenteImmobiliare agente = agenteRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Agente not found with email: " + email));
+        String emailLowerCase = email.toLowerCase();
+        AgenteImmobiliare agente = agenteRepository.findByEmail(emailLowerCase).orElseThrow(()->new EntityNotFoundException("Agente not found with email: " + email));
         return new AgenteDTO(agente.getIdAgenzia(), agente.getNome(), agente.getCognome(), agente.getDataDiNascita(), agente.getSesso(), agente.getEmail());
     }
 }

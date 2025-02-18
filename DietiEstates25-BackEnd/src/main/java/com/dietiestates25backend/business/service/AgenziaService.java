@@ -48,6 +48,8 @@ public class AgenziaService {
     @Transactional
     public AgenziaDTO registraAgenzia(RegisterAgenziaDTO registerAgenziaDTO) {
         logger.debug("Starting registraAgenzia with email: {}", registerAgenziaDTO.getEmail());
+        String emailLowerCase = registerAgenziaDTO.getEmail().toLowerCase();
+        registerAgenziaDTO.setEmail(emailLowerCase);
 
         if (agenziaRepository.existsByEmail(registerAgenziaDTO.getEmail())) {
             logger.error("Email già registrata nella tabella agenzie: {}", registerAgenziaDTO.getEmail());

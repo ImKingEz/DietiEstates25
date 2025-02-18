@@ -26,7 +26,7 @@ public class AgenziaController extends BaseController {
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<AgenziaDTO>> registerAgenzia(
-            @Valid @ModelAttribute RegisterAgenziaDTO registerAgenziaDTO) {  // Modified parameter
+            @Valid @ModelAttribute RegisterAgenziaDTO registerAgenziaDTO) {
 
         try {
             AgenziaDTO agenziaDTO = agenziaService.registraAgenzia(registerAgenziaDTO);

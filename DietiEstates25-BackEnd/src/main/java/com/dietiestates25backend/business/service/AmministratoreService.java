@@ -49,6 +49,8 @@ public class AmministratoreService {
     @Transactional
     public AmministratoreDTO registraAmministratore(RegisterAmministratoreDTO registerDTO) {
         logger.debug("Starting registraAmministratore with email: {}", registerDTO.getEmail());
+        String emailLowerCase = registerDTO.getEmail().toLowerCase();
+        registerDTO.setEmail(emailLowerCase);
         if (amministratoreRepository.existsByEmail(registerDTO.getEmail())) {
             logger.error("Admin email already registered in amministratore: {}", registerDTO.getEmail());
             throw new DataIntegrityViolationException("Email già in uso nella tabella degli amministratori");
@@ -77,7 +79,8 @@ public class AmministratoreService {
     @Transactional(readOnly = true)
     public String loginAmministratore(String email, String password, String csrfToken) throws BadCredentialsException {
         logger.debug("Starting loginAmministratore with email: {}", email);
-        Amministratore amministratore = amministratoreRepository.findByEmail(email)
+        String emailLowerCase = email.toLowerCase();
+        Amministratore amministratore = amministratoreRepository.findByEmail(emailLowerCase)
                 .orElseThrow(() -> new BadCredentialsException("Admin not found"));
         logger.debug("Admin retrieved from database: {}", amministratore.getEmail());
 
@@ -98,7 +101,8 @@ public class AmministratoreService {
 
     @Transactional(readOnly = true)
     public AmministratoreDTO getAmministratoreDetails(String email){
-        Amministratore amministratore = amministratoreRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Admin not found with email: " + email));
+        String emailLowerCase = email.toLowerCase();
+        Amministratore amministratore = amministratoreRepository.findByEmail(emailLowerCase).orElseThrow(()->new EntityNotFoundException("Admin not found with email: " + email));
         return new AmministratoreDTO(amministratore.getEmail(), amministratore.getIdAgenzia());
     }
 }
