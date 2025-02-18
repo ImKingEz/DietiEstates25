@@ -64,6 +64,13 @@
     -fx-min-height: 25;
 }
 
+.searchTextField {
+    -fx-max-width: 200;
+    -fx-pref-width: 200;
+    -fx-max-height: 30;
+    -fx-min-height: 30;
+}
+
 .HBoxField {
     -fx-spacing: 5;
     -fx-max-width: 300;
@@ -106,14 +113,26 @@ DatePicker > .arrow-button {
 
 /* -- SplitMenuButton -- */
 
-SplitMenuButton > .arrow-button > .arrow {
+MenuButton {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.menu-button {
+    -fx-text-fill: #999999;
+}
+
+MenuButton > .arrow-button > .arrow {
     -fx-opacity: 0;
 }
 
-SplitMenuButton > .arrow-button {
+MenuButton > .arrow-button {
     -fx-background-color: #6c93c4;
     -fx-background-image: url("../images/splitButtonArrowIcon.png");
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -fx-background-size: 20px 20px;
+    -fx-background-size: 24px 24px;
+    -fx-pref-width: 24;
 }

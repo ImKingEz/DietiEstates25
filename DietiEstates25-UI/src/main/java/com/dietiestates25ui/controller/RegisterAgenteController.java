@@ -44,7 +44,7 @@ public class RegisterAgenteController extends AbstractController implements Init
     private DatePicker dataDatePicker;
 
     @FXML
-    private SplitMenuButton sessoSplitMenuButton;
+    private MenuButton sessoMenuButton;
 
     @FXML
     private MenuItem maschioMenuItem;
@@ -85,7 +85,8 @@ public class RegisterAgenteController extends AbstractController implements Init
     }
 
     private void impostaSesso(String sesso) {
-        sessoSplitMenuButton.setText(sesso);
+        sessoMenuButton.setText(sesso);
+        sessoMenuButton.setStyle("-fx-text-fill: black;");
     }
 
     private void openAreaAmministrativaPage() {
@@ -116,7 +117,7 @@ public class RegisterAgenteController extends AbstractController implements Init
         nomeTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
         cognomeTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
         dataDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
-        sessoSplitMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
+        sessoMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
         emailTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
         passwordPasswordField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
 
@@ -128,7 +129,7 @@ public class RegisterAgenteController extends AbstractController implements Init
         String nome = nomeTextField.getText().trim();
         String cognome = cognomeTextField.getText().trim();
         LocalDate dataNascita = dataDatePicker.getValue();
-        String sesso = sessoSplitMenuButton.getText();
+        String sesso = sessoMenuButton.getText();
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
 
@@ -155,7 +156,7 @@ public class RegisterAgenteController extends AbstractController implements Init
         String nome = nomeTextField.getText().trim();
         String cognome = cognomeTextField.getText().trim();
         LocalDate dataNascita = dataDatePicker.getValue();
-        String sesso = sessoSplitMenuButton.getText();
+        String sesso = sessoMenuButton.getText();
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
 

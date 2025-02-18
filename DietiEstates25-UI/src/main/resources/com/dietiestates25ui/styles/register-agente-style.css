@@ -4,3 +4,7 @@
 .VBoxField {
     -fx-spacing: 15;
 }
+
+MenuButton {
+    -fx-pref-width: 285;
+}
