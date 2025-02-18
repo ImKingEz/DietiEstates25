@@ -62,7 +62,7 @@ public class UtenteService extends ApiService {
                 throw new ResourceNotFoundException("Utente non trovato.");
             case 409:
                 logEmailAlreadyInUse(response);
-                throw new AuthenticationException("Email giÃ  in uso. Inserisci un'altra email.");
+                throw new AuthenticationException("Email già in uso. Inserisci un'altra email.");
             default:
                 if (statusCode >= 400 && statusCode < 500) {
                     logClientError(statusCode, response.body());

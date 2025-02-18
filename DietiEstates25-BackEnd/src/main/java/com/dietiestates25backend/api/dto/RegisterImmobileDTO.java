@@ -18,8 +18,8 @@ public class RegisterImmobileDTO {
     private double prezzo;
     private String descrizione;
     private double dimensione;
-    private int numero_camere;
-    private int numero_bagni;
+    private int numeroCamere;
+    private int numeroBagni;
     private String classeEnergetica;
     private Integer piano;
     private boolean ascensore;

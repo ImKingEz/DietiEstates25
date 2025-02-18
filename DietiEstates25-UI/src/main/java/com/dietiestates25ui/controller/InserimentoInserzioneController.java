@@ -42,7 +42,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
     @FXML
     private TextField titoloTextField;
     @FXML
-    private ChoiceBox<String> tipologiaChoiceBox;
+    private MenuButton tipologiaMenuButton;
+    @FXML
+    private MenuItem venditaMenuItem;
+    @FXML
+    private MenuItem affittoMenuItem;
     @FXML
     private TextField indirizzoTextField;
     @FXML
@@ -103,7 +107,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         
         mapBackButton.setOnAction(event -> hideMapView());
 
-        setupChoiceBox();
+        setupMenuButton();
         setupSpinners();
         
         selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
@@ -115,12 +119,18 @@ public class InserimentoInserzioneController extends AbstractController implemen
         createAndPlaceBackButton();
     }
 
-    public void setTitoloTextField(String titolo) {
-        this.titoloTextField.setText(titolo);
+    private void setupMenuButton() {
+        venditaMenuItem.setOnAction(event -> impostaTipologia("Vendita"));
+        affittoMenuItem.setOnAction(event -> impostaTipologia("Affitto"));
     }
 
-    public void setTipologiaChoiceBox(String tipologia) {
-        this.tipologiaChoiceBox.setValue(tipologia);
+    private void impostaTipologia(String tipo) {
+        tipologiaMenuButton.setText(tipo);
+        tipologiaMenuButton.setStyle("-fx-text-fill: black;");
+    }
+
+    public void setTitoloTextField(String titolo) {
+        this.titoloTextField.setText(titolo);
     }
 
     public void setIndirizzoTextField(String indirizzo) {
@@ -153,6 +163,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     public void setPianoSpinner(int piano) {
         this.pianoSpinner.getValueFactory().setValue(piano);
+    }
+
+    public void setTipologiaMenuButton(String tipologia) {
+        this.tipologiaMenuButton.setText(tipologia);
     }
 
     public void setAscensoreCheckBox(boolean ascensore) {
@@ -303,11 +317,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         }
     }
 
-    private void setupChoiceBox() {
-        tipologiaChoiceBox.setItems(FXCollections.observableArrayList("Affitto", "Vendita"));
-        tipologiaChoiceBox.setValue("Affitto");
-    }
-
     private void setupSpinners() {
         camereSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
         bagniSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 1));
@@ -371,7 +380,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         }
     }
 
-
     private void openGestioneImmobiliPage() {
         loadScene("/com/dietiestates25ui/view/gestione-immobili-view.fxml",
                 (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/gestione-immobili-style.css");
@@ -385,7 +393,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         classeEnergeticaTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         descrizioneTextArea.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
 
-        tipologiaChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        tipologiaMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         camereSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         bagniSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         pianoSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
@@ -402,7 +410,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         String superficie = superficieTextField.getText().trim();
         String classeEnergetica = classeEnergeticaTextField.getText().trim();
         String descrizione = descrizioneTextArea.getText().trim();
-        String tipologia = tipologiaChoiceBox.getValue();
+        String tipologia = tipologiaMenuButton.getText();
 
         boolean isPrezzoValid = false;
         try {
@@ -420,12 +428,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
             // Superficie non valida
         }
 
-        boolean requiredFieldsFilled = !titolo.isEmpty() && !indirizzo.isEmpty() && !descrizione.isEmpty() && isPrezzoValid && isSuperficieValid && !classeEnergetica.isEmpty() && (!selectedImageList.isEmpty()) && tipologia != null;
+        boolean requiredFieldsFilled = !titolo.isEmpty() && !indirizzo.isEmpty() && !descrizione.isEmpty() && isPrezzoValid && isSuperficieValid &&
+                !classeEnergetica.isEmpty() && (!selectedImageList.isEmpty()) && (tipologia.equals("Vendita") || tipologia.equals("Affitto"));
         boolean isMaxImagesSelected = selectedImageList.size() <= 5;
 
         avantiButton.setDisable(!requiredFieldsFilled || !isMaxImagesSelected);
-
-        logger.info("Form valid: {}", !avantiButton.isDisable());
     }
 
     private void getNearbyPlaces(String address) {
@@ -542,7 +549,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private void openConfermaInserzionePage() {
         Immobile immobile = new Immobile();
         immobile.setTitolo(titoloTextField.getText());
-        immobile.setTipologia(tipologiaChoiceBox.getValue());
+        immobile.setTipologia(tipologiaMenuButton.getText());
         immobile.setIndirizzo(indirizzoTextField.getText());
         immobile.setPrezzo(Double.parseDouble(prezzoTextField.getText()));
         immobile.setDescrizione(descrizioneTextArea.getText());

@@ -179,7 +179,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
                 (fxmlLoader, stage) -> {
                     InserimentoInserzioneController controller = fxmlLoader.getController();
                     controller.setTitoloTextField(immobile.getTitolo());
-                    controller.setTipologiaChoiceBox(immobile.getTipologia());
+                    controller.setTipologiaMenuButton(immobile.getTipologia());
                     controller.setIndirizzoTextField(immobile.getIndirizzo());
                     controller.setPrezzoTextField(String.valueOf(immobile.getPrezzo()));
                     controller.setDescrizioneTextArea(immobile.getDescrizione());
@@ -209,8 +209,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
     private void salvaImmobile() {
         try {
             immobileService.salvaImmobile(immobile, token, selectedImageList);
-            showPopup("Successo", "immobile salvato correttamente!", SUCCESS_ICON);
-            logger.info("immobile salvato correttamente!");
+            showPopup("immobile salvato correttamente!", "Reindirizzamento alla gestione immobili", SUCCESS_ICON);
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
             delay.setOnFinished(event -> openGestioneImmobiliPage());
             delay.play();
