@@ -19,15 +19,52 @@
     -fx-background-color: white;
 }
 
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
 .filterGroupVBox {
     -fx-spacing: 5;
-    -fx-padding: 0 10 0 10;
-    -fx-pref-height: 60;
-    -fx-border-width: 0.5;
+    -fx-padding: 5 10 5 10;
+    -fx-border-width: 1;
     -fx-border-radius: 5;
-    -fx-border-color: black;
+    -fx-border-color: #ccc;
 }
 
 .filterGroupHBox {
     -fx-spacing: 10;
+}
+
+.arrowButton {
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-max-width: 30px;
+    -fx-max-height: 30px;
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+}
+
+.arrowButton:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+.arrowButton > .graphic {
+    -fx-padding: 0;
+}
+
+.HBoxCheckBoxFilter {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-padding: 4 5 4 5;
+    -fx-spacing: 8;
 }

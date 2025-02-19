@@ -31,8 +31,8 @@ public class DashboardController extends AbstractController implements Initializ
     @FXML
     private Button scrollRightButton;
 
-    private final double scrollAmount = 200.0; // Aumenta la quantità di scorrimento
-    private final Duration scrollDuration = Duration.millis(250); // Durata della transizione
+    private final double scrollAmount = 600.0;
+    private final Duration scrollDuration = Duration.millis(500);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -48,13 +48,12 @@ public class DashboardController extends AbstractController implements Initializ
         double currentX = filterHBox.getTranslateX();
         double targetX = currentX + deltaX;
 
-        // Limita lo scorrimento per non mostrare aree vuote
         double minX = filterScrollPane.getWidth() - filterHBox.getWidth();
         targetX = Math.max(minX, Math.min(0, targetX));
 
         TranslateTransition tt = new TranslateTransition(scrollDuration, filterHBox);
         tt.setToX(targetX);
-        tt.setInterpolator(Interpolator.EASE_BOTH); // Effetto di accelerazione/decelerazione
+        tt.setInterpolator(Interpolator.EASE_BOTH);
         tt.play();
     }
 

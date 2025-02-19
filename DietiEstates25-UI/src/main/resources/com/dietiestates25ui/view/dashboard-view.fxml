@@ -3,6 +3,7 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
@@ -73,11 +74,27 @@
                 </HBox.margin>
             </Button>
         </HBox>
-        <AnchorPane GridPane.columnSpan="3" GridPane.rowIndex="1">
-            <children>
-                <ScrollPane fx:id="filterScrollPane" fitToHeight="true" fitToWidth="false" hbarPolicy="NEVER" pannable="false" prefHeight="90.0" prefWidth="1200.0" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER" fillHeight="false" styleClass="backgroundFilterRow" GridPane.columnSpan="3" GridPane.rowIndex="1">
+         <children>
+                <Button fx:id="scrollLeftButton" mnemonicParsing="false">
+                    <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/arrowLeft.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+               <styleClass>
+                  <String fx:value="generalButton" />
+                  <String fx:value="arrowButton" />
+               </styleClass>
+                </Button>
+                <ScrollPane fx:id="filterScrollPane" fitToHeight="true" fitToWidth="false" focusTraversable="false" hbarPolicy="NEVER" pannable="false" prefHeight="90.0" vbarPolicy="NEVER">
                     <content>
-                        <HBox fx:id="filterHBox" alignment="CENTER_LEFT" fillHeight="false" spacing="25.0" styleClass="backgroundFilterRow">
+                        <HBox fx:id="filterHBox" alignment="CENTER_LEFT" fillHeight="false" spacing="25.0">
                             <padding>
                                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                             </padding>
@@ -264,63 +281,120 @@
                                         </MenuButton>
                                     </children>
                                 </HBox>
-                                <HBox alignment="CENTER">
-                                    <children>
-                                        <MenuButton mnemonicParsing="false" text="Altro filtro">
-                                            <items>
-                                                <MenuItem mnemonicParsing="false" text="Opzione 1" />
-                                                <MenuItem mnemonicParsing="false" text="Opzione 2" />
-                                            </items>
-                                            <graphic>
-                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                    <image>
-                                                        <Image url="@../images/floorIcon.png" />
-                                                    </image>
-                                                </ImageView>
-                                            </graphic>
-                                        </MenuButton>
-                                    </children>
-                                </HBox>
-                                <HBox alignment="CENTER">
-                                    <children>
-                                        <MenuButton mnemonicParsing="false" text="Ancora un altro filtro">
-                                            <items>
-                                                <MenuItem mnemonicParsing="false" text="Opzione A" />
-                                                <MenuItem mnemonicParsing="false" text="Opzione B" />
-                                            </items>
-                                            <graphic>
-                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                    <image>
-                                                        <Image url="@../images/floorIcon.png" />
-                                                    </image>
-                                                </ImageView>
-                                            </graphic>
-                                        </MenuButton>
-                                    </children>
-                                </HBox>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <MenuButton mnemonicParsing="false" text="Classe energetica">
+                                 <items>
+                                    <MenuItem mnemonicParsing="false" text="A" />
+                                    <MenuItem mnemonicParsing="false" text="B (o superiore)" />
+                                    <MenuItem mnemonicParsing="false" text="C (o superiore)" />
+                                 </items>
+                                 <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/energyIcon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </MenuButton>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" styleClass="HBoxCheckBoxFilter">
+                           <children>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/elevatorIcon.png" />
+                                 </image>
+                              </ImageView>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ascensore" />
+                              <CheckBox mnemonicParsing="false" styleClass="custom-checkbox" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" styleClass="HBoxCheckBoxFilter">
+                           <children>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/portineriaIcon.png" />
+                                 </image>
+                              </ImageView>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Portineria" />
+                              <CheckBox mnemonicParsing="false" styleClass="custom-checkbox" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" styleClass="HBoxCheckBoxFilter">
+                           <children>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/climatizzazioneIcon.png" />
+                                 </image>
+                              </ImageView>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Climatizzazione" />
+                              <CheckBox mnemonicParsing="false" styleClass="custom-checkbox" />
+                           </children>
+                        </HBox>
+                        <VBox alignment="CENTER" fillWidth="false" styleClass="filterGroupVBox">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nei pressi di" />
+                              <HBox prefHeight="100.0" prefWidth="200.0" styleClass="filterGroupHBox">
+                                 <children>
+                                    <HBox alignment="CENTER" styleClass="HBoxCheckBoxFilter">
+                                       <children>
+                                          <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/schoolIcon.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Scuola" />
+                                          <CheckBox mnemonicParsing="false" styleClass="custom-checkbox" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" styleClass="HBoxCheckBoxFilter">
+                                       <children>
+                                          <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/parkIcon.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Parco" />
+                                          <CheckBox mnemonicParsing="false" styleClass="custom-checkbox" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" styleClass="HBoxCheckBoxFilter">
+                                       <children>
+                                          <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/busIcon.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Trasporto pubblico" />
+                                          <CheckBox mnemonicParsing="false" styleClass="custom-checkbox" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
                             </children>
                         </HBox>
                     </content>
                 </ScrollPane>
-                <Button fx:id="scrollLeftButton" mnemonicParsing="false" styleClass="arrowButton" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <Button fx:id="scrollRightButton" mnemonicParsing="false">
                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../images/arrowLeft.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                </Button>
-                <Button fx:id="scrollRightButton" mnemonicParsing="false" styleClass="arrowButton" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="30.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@../images/arrowRight.png" />
                             </image>
                         </ImageView>
                     </graphic>
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </HBox.margin>
+               <styleClass>
+                  <String fx:value="generalButton" />
+                  <String fx:value="arrowButton" />
+               </styleClass>
                 </Button>
-            </children>
-        </AnchorPane>
+         </children>
+      </HBox>
     </GridPane>
 </AnchorPane>
