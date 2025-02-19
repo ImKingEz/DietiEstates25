@@ -1,0 +1,37 @@
+@import "global-style.css";
+
+
+#apriMappaButton {
+    -fx-pref-height: 20;
+    -fx-pref-width: 60;
+}
+
+/* Stili per i suggerimenti */
+.tipsVBox {
+    -fx-max-width: 300;
+    -fx-min-width: 300;
+}
+
+#indirizzoHBox {
+    -fx-spacing: 0;
+}
+
+/* Stili per l'asterisco */
+.textAsterisco {
+    -fx-fill: #3A5F7D;
+}
+
+/* Stili per il testo secondario */
+.textSecondari {
+    -fx-font-size: 10;
+    -fx-fill:  #3A5F7D;
+}
+
+#descrizioneTextArea {
+    -fx-max-width: 300;
+    -fx-min-width: 300;
+    -fx-pref-width: 300;
+    -fx-max-height: 60;
+    -fx-min-height: 60;
+    -fx-pref-height: 60;
+}

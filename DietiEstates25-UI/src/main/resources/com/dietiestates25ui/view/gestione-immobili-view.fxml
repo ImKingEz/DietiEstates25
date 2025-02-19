@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.GestioneImmobiliController">
+    <GridPane prefHeight="80.0" prefWidth="1280.0" styleClass="navbarGridPane" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.53336334228516" minWidth="10.0" prefWidth="160.53336334228516" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="869.3333129882812" minWidth="10.0" prefWidth="594.6666366577149" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="550.9334350585938" minWidth="10.0" prefWidth="520.0000854492188" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+        <HBox fx:id="profileHBox" alignment="CENTER_RIGHT" GridPane.columnIndex="2">
+            <children>
+                <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
+                    <graphic>
+                        <HBox alignment="CENTER">
+                            <children>
+                                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/userIcon.png" />
+                                    </image>
+                                </ImageView>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/arrowDown.png" />
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </HBox>
+                    </graphic>
+                    <HBox.margin>
+                        <Insets right="20.0" />
+                    </HBox.margin>
+                </Button>
+            </children>
+        </HBox>
+        <ImageView fx:id="logo" fitHeight="80.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../images/logo2-removebg.png" />
+        </ImageView>
+    </GridPane>
+        <VBox alignment="CENTER" layoutX="166.0" layoutY="15.0" prefHeight="366.0" prefWidth="282.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <VBox alignment="CENTER" prefWidth="1280.0" spacing="20.0" styleClass="secondaryBackground">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="Gestione immobili" textAlignment="CENTER" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Salve agente cosa desidera fare oggi?" textAlignment="CENTER" wrappingWidth="353.33331298828125" />
+                        <Button fx:id="caricaImmobileButton" mnemonicParsing="false" styleClass="generalButton" text="Carica un nuovo immobile" />
+                        <Button fx:id="offerteButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Offerte" />
+                        <Button fx:id="inserzioniButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Inserzioni caricate" />
+                        <Button fx:id="statisticheButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Statistiche inserzioni" />
+                        <Button fx:id="homepageButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Vai alla Homepage" />
+                  <HBox alignment="CENTER_LEFT">
+                              <Button fx:id="tornaLoginButton" mnemonicParsing="false" styleClass="generalButton" text="Torna all'area login" />
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" />
+                     </VBox.margin>
+                  </HBox>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+                </VBox>
+        </VBox>
+</AnchorPane>
