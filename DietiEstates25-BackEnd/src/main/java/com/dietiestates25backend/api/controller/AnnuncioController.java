@@ -43,15 +43,8 @@ public class AnnuncioController extends BaseController {
         String token = authorizationHeader.substring(7);
 
         try {
-            UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));
-            if (jwtService.isTokenValid(token, userDetails)) {
-                AnnuncioDTO annuncioDTO = annuncioService.saveAnnuncio(registerAnnuncioDTO);
-                return successResponse(annuncioDTO, HttpStatus.CREATED);
-            } else {
-                logger.error("createAnnuncio() failed, token not valid");
-                ApiResponse<AnnuncioDTO> response = new ApiResponse<>(false, null, "Token non valido");
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            }
+            AnnuncioDTO annuncioDTO = annuncioService.saveAnnuncio(registerAnnuncioDTO);
+            return successResponse(annuncioDTO, HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Errore durante la creazione dell'annuncio: {}", e.getMessage(), e);
             ApiResponse<AnnuncioDTO> response = new ApiResponse<>(false, null, "Errore durante la creazione dell'annuncio: " + e.getMessage());
