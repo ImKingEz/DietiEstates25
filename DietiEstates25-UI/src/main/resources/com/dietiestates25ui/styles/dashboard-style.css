@@ -15,7 +15,7 @@
     -fx-border-width: 0;
 }
 
-.backgroundFilterRow {
+#backgroundFilterRow {
     -fx-background-color: white;
 }
 
@@ -67,4 +67,91 @@
     -fx-border-radius: 3px;
     -fx-padding: 4 5 4 5;
     -fx-spacing: 8;
+}
+
+.navbarGridPane {
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow( gaussian , rgba(0, 0, 0, 0.1) , 5 , 0 , 0 , 2 );
+}
+
+#backgroundNavbarRow {
+    -fx-background-color: #c0dff3;
+}
+
+#primaryHBox {
+    -fx-padding: 10;
+}
+
+#primaryVBox {
+    -fx-padding: 20 10 20 10;
+}
+
+#listaAnnunciVBox {
+    -fx-spacing: 30;
+}
+
+.annuncioHBox {
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-border-color: #2e2e2e;
+    -fx-alignment: center;
+}
+
+.annuncioImageStackPane {
+    -fx-border-color: transparent;
+    -fx-background-color: #2e2e2e;
+    -fx-border-radius: 5 0 0 5;
+    -fx-background-radius: 5 0 0 5;
+}
+
+.annuncioImageView {
+    -fx-fit-width: 200;
+    -fx-fit-height: 200;
+    -fx-max-height: 200;
+    -fx-min-height: 200;
+    -fx-max-width: 200;
+    -fx-min-width: 200;
+    -fx-border-radius: 5 0 0 5;
+    -fx-background-radius: 5 0 0 5;
+}
+
+.annuncioDetailVBox {
+    -fx-spacing: 10;
+    -fx-padding: 10;
+    -fx-alignment: center-left;
+}
+
+.annuncioTitle {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+}
+
+.prezzoAnnuncio {
+    -fx-font-size: 17;
+}
+
+.detailAnnuncioFlowPane {
+    -fx-spacing: 50;
+    -fx-pref-width: 350;
+    -fx-vgap: 3;
+}
+
+.detailWithIconHBox {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-pref-width: 150;
+}
+
+.textDetailAnnuncio {
+    -fx-font-size: 15;
+}
+
+.iconDetailAnnuncio {
+    -fx-fit-width: 25;
+    -fx-fit-height: 25;
+}
+
+.annuncioButtonsHBox {
+    -fx-alignment: center;
+    -fx-spacing: 20;
 }
