@@ -61,8 +61,12 @@
 
                         <HBox spacing="5.0">
                             <Label styleClass="caratteristicheImmobileText" text="Tipo di inserzione: " />
-                            <Label fx:id="tipologiaLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
+                            <Label fx:id="tipoLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
                         </HBox>
+            <HBox spacing="5.0">
+                  <Label styleClass="caratteristicheImmobileText" text="Tipo immobile: " />
+                  <Label fx:id="tipologiaLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
+            </HBox>
 
                         <HBox spacing="5.0">
                             <Label styleClass="caratteristicheImmobileText" text="Classe energetica: " />

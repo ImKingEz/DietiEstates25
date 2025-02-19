@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class InserimentoInserzioneController extends AbstractController implements Initializable {
@@ -42,11 +44,21 @@ public class InserimentoInserzioneController extends AbstractController implemen
     @FXML
     private TextField titoloTextField;
     @FXML
-    private MenuButton tipologiaMenuButton;
+    private MenuButton tipoMenuButton;
     @FXML
     private MenuItem venditaMenuItem;
     @FXML
     private MenuItem affittoMenuItem;
+    @FXML
+    private MenuButton tipologiaMenuButton;
+    @FXML
+    private MenuItem villaMenuItem;
+    @FXML
+    private MenuItem appartamentoMenuItem;
+    @FXML
+    private MenuItem terrenoMenuItem;
+    @FXML
+    private MenuItem casaIndipendenteMenuItem;
     @FXML
     private TextField indirizzoTextField;
     @FXML
@@ -91,7 +103,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private CheckBox vicinoTrasportoPubblicoCheckBox;
 
     private final ObservableList<File> selectedImageList = FXCollections.observableArrayList();
-    
+
     private double latitudine;
     private double longitudine;
 
@@ -100,16 +112,17 @@ public class InserimentoInserzioneController extends AbstractController implemen
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //focus sul logo
-        
+
         apriMappaButton.setOnAction(this::handleApriMappaButtonAction);
-        
+
         indietroButton.setOnAction(event -> openGestioneImmobiliPage());
-        
+
         mapBackButton.setOnAction(event -> hideMapView());
 
-        setupMenuButton();
+        setupTipoMenuButton();
+        setupTipologiaMenuButton();
         setupSpinners();
-        
+
         selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
 
         updateAvantiButtonState();
@@ -119,9 +132,21 @@ public class InserimentoInserzioneController extends AbstractController implemen
         createAndPlaceBackButton();
     }
 
-    private void setupMenuButton() {
-        venditaMenuItem.setOnAction(event -> impostaTipologia("Vendita"));
-        affittoMenuItem.setOnAction(event -> impostaTipologia("Affitto"));
+    private void setupTipoMenuButton() {
+        venditaMenuItem.setOnAction(event -> impostaTipo("Vendita"));
+        affittoMenuItem.setOnAction(event -> impostaTipo("Affitto"));
+    }
+
+    private void impostaTipo(String tipo) {
+        tipoMenuButton.setText(tipo);
+        tipoMenuButton.setStyle("-fx-text-fill: black;");
+    }
+
+    private void setupTipologiaMenuButton() {
+        villaMenuItem.setOnAction(event -> impostaTipologia("Villa"));
+        appartamentoMenuItem.setOnAction(event -> impostaTipologia("Appartamento"));
+        casaIndipendenteMenuItem.setOnAction(event -> impostaTipologia("Casa indipendente"));
+        terrenoMenuItem.setOnAction(event -> impostaTipologia("Terreno"));
     }
 
     private void impostaTipologia(String tipo) {
@@ -163,6 +188,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     public void setPianoSpinner(int piano) {
         this.pianoSpinner.getValueFactory().setValue(piano);
+    }
+
+    public void setTipoMenuButton(String tipologia) {
+        this.tipoMenuButton.setText(tipologia);
     }
 
     public void setTipologiaMenuButton(String tipologia) {
@@ -308,11 +337,9 @@ public class InserimentoInserzioneController extends AbstractController implemen
             this.latitudine = lat;
             this.longitudine = lng;
 
-            if (latitudine != 0 && longitudine != 0) {
-                getNearbyPlaces(address);
-            } else {
-                logger.warn("Latitudine e Longitudine non valide, impossibile chiamare getNearbyPlaces");
-            }
+            // Chiama getNearbyPlaces *qui*, dopo aver impostato l'indirizzo e le coordinate
+            getNearbyPlaces(lat,lng);
+
             logo.requestFocus();
         }
     }
@@ -393,6 +420,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         classeEnergeticaTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         descrizioneTextArea.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
 
+        tipoMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         tipologiaMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         camereSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         bagniSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
@@ -410,6 +438,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         String superficie = superficieTextField.getText().trim();
         String classeEnergetica = classeEnergeticaTextField.getText().trim();
         String descrizione = descrizioneTextArea.getText().trim();
+        String tipo = tipoMenuButton.getText();
         String tipologia = tipologiaMenuButton.getText();
 
         boolean isPrezzoValid = false;
@@ -429,34 +458,30 @@ public class InserimentoInserzioneController extends AbstractController implemen
         }
 
         boolean requiredFieldsFilled = !titolo.isEmpty() && !indirizzo.isEmpty() && !descrizione.isEmpty() && isPrezzoValid && isSuperficieValid &&
-                !classeEnergetica.isEmpty() && (!selectedImageList.isEmpty()) && (tipologia.equals("Vendita") || tipologia.equals("Affitto"));
+                !classeEnergetica.isEmpty() && (!selectedImageList.isEmpty()) && (tipo.equals("Vendita") || tipo.equals("Affitto")) &&
+                (tipologia.equals("Villa") || tipologia.equals("Appartamento") || tipologia.equals("Terreno") || tipologia.equals("Casa indipendente"));
         boolean isMaxImagesSelected = selectedImageList.size() <= 5;
 
         avantiButton.setDisable(!requiredFieldsFilled || !isMaxImagesSelected);
     }
 
-    private void getNearbyPlaces(String address) {
-        logger.info("Ricerca luoghi di interesse nelle vicinanze per l'indirizzo: {}", address);
+    private void getNearbyPlaces(double latitude, double longitude) {
+        logger.info("getNearbyPlaces chiamato con Latitudine: {}, Longitudine: {}", latitude, longitude);
 
-        if (isNullOrEmpty(address)) {
-            logger.warn("Indirizzo vuoto o nullo. Impossibile chiamare l'API Geoapify.");
-            return;
-        }
-
-        if (!isValidCoordinates(latitudine, longitudine)) {
+        if (!isValidCoordinates(latitude, longitude)) {
             logger.warn("Latitudine o Longitudine non valide. Impossibile chiamare l'API Geoapify.");
             return;
         }
 
-        String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac"; // Replace with your actual API key
-        String url = buildGeoapifyUrl(longitudine, latitudine, apiKey);
+        String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac";
+        String url = buildGeoapifyUrl(longitude, latitude, apiKey);
 
         logger.info("URL chiamata API Geoapify: {}", url);
 
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .build();
+                    .uri(URI.create(url))
+                    .build();
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenApply(HttpResponse::body)
                     .thenAccept(this::processGeoapifyResponse)
@@ -464,17 +489,15 @@ public class InserimentoInserzioneController extends AbstractController implemen
         }
     }
 
-    private boolean isNullOrEmpty(String str) {
-        return str == null || str.isEmpty();
-    }
-
     private boolean isValidCoordinates(double latitude, double longitude) {
         return latitude != 0 && longitude != 0;
     }
 
     private String buildGeoapifyUrl(double longitude, double latitude, String apiKey) {
-        return String.format("https://api.geoapify.com/v2/places?categories=education.school,leisure.park,public_transport&filter=circle:%f,%f,%d&limit=3&apiKey=%s",
+        String url = String.format(Locale.US, "https://api.geoapify.com/v2/places?categories=education.school,leisure.park,public_transport&filter=circle:%f,%f,%d&limit=3&apiKey=%s",
                 longitude, latitude, GEOAPIFY_RADIUS, apiKey);
+        logger.info("URL formattato: {}", url); // Aggiungi questo log
+        return url;
     }
 
     private void processGeoapifyResponse(String responseBody) {
@@ -548,31 +571,35 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     private void openConfermaInserzionePage() {
         Immobile immobile = new Immobile();
-        immobile.setTitolo(titoloTextField.getText());
         immobile.setTipologia(tipologiaMenuButton.getText());
         immobile.setIndirizzo(indirizzoTextField.getText());
-        immobile.setPrezzo(Double.parseDouble(prezzoTextField.getText()));
-        immobile.setDescrizione(descrizioneTextArea.getText());
         immobile.setDimensione(Double.parseDouble(superficieTextField.getText()));
-        immobile.setNumeroCamere(camereSpinner.getValue());
+        immobile.setNumeroLocali(camereSpinner.getValue());
         immobile.setNumeroBagni(bagniSpinner.getValue());
         immobile.setClasseEnergetica(classeEnergeticaTextField.getText());
         immobile.setPiano(pianoSpinner.getValue());
         immobile.setAscensore(ascensoreCheckBox.isSelected());
         immobile.setPortineria(portineriaCheckBox.isSelected());
         immobile.setClimatizzazione(climatizzazioneCheckBox.isSelected());
-        List<String> imageUrls = selectedImageList.stream().map(file -> file.toURI().toString()).toList();
-        immobile.setImmaginiUrls(imageUrls);
         immobile.setLatitudine(latitudine);
         immobile.setLongitudine(longitudine);
         immobile.setVicinoScuole(vicinoScuoleCheckBox.isSelected());
         immobile.setVicinoParchi(vicinoParchiCheckBox.isSelected());
         immobile.setVicinoTrasportoPubblico(vicinoTrasportoPubblicoCheckBox.isSelected());
 
+        Annuncio annuncio = new Annuncio();
+        annuncio.setTitolo(titoloTextField.getText());
+        annuncio.setPrezzo(Double.parseDouble(prezzoTextField.getText()));
+        annuncio.setDescrizione(descrizioneTextArea.getText());
+        annuncio.setTipo(tipoMenuButton.getText());
+        List<String> imageUrls = selectedImageList.stream().map(file -> file.toURI().toString()).toList();
+        annuncio.setImmaginiUrls(imageUrls);
+
         loadScene("/com/dietiestates25ui/view/conferma-inserzione-view.fxml",
                 (fxmlLoader, stage) -> {
                     ConfermaInserzioneController controller = fxmlLoader.getController();
                     controller.setImmobile(immobile);
+                    controller.setAnnuncio(annuncio);
                     controller.setSelectedImageList(selectedImageList);
                     controller.setToken(token);
                     controller.setStage(stage);

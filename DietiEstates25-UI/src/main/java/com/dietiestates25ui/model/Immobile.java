@@ -2,25 +2,18 @@ package com.dietiestates25ui.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.List;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Immobile {
-
-    private String titolo;
     private String tipologia;
     private String indirizzo;
-    private double prezzo;
-    private String descrizione;
     private double dimensione;
-    private int numeroCamere;
+    private int numeroLocali;
     private int numeroBagni;
     private String classeEnergetica;
     private Integer piano;
     private boolean ascensore;
     private boolean portineria;
     private boolean climatizzazione;
-    private List<String> immaginiUrls;
     private double latitudine;
     private double longitudine;
     private boolean vicinoScuole;
@@ -28,14 +21,6 @@ public class Immobile {
     private boolean vicinoTrasportoPubblico;
 
     public Immobile() {
-    }
-
-    public String getTitolo() {
-        return titolo;
-    }
-
-    public void setTitolo(String titolo) {
-        this.titolo = titolo;
     }
 
     public String getTipologia() {
@@ -54,22 +39,6 @@ public class Immobile {
         this.indirizzo = indirizzo;
     }
 
-    public double getPrezzo() {
-        return prezzo;
-    }
-
-    public void setPrezzo(double prezzo) {
-        this.prezzo = prezzo;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
     public double getDimensione() {
         return dimensione;
     }
@@ -78,12 +47,12 @@ public class Immobile {
         this.dimensione = dimensione;
     }
 
-    public int getNumeroCamere() {
-        return numeroCamere;
+    public int getNumeroLocali() {
+        return numeroLocali;
     }
 
-    public void setNumeroCamere(int numeroCamere) {
-        this.numeroCamere = numeroCamere;
+    public void setNumeroLocali(int numeroLocali) {
+        this.numeroLocali = numeroLocali;
     }
 
     public int getNumeroBagni() {
@@ -132,14 +101,6 @@ public class Immobile {
 
     public void setClimatizzazione(boolean climatizzazione) {
         this.climatizzazione = climatizzazione;
-    }
-
-    public List<String> getImmaginiUrls() {
-        return immaginiUrls;
-    }
-
-    public void setImmaginiUrls(List<String> immaginiUrls) {
-        this.immaginiUrls = immaginiUrls;
     }
 
     public double getLatitudine() {

@@ -19,6 +19,6 @@ public class FotoImmobile {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @Column(name = "id_immobile")
-    private Long idImmobile;
+    @Column(name = "id_annuncio")
+    private Long idAnnuncio;
 }

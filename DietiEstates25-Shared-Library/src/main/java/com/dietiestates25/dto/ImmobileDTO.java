@@ -4,18 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImmobileDTO {
-
-    private String titolo;
+    private Long id;
     private String tipologia;
     private String indirizzo;
-    private double prezzo;
-    private String descrizione;
     private double dimensione;
     private int numeroCamere;
     private int numeroBagni;
@@ -29,14 +24,10 @@ public class ImmobileDTO {
     private boolean vicinoScuole;
     private boolean vicinoParchi;
     private boolean vicinoTrasportoPubblico;
-    private List<String> immaginiUrls;
 
-    public ImmobileDTO(String titolo, String tipologia, String indirizzo, double prezzo, String descrizione, double dimensione, int numeroCamere, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico) {
-        this.titolo = titolo;
+    public ImmobileDTO(String tipologia, String indirizzo, double dimensione, int numeroCamere, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico) {
         this.tipologia = tipologia;
         this.indirizzo = indirizzo;
-        this.prezzo = prezzo;
-        this.descrizione = descrizione;
         this.dimensione = dimensione;
         this.numeroCamere = numeroCamere;
         this.numeroBagni = numeroBagni;

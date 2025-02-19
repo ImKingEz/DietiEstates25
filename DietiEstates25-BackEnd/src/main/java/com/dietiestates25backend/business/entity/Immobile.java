@@ -16,26 +16,17 @@ public class Immobile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "titolo", nullable = false)
-    private String titolo;
-
-    @Column(name = "tipo", nullable = false)
+    @Column(name = "tipologia", nullable = false)
     private String tipologia;
 
     @Column(name = "indirizzo", nullable = false)
     private String indirizzo;
 
-    @Column(name = "prezzo", nullable = false)
-    private double prezzo;
-
-    @Column(name = "descrizione", nullable = false)
-    private String descrizione;
-
     @Column(name = "dimensioni", nullable = false)
     private double dimensione;
 
-    @Column(name = "numero_stanze", nullable = false)
-    private int numeroCamere;
+    @Column(name = "numero_locali", nullable = false)
+    private int numeroLocali;
 
     @Column(name = "numero_bagni", nullable = false)
     private int numeroBagni;
@@ -70,17 +61,11 @@ public class Immobile {
     @Column(name = "vicino_trasporto_pubblico")
     private boolean vicinoTrasportoPubblico;
 
-    @Column(name = "id_agente", nullable = false)
-    private Long idAgente;
-
-    public Immobile(String titolo, String tipologia, String indirizzo, double prezzo, String descrizione, double dimensione, int numeroCamere, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico, Long idAgente) {
-        this.titolo = titolo;
+    public Immobile(String tipologia, String indirizzo, double dimensione, int numeroLocali, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico) {
         this.tipologia = tipologia;
         this.indirizzo = indirizzo;
-        this.prezzo = prezzo;
-        this.descrizione = descrizione;
         this.dimensione = dimensione;
-        this.numeroCamere = numeroCamere;
+        this.numeroLocali = numeroLocali;
         this.numeroBagni = numeroBagni;
         this.classeEnergetica = classeEnergetica;
         this.piano = piano;
@@ -92,6 +77,5 @@ public class Immobile {
         this.vicinoScuole = vicinoScuole;
         this.vicinoParchi = vicinoParchi;
         this.vicinoTrasportoPubblico = vicinoTrasportoPubblico;
-        this.idAgente = idAgente;
     }
 }
