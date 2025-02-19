@@ -14,7 +14,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
   dietiestates-backend:
     build: .
     ports:
@@ -27,7 +26,6 @@ services:
     volumes:
       - ./target/dietiestates-backend-1.0-SNAPSHOT.jar:/app/app.jar
       - uploads:/app/uploads/foto_immobili
-
+      - uploads:/app/uploads/logos
 volumes:
   postgres_data:
-  uploads:

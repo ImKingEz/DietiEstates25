@@ -1,0 +1,5 @@
+@import "global-style.css";
+
+.roleButton {
+    -fx-pref-width: 200;
+}

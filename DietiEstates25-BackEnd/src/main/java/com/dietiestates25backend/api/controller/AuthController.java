@@ -6,57 +6,42 @@ import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.*;
 import com.dietiestates25backend.business.entity.Utente;
 import com.dietiestates25backend.business.service.AuthService;
-import com.dietiestates25backend.business.service.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
-public class AuthController {
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+public class AuthController extends BaseController {
 
+    public static final String ENTITY_TYPE = "Utente";
     private final AuthService authService;
-    private final JwtService jwtService;
 
     @Autowired
-    public AuthController(AuthService authService, JwtService jwtService) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UtenteDTO>> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
-        logger.debug("registerUser() called with registerDTO: {}", registerDTO.getEmail());
-        Utente utente = new Utente(
-                registerDTO.getNome(),
-                registerDTO.getCognome(),
-                registerDTO.getCitta(),
-                registerDTO.getEmail(),
-                registerDTO.getPassword()
-        );
-
+    public ResponseEntity<ApiResponse<UtenteDTO>> registerUser(@RequestBody @Valid RegisterUtenteDTO registerDTO) {
+        String email = registerDTO.getEmail();
+        logger.debug("registerUser() called with registerDTO: {}", email);
         try {
-            UtenteDTO utenteDTO = authService.registraUtente(utente);
+            UtenteDTO utenteDTO = authService.registraUtente(registerDTO);
             logger.debug("registerUser() successful with user: {}", utenteDTO.getEmail());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return successResponse(utenteDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {
-            logger.error("registerUser() failed, email already registered: {}", registerDTO.getEmail());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Email già in uso");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            logger.error("registerUser() failed, email already registered: {}", email);
+            return handleDataIntegrityViolation(ex, ENTITY_TYPE);
         } catch (Exception ex) {
             logger.error("registerUser() failed with error: {}", ex.getMessage());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore durante la registrazione : " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Errore durante la registrazione", ENTITY_TYPE);
         }
     }
 
@@ -65,78 +50,62 @@ public class AuthController {
             @RequestBody @Valid LoginDTO loginDTO,
             @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader
     ) {
-        logger.debug("loginUser() called with email: {}", loginDTO.getEmail());
+        String email = loginDTO.getEmail();
+        logger.debug("loginUser() called with email: {}", email);
         logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader);
 
         try {
-            String token = authService.loginUtente(loginDTO.getEmail(), loginDTO.getPassword(), csrfTokenHeader);
+            String token = authService.loginUtente(email, loginDTO.getPassword(), csrfTokenHeader);
             LoginResponse loginResponse = new LoginResponse(token);
-            logger.debug("loginUser() successful for user: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(true, loginResponse, null);
-            return ResponseEntity.ok(response);
+            logger.debug("loginUser() successful for user: {}", email);
+            return successResponse(loginResponse);
         } catch (AuthenticationException ex) {
-            logger.error("loginUser() failed, authentication error for user: {}", loginDTO.getEmail());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            logger.error("loginUser() failed, authentication error for user: {}", email);
+            return new ResponseEntity<>(new ApiResponse<>(false, null, "Credenziali non valide"), HttpStatus.UNAUTHORIZED);
         } catch (Exception ex){
             logger.error("loginUser() failed with error: {}", ex.getMessage());
-            ApiResponse<LoginResponse> response = new ApiResponse<>(false, null, "Login fallito : " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Login fallito", ENTITY_TYPE);
         }
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('ROLE_UTENTE')")
     public ResponseEntity<ApiResponse<UtenteDTO>> updateUtente(
             @RequestBody UpdateUtenteDTO updateUtenteDTO,
-            @RequestHeader("Authorization") String authorizationHeader,
-            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader, HttpServletRequest request) {
+            @RequestHeader(value = "X-XSRF-TOKEN", required = false) String csrfTokenHeader) {
         logger.debug("updateUtente() called with user: {}", updateUtenteDTO);
 
         if (csrfTokenHeader == null ) {
             logger.error("updateUtente() failed, CSRF token missing");
             return new ResponseEntity<>(new ApiResponse<>(false, null, "CSRF token mancante"), HttpStatus.FORBIDDEN);
         }
-        String token = authorizationHeader.substring(7);
+
         try {
-            UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));
-            if (jwtService.isTokenValid(token, userDetails)) {
-                UtenteDTO utenteDTO = authService.updateUtente(updateUtenteDTO, userDetails.getUsername());
-                logger.debug("updateUtente() successful for user: {}", userDetails.getUsername());
-                ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                logger.error("updateUtente() failed, token not valid");
-                ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Token non valido");
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            }
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            UtenteDTO utenteDTO = authService.updateUtente(updateUtenteDTO, userEmail);
+            logger.debug("updateUtente() successful for user: {}", userEmail);
+            return successResponse(utenteDTO);
+
         } catch (Exception ex) {
             logger.error("updateUtente() failed with error: {}", ex.getMessage());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore durante l'aggiornamento dell'utente: " + ex.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleGenericException(ex, "Errore durante l'aggiornamento dell'utente", ENTITY_TYPE);
         }
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UtenteDTO>> getUserDetails(@RequestHeader("Authorization") String authorizationHeader) {
+    @PreAuthorize("hasRole('ROLE_UTENTE')")
+    public ResponseEntity<ApiResponse<UtenteDTO>> getUserDetails() {
         logger.debug("getUserDetails() called");
-        String token = authorizationHeader.substring(7);
+
         try {
-            UserDetails userDetails = authService.loadUserByUsername(jwtService.extractUsername(token));
-            if (jwtService.isTokenValid(token, userDetails)) {
-                UtenteDTO utenteDTO = authService.getUtenteDetails(userDetails.getUsername());
-                logger.debug("getUserDetails() successful for user: {}", userDetails.getUsername());
-                ApiResponse<UtenteDTO> response = new ApiResponse<>(true, utenteDTO, null);
-                return ResponseEntity.ok(response);
-            } else {
-                logger.error("getUserDetails() failed, token not valid");
-                ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Token non valido");
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-            }
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            UtenteDTO utenteDTO = authService.getUtenteDetails(userEmail);
+            logger.debug("getUserDetails() successful for user: {}", userEmail);
+            return successResponse(utenteDTO);
 
         } catch (Exception ex) {
             logger.error("getUserDetails() failed with error: {}", ex.getMessage());
-            ApiResponse<UtenteDTO> response = new ApiResponse<>(false, null, "Errore nel recupero dei dettagli dell'utente: " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'utente", ENTITY_TYPE);
         }
     }
 }

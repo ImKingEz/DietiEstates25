@@ -9,7 +9,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,14 +38,19 @@ public class LoginController extends AbstractController implements Initializable
     private Button loginButton;
 
     @FXML
-    private PasswordField passwordPasswordField;
+    private Button registratiButton;
 
     @FXML
-    private Button registratiButton;
+    private Button togglePasswordButton;
+
+    @FXML
+    private Button agenziaImmobiliareButton;
 
     private UtenteService utenteService;
 
     private OAuth2Handler oAuth2Handler;
+
+    private boolean passwordVisible = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -57,7 +61,7 @@ public class LoginController extends AbstractController implements Initializable
 
         updateLoginButton();
         loginButton.setOnAction(event -> loginUtente());
-        //registratiButton.setOnAction(event -> openRegisterPage());
+        registratiButton.setOnAction(event -> openRegisterPage());
 
         utenteService = new UtenteService();
 
@@ -67,6 +71,16 @@ public class LoginController extends AbstractController implements Initializable
         createAndPlaceBackButton();
 
         updateWebView();
+
+        passwordTextFieldInitializer("loginField");
+        togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
+
+        agenziaImmobiliareButton.setOnAction(event -> openSelectRolePage());
+    }
+
+    private void openSelectRolePage() {
+        loadScene("/com/dietiestates25ui/view/select-role-view.fxml",
+                (fxmlLoader, stage) -> {}, agenziaImmobiliareButton, "/com/dietiestates25ui/styles/select-role-style.css");
     }
 
     private void updateWebView() {
@@ -107,6 +121,7 @@ public class LoginController extends AbstractController implements Initializable
     }
 
     private void loginUtente() {
+        Platform.runLater(logo::requestFocus);
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
         Utente user = new Utente(email, password);
@@ -115,6 +130,12 @@ public class LoginController extends AbstractController implements Initializable
             if (token != null) {
                 showPopup("Login effettuato con successo", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
+                googleButton.setDisable(true);
+                facebookButton.setDisable(true);
+                githubButton.setDisable(true);
+                registratiButton.setDisable(true);
+                loginButton.setDisable(true);
+                agenziaImmobiliareButton.setDisable(true);
 
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
                 delay.setOnFinished(event -> openDashboard(token, loginButton));
@@ -140,8 +161,8 @@ public class LoginController extends AbstractController implements Initializable
     }
 
 
-//    private void openRegisterPage() {
-//        loadScene("/com/dietiestates25ui/view/register-view.fxml",
-//                stageRegister -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
-//    }
+    private void openRegisterPage() {
+        loadScene("/com/dietiestates25ui/view/register-view.fxml",
+                (fxmlLoader, stage) -> {}, registratiButton, "/com/dietiestates25ui/styles/register-style.css");
+    }
 }

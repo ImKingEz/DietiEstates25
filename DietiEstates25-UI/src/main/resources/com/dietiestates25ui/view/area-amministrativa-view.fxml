@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.AreaAmministrativaController">
+   <GridPane prefHeight="80.0" prefWidth="1280.0" styleClass="navbarGridPane" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+     <columnConstraints>
+       <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.53336334228516" minWidth="10.0" prefWidth="160.53336334228516" />
+       <ColumnConstraints hgrow="SOMETIMES" maxWidth="869.3333129882812" minWidth="10.0" prefWidth="594.6666366577149" />
+         <ColumnConstraints hgrow="SOMETIMES" maxWidth="550.9334350585938" minWidth="10.0" prefWidth="520.0000854492188" />
+     </columnConstraints>
+     <rowConstraints>
+       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+     </rowConstraints>
+      <HBox fx:id="profileHBox" alignment="CENTER_RIGHT" GridPane.columnIndex="2">
+         <children>
+            <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
+               <graphic>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/userIcon.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/arrowDown.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </graphic>
+               <HBox.margin>
+                  <Insets right="20.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+            <ImageView fx:id="logo" fitHeight="80.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <Image url="@../images/logo2-removebg.png" />
+            </ImageView>
+   </GridPane>
+
+               <VBox alignment="CENTER" prefHeight="410.0" prefWidth="446.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="BOTTOM_LEFT" prefWidth="1280.0" styleClass="secondaryBackground">
+         <children>
+            <VBox alignment="CENTER" spacing="30.0">
+               <children>
+                  <VBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="Area amministrativa" />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Salve amministratore, cosa desidera fare?" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" spacing="15.0">
+                     <children>
+                        <Button fx:id="creaAccountAmministratoreButton" mnemonicParsing="false" text="Creare account di supporto">
+                           <styleClass>
+                              <String fx:value="buttonGestione" />
+                              <String fx:value="generalButton" />
+                           </styleClass></Button>
+                        <Button fx:id="creaAccountAgenteButton" mnemonicParsing="false" text="Creare account per agente immobiliare">
+                           <styleClass>
+                              <String fx:value="buttonGestione" />
+                              <String fx:value="generalButton" />
+                           </styleClass></Button>
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" spacing="15.0">
+                     <children>
+                        <Button fx:id="homepageButton" mnemonicParsing="false" styleClass="generalButton" text="Vai alla Homepage" />
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets top="20.0" />
+               </padding>
+            </VBox>
+            <Button fx:id="tornaLoginButton" mnemonicParsing="false" styleClass="generalButton" text="Torna all'area login">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" top="20.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </VBox>
+
+</AnchorPane>

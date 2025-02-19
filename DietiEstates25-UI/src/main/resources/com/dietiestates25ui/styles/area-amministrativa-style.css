@@ -1,0 +1,5 @@
+@import "global-style.css";
+
+.buttonGestione {
+    -fx-pref-width: 300;
+}

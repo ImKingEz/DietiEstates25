@@ -64,6 +64,13 @@
     -fx-min-height: 25;
 }
 
+.searchTextField {
+    -fx-max-width: 200;
+    -fx-pref-width: 200;
+    -fx-max-height: 30;
+    -fx-min-height: 30;
+}
+
 .HBoxField {
     -fx-spacing: 5;
     -fx-max-width: 300;
@@ -90,13 +97,42 @@
     -fx-effect: dropshadow( gaussian , rgba(0, 0, 0, 0.1) , 5 , 0 , 0 , 2 );
 }
 
-.caratteristicheImmobileText {
-    -fx-font-weight: bold;
-    -fx-text-fill: black;
-    -fx-font-size: 12px;
+/* -- DatePicker -- */
+
+DatePicker > .arrow-button > .arrow {
+    -fx-opacity: 0;
 }
 
-.valoriCaratteristicheImmobileText {
-    -fx-text-fill: black;
-    -fx-font-size: 12px;
+DatePicker > .arrow-button {
+    -fx-background-color: #6c93c4;
+    -fx-background-image: url("../images/calendarIcon.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: 20px 20px;
+}
+
+/* -- SplitMenuButton -- */
+
+MenuButton {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.menu-button {
+    -fx-text-fill: #999999;
+}
+
+MenuButton > .arrow-button > .arrow {
+    -fx-opacity: 0;
+}
+
+MenuButton > .arrow-button {
+    -fx-background-color: #6c93c4;
+    -fx-background-image: url("../images/splitButtonArrowIcon.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: 24px 24px;
+    -fx-pref-width: 24;
 }
