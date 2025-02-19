@@ -89,9 +89,14 @@ public class AnnuncioService {
             logger.warn("image is null or empty, returning empty string");
             return "";
         }
-
+        String originalFileName = null;
+        String imageFileName = image.getOriginalFilename();
+        if (imageFileName != null) {
+            originalFileName = StringUtils.cleanPath(imageFileName);
+        } else {
+            return "";
+        }
         String fileExtension = "";
-        String originalFileName = StringUtils.cleanPath(image.getOriginalFilename());
         int dotIndex = originalFileName.lastIndexOf('.');
         if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
             fileExtension = originalFileName.substring(dotIndex);
