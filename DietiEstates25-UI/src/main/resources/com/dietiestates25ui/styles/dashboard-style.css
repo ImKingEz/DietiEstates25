@@ -18,3 +18,16 @@
 .backgroundFilterRow {
     -fx-background-color: white;
 }
+
+.filterGroupVBox {
+    -fx-spacing: 5;
+    -fx-padding: 0 10 0 10;
+    -fx-pref-height: 60;
+    -fx-border-width: 0.5;
+    -fx-border-radius: 5;
+    -fx-border-color: black;
+}
+
+.filterGroupHBox {
+    -fx-spacing: 10;
+}

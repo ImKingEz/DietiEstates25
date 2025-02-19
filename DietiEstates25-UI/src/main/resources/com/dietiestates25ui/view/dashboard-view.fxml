@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -13,6 +14,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.DashboardController">
@@ -24,87 +26,301 @@
         </columnConstraints>
         <rowConstraints>
             <RowConstraints maxHeight="80.0" minHeight="80.0" prefHeight="80.0" vgrow="SOMETIMES" />
-         <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="90.0" minHeight="90.0" prefHeight="90.0" vgrow="SOMETIMES" />
         </rowConstraints>
         <ImageView fx:id="logo" fitHeight="80.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../images/logo2-removebg.png" />
         </ImageView>
-      <HBox alignment="CENTER" GridPane.columnIndex="1">
-         <children>
-            <TextField promptText="Città - Stato" styleClass="searchTextField" />
-            <Button mnemonicParsing="false">
-               <graphic>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/searchIcon.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <styleClass>
-                  <String fx:value="generalButton" />
-                  <String fx:value="searchButton" />
-               </styleClass>
-               <HBox.margin>
-                  <Insets bottom="1.0" />
-               </HBox.margin>
-            </Button>
-         </children>
-      </HBox>
-        <HBox fx:id="profileHBox" alignment="CENTER_RIGHT" GridPane.columnIndex="2">
-                <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
+        <HBox alignment="CENTER" GridPane.columnIndex="1">
+            <children>
+                <TextField promptText="Città - Stato" styleClass="searchTextField" />
+                <Button mnemonicParsing="false">
                     <graphic>
-                        <HBox alignment="CENTER">
-                                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/userIcon.png" />
-                                    </image>
-                                </ImageView>
-                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/arrowDown.png" />
-                                    </image>
-                                </ImageView>
-                        </HBox>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/searchIcon.png" />
+                            </image>
+                        </ImageView>
                     </graphic>
+                    <styleClass>
+                        <String fx:value="generalButton" />
+                        <String fx:value="searchButton" />
+                    </styleClass>
                     <HBox.margin>
-                        <Insets right="20.0" />
+                        <Insets bottom="1.0" />
                     </HBox.margin>
                 </Button>
+            </children>
         </HBox>
-      <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="backgroundFilterRow" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
-         <children>
-            <HBox alignment="CENTER" spacing="5.0">
-               <HBox.margin>
-                  <Insets left="20.0" />
-               </HBox.margin>
-               <children>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/filterIcon.png" />
-                     </image>
-                  </ImageView>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="filterText" text="Filtri" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER">
-               <children>
-                  <MenuButton mnemonicParsing="false" text="MenuButton">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                      <MenuItem mnemonicParsing="false" text="Action 2" />
-                    </items>
-                     <graphic>
-                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/sellIcon.png" />
-                           </image>
+        <HBox fx:id="profileHBox" alignment="CENTER_RIGHT" GridPane.columnIndex="2">
+            <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
+                <graphic>
+                    <HBox alignment="CENTER">
+                        <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/userIcon.png" />
+                            </image>
                         </ImageView>
-                     </graphic>
-                  </MenuButton>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" />
-         </children>
-      </HBox>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/arrowDown.png" />
+                            </image>
+                        </ImageView>
+                    </HBox>
+                </graphic>
+                <HBox.margin>
+                    <Insets right="20.0" />
+                </HBox.margin>
+            </Button>
+        </HBox>
+        <AnchorPane GridPane.columnSpan="3" GridPane.rowIndex="1">
+            <children>
+                <ScrollPane fx:id="filterScrollPane" fitToHeight="true" fitToWidth="false" hbarPolicy="NEVER" pannable="false" prefHeight="90.0" prefWidth="1200.0" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
+                    <content>
+                        <HBox fx:id="filterHBox" alignment="CENTER_LEFT" fillHeight="false" spacing="25.0" styleClass="backgroundFilterRow">
+                            <padding>
+                                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                            </padding>
+                            <children>
+                                <HBox alignment="CENTER" spacing="5.0">
+                                    <children>
+                                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/filterIcon.png" />
+                                            </image>
+                                        </ImageView>
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="filterText" text="Filtri" />
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER">
+                                    <children>
+                                        <MenuButton mnemonicParsing="false" text="Tipo">
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" text="Vendita" />
+                                                <MenuItem mnemonicParsing="false" text="Affitto" />
+                                            </items>
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../images/sellIcon.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </MenuButton>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER">
+                                    <children>
+                                        <MenuButton mnemonicParsing="false" text="Tipologia">
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" text="Casa" />
+                                                <MenuItem mnemonicParsing="false" text="Appartamento" />
+                                            </items>
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../images/homeIcon.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </MenuButton>
+                                    </children>
+                                </HBox>
+                                <VBox alignment="CENTER" fillWidth="false" styleClass="filterGroupVBox">
+                                    <children>
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Prezzo (€)" />
+                                        <HBox alignment="CENTER" fillHeight="false" styleClass="filterGroupHBox">
+                                            <children>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <MenuButton mnemonicParsing="false" text="Min">
+                                                            <items>
+                                                                <MenuItem mnemonicParsing="false" text="20.000" />
+                                                                <MenuItem mnemonicParsing="false" text="40.000" />
+                                                            </items>
+                                                            <graphic>
+                                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/priceIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                            </graphic>
+                                                        </MenuButton>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <MenuButton mnemonicParsing="false" text="Max">
+                                                            <items>
+                                                                <MenuItem mnemonicParsing="false" text="20.000" />
+                                                                <MenuItem mnemonicParsing="false" text="40.000" />
+                                                            </items>
+                                                            <graphic>
+                                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/priceIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                            </graphic>
+                                                        </MenuButton>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                                <VBox alignment="CENTER" fillWidth="false" styleClass="filterGroupVBox">
+                                    <children>
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Superficie (mq)" />
+                                        <HBox alignment="CENTER" fillHeight="false" styleClass="filterGroupHBox">
+                                            <children>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <MenuButton mnemonicParsing="false" text="Min">
+                                                            <items>
+                                                                <MenuItem mnemonicParsing="false" text="20" />
+                                                                <MenuItem mnemonicParsing="false" text="40" />
+                                                            </items>
+                                                            <graphic>
+                                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/superficieIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                            </graphic>
+                                                        </MenuButton>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER">
+                                                    <children>
+                                                        <MenuButton mnemonicParsing="false" text="Max">
+                                                            <items>
+                                                                <MenuItem mnemonicParsing="false" text="20" />
+                                                                <MenuItem mnemonicParsing="false" text="40" />
+                                                            </items>
+                                                            <graphic>
+                                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                                    <image>
+                                                                        <Image url="@../images/superficieIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                            </graphic>
+                                                        </MenuButton>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                                <HBox alignment="CENTER">
+                                    <children>
+                                        <MenuButton mnemonicParsing="false" text="Locali">
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" text="1" />
+                                                <MenuItem mnemonicParsing="false" text="2" />
+                                            </items>
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../images/roomIcon.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </MenuButton>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER">
+                                    <children>
+                                        <MenuButton mnemonicParsing="false" text="Bagni">
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" text="1" />
+                                                <MenuItem mnemonicParsing="false" text="2" />
+                                            </items>
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../images/bathroomIcon.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </MenuButton>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER">
+                                    <children>
+                                        <MenuButton mnemonicParsing="false" text="Piano">
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" text="Piano terra" />
+                                                <MenuItem mnemonicParsing="false" text="Piani intermedi" />
+                                                <MenuItem mnemonicParsing="false" text="Ultimo piano" />
+                                            </items>
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../images/floorIcon.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </MenuButton>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER">
+                                    <children>
+                                        <MenuButton mnemonicParsing="false" text="Altro filtro">
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" text="Opzione 1" />
+                                                <MenuItem mnemonicParsing="false" text="Opzione 2" />
+                                            </items>
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../images/floorIcon.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </MenuButton>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER">
+                                    <children>
+                                        <MenuButton mnemonicParsing="false" text="Ancora un altro filtro">
+                                            <items>
+                                                <MenuItem mnemonicParsing="false" text="Opzione A" />
+                                                <MenuItem mnemonicParsing="false" text="Opzione B" />
+                                            </items>
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../images/floorIcon.png" />
+                                                    </image>
+                                                </ImageView>
+                                            </graphic>
+                                        </MenuButton>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </ScrollPane>
+                <Button fx:id="scrollLeftButton" mnemonicParsing="false" styleClass="arrowButton" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/arrowLeft.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="scrollRightButton" mnemonicParsing="false" styleClass="arrowButton" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/arrowRight.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </children>
+        </AnchorPane>
     </GridPane>
 </AnchorPane>
