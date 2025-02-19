@@ -1,0 +1,10 @@
+@import "global-style.css";
+@import "global-registration-style.css";
+
+.VBoxField {
+    -fx-spacing: 15;
+}
+
+MenuButton {
+    -fx-pref-width: 285;
+}

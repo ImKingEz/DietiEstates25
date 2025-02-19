@@ -1,5 +1,7 @@
 package com.dietiestates25backend.business.service;
 
+import com.dietiestates25backend.business.entity.AgenteImmobiliare;
+import com.dietiestates25backend.business.entity.Amministratore;
 import com.dietiestates25backend.business.entity.Utente;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -28,6 +30,14 @@ public class JwtService {
         return generateToken(new HashMap<>(), utente);
     }
 
+    public String generateToken(Amministratore amministratore){
+        return generateToken(new HashMap<>(), amministratore);
+    }
+
+    public String generateToken(AgenteImmobiliare agente){
+        return generateToken(new HashMap<>(), agente);
+    }
+
     public String generateToken(
             Map<String, Object> extraClaims,
             Utente utente
@@ -38,6 +48,34 @@ public class JwtService {
                 .setSubject(utente.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+expiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(
+            Map<String, Object> extraClaims,
+            Amministratore amministratore
+    ){
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(amministratore.getEmail())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis()+expiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(
+            Map<String, Object> extraClaims,
+            AgenteImmobiliare agente
+    ) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(agente.getEmail())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

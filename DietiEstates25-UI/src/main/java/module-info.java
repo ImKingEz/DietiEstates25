@@ -12,6 +12,10 @@ module com.dietiestates25ui {
     requires jdk.jsobject;
     requires annotations;
 
+    requires java.datatransfer;
+    requires java.desktop;
+    requires org.apache.commons.validator;
+
     opens com.dietiestates25ui.controller to javafx.fxml;
     opens com.dietiestates25ui.model to com.fasterxml.jackson.databind;
 

@@ -9,6 +9,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public abstract class AbstractController {
 
@@ -54,6 +57,18 @@ public abstract class AbstractController {
 
     @FXML
     protected Button providerBackButton;
+    
+    @FXML
+    protected TextField passwordTextField;
+    
+    @FXML
+    protected HBox passwordHBox;
+    
+    @FXML
+    protected PasswordField passwordPasswordField;
+    
+    @FXML
+    protected ImageView eyeImageView;
 
     public Stage getCurrentStage() {
         return currentStage;
@@ -65,6 +80,7 @@ public abstract class AbstractController {
 
     protected void createAndPlaceBackButton() {
         providerBackButton = new Button("Torna indietro");
+        providerBackButton.getStyleClass().add("generalButton");
         providerBackButton.setVisible(false);
         providerBackButton.setOnAction(e -> hideWebView());
         AnchorPane.setBottomAnchor(providerBackButton, 10.0);
@@ -143,8 +159,9 @@ public abstract class AbstractController {
 
     public void openDashboard(String token, Button button) {
         loadScene("/com/dietiestates25ui/view/dashboard-view.fxml",
-                stageDashboard -> {
-                    DashboardController dashboardController = stageDashboard.getController();
+                (fxmlLoader, stage) -> {
+                    DashboardController dashboardController = fxmlLoader.getController();
+                    dashboardController.setStage(stage); // Chiama setStage anziché modificare currentStage
                     dashboardController.setToken(token);
                 }, button, "/com/dietiestates25ui/styles/dashboard-style.css");
     }
@@ -157,6 +174,7 @@ public abstract class AbstractController {
 
             if (sourceButton != null) {
                 stage = (Stage) sourceButton.getScene().getWindow();
+
                 stage.setWidth(stage.getWidth());
                 stage.setHeight(stage.getHeight());
                 stage.setX(stage.getX());
@@ -165,23 +183,60 @@ public abstract class AbstractController {
                 stage = currentStage;
             }
 
+            AbstractController controller = fxmlLoader.getController();
+            if(controller != null) {
+                controller.setStage(stage);
+            }
 
             if (stylesheetPath != null && !stylesheetPath.isEmpty()) {
                 scene.getStylesheets().add(getClass().getResource(stylesheetPath).toExternalForm());
             }
 
-            sceneConfigurator.configure(fxmlLoader);
+            sceneConfigurator.configure(fxmlLoader, stage);
+
             stage.setTitle(APP_TITLE);
             stage.setScene(scene);
             stage.show();
+
         } catch (IOException e) {
-            logger.error("Errore durante il caricamento della scena: {}", e.getMessage());
+            logger.error("Errore durante il caricamento della scena: {}", e.getMessage(), e);
             showPopup("Errore durante il caricamento della scena", e.getMessage(), ERROR_ICON);
         }
     }
 
+
     @FunctionalInterface
     public interface SceneConfigurator {
-        void configure(FXMLLoader fxmlLoader);
+        void configure(FXMLLoader fxmlLoader, Stage stage);
+    }
+    
+    protected void passwordTextFieldInitializer(String classOfTextField) {
+        passwordTextField = new TextField();
+        passwordTextField.getStyleClass().add(classOfTextField);
+        passwordTextField.setPromptText(passwordPasswordField.getPromptText());
+        passwordTextField.managedProperty().bind(passwordTextField.visibleProperty());
+        passwordTextField.setVisible(false);
+        passwordTextField.textProperty().bindBidirectional(passwordPasswordField.textProperty());
+    }
+
+    protected boolean togglePasswordVisibility(boolean passwordVisible) {
+        passwordVisible = !passwordVisible;
+        if (passwordVisible) {
+            if (!passwordHBox.getChildren().contains(passwordTextField)) {
+                passwordHBox.getChildren().remove(passwordPasswordField);
+                passwordHBox.getChildren().addFirst(passwordTextField);
+                passwordTextField.setPrefWidth(passwordPasswordField.getWidth());
+            }
+            passwordTextField.setVisible(true);
+            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_open.png"))));
+        } else {
+            if (!passwordHBox.getChildren().contains(passwordPasswordField)) {
+                passwordHBox.getChildren().remove(passwordTextField);
+                passwordHBox.getChildren().addFirst(passwordPasswordField);
+            }
+            eyeImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/eye_closed.png"))));
+            passwordTextField.setVisible(false);
+        }
+        return passwordVisible;
     }
 }

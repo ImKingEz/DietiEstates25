@@ -1,0 +1,6 @@
+@import "global-style.css";
+@import "global-registration-style.css";
+
+.VBoxField {
+    -fx-spacing: 15;
+}

@@ -1,0 +1,3 @@
+ALTER TABLE IF EXISTS agente_immobiliare DROP COLUMN sesso;
+DROP TYPE IF EXISTS genere CASCADE;
+ALTER TABLE agente_immobiliare ADD COLUMN sesso VARCHAR(255) NOT NULL;

@@ -9,11 +9,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +35,6 @@ public class RegisterController extends AbstractController implements Initializa
     private TextField nomeTextField;
 
     @FXML
-    private PasswordField passwordPasswordField;
-
-    @FXML
     private Button registratiButton;
 
     @FXML
@@ -54,7 +49,12 @@ public class RegisterController extends AbstractController implements Initializa
     @FXML
     private Button githubButton;
 
+    @FXML
+    private Button togglePasswordButton;
+
     private UtenteService utenteService;
+
+    private boolean passwordVisible = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -74,6 +74,9 @@ public class RegisterController extends AbstractController implements Initializa
         updateWebView(oAuth2Handler);
 
         actionButtonProvider();
+
+        passwordTextFieldInitializer("registerField");
+        togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
     }
 
     private void updateWebView(OAuth2Handler oAuth2Handler) {
@@ -139,6 +142,9 @@ public class RegisterController extends AbstractController implements Initializa
             logger.info("Registrazione effettuata con successo.");
             registratiButton.setDisable(true);
             indietroButton.setDisable(true);
+            googleButton.setDisable(true);
+            facebookButton.setDisable(true);
+            githubButton.setDisable(true);
             showPopup("Registrazione completata!", "Reindirizzamento al login...", SUCCESS_ICON);
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
             delay.setOnFinished(event -> openLoginPage());
@@ -159,6 +165,6 @@ public class RegisterController extends AbstractController implements Initializa
 
     private void openLoginPage() {
         loadScene("/com/dietiestates25ui/view/login-view.fxml",
-                stageLogin -> {}, indietroButton, "/com/dietiestates25ui/styles/login-style.css");
+                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/login-style.css");
     }
 }
