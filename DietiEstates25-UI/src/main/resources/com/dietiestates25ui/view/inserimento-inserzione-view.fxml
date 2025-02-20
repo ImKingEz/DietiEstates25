@@ -73,7 +73,7 @@
                                                 <graphic>
                                                     <ImageView fx:id="mapImageView" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                
-                                                              <Image url="@../images/map.png.png" />
+                                                              <Image url="@../images/map.png" />
                
                                                           </ImageView>
                                                 </graphic>
