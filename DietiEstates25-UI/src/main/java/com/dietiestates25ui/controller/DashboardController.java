@@ -2,6 +2,7 @@ package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.model.Utente;
 import com.dietiestates25ui.service.UtenteService;
 import javafx.animation.Interpolator;
@@ -59,12 +60,17 @@ public class DashboardController extends AbstractController implements Initializ
     @FXML
     private TextField maxPriceTextField;
 
+    @FXML
+    private Button confermaPrezzoButton;
+
     private static final double SCROLL_AMOUNT = 600.0;
     private final Duration scrollDuration = Duration.millis(500);
 
-    Utente utente;
+    private FiltroAnnunci filtroAnnunci = new FiltroAnnunci();
 
-    UtenteService utenteService = new UtenteService();
+    private Utente utente;
+
+    private UtenteService utenteService = new UtenteService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -84,28 +90,72 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void initializePriceTextFieldListeners() {
+        minPriceTextFieldListener();
+        maxPriceTextFieldListener();
+        confermaPrezzoButtonListener();
+    }
+
+    private void confermaPrezzoButtonListener() {
+        confermaPrezzoButton.setOnAction(event -> {
+            boolean toUpdate = false;
+            try {
+                double minPrice = Double.parseDouble(minPriceTextField.getText());
+                filtroAnnunci.setPrezzoMin(minPrice);
+                toUpdate = true;
+                logger.info("Prezzo minimo: {}", minPrice);
+            } catch (NumberFormatException e) {
+                logger.error("Prezzo minimo non valido.");
+                minPriceTextField.setText("");
+            }
+
+            try {
+                double maxPrice = Double.parseDouble(maxPriceTextField.getText());
+                filtroAnnunci.setPrezzoMax(maxPrice);
+                toUpdate = true;
+                logger.info("Prezzo massimo: {}", maxPrice);
+            } catch (NumberFormatException e) {
+                logger.error("Prezzo massimo non valido.");
+                maxPriceTextField.setText("");
+            }
+            //updateAnnunci(); TODO
+        });
+    }
+
+    private void maxPriceTextFieldListener() {
+        maxPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (Boolean.FALSE.equals(newVal)) {
+                try {
+                    double maxValue = Double.parseDouble(maxPriceTextField.getText());
+                    if (maxValue < 0) {
+                        throw new NumberFormatException();
+                    } else if (!minPriceTextField.getText().isBlank() && maxValue < Double.parseDouble(minPriceTextField.getText())) {
+                        throw new IllegalArgumentException();
+                    }
+                } catch (NumberFormatException e) {
+                    maxPriceTextField.setText("");
+                } catch (IllegalArgumentException e) {
+                    logger.error("Prezzo massimo inferiore al prezzo minimo.");
+                    maxPriceTextField.setText("");
+                }
+            }
+        });
+    }
+
+    private void minPriceTextFieldListener() {
         minPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
             if (Boolean.FALSE.equals(newVal)) {
                 try {
                     double minValue = Double.parseDouble(minPriceTextField.getText());
-                    System.out.println("Min price: " + minValue);
-                    // Qui puoi fare qualcosa con il valore minimo
+                    if (minValue < 0) {
+                        throw new NumberFormatException();
+                    } else if (!maxPriceTextField.getText().isBlank() && minValue > Double.parseDouble(maxPriceTextField.getText())) {
+                        throw new IllegalArgumentException();
+                    }
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid min price.");
                     minPriceTextField.setText("");
-                }
-            }
-        });
-
-        maxPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                try {
-                    double maxValue = Double.parseDouble(maxPriceTextField.getText());
-                    System.out.println("Max price: " + maxValue);
-                    // Qui puoi fare qualcosa con il valore massimo
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid max price.");
-                    maxPriceTextField.setText("");
+                } catch (IllegalArgumentException e) {
+                    logger.error("Prezzo minimo superiore al prezzo massimo.");
+                    minPriceTextField.setText("");
                 }
             }
         });

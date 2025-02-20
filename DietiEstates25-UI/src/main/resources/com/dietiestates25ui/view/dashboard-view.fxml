@@ -4,6 +4,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.CustomMenuItem?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
@@ -20,7 +21,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.control.CustomMenuItem?>
 <AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.DashboardController">
     <GridPane prefHeight="80.0" prefWidth="1280.0" styleClass="navbarGridPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -162,15 +162,16 @@
                                                   </ImageView>
                                               </graphic>
                                               <items>
-                                                  <CustomMenuItem fx:id="priceRangeMenuItem" hideOnClick="false">
+                                                  <CustomMenuItem fx:id="priceRangeMenuItem" hideOnClick="false" styleClass="filterCustomMenuItem">
                                                       <content>
-                                                          <VBox spacing="5.0" styleClass="priceRangeVBox">
+                                                          <VBox alignment="TOP_CENTER" spacing="5.0">
                                                               <padding>
                                                                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                                               </padding>
                                                               <children>
                                                                   <TextField fx:id="minPriceTextField" promptText="Min" />
                                                                   <TextField fx:id="maxPriceTextField" promptText="Max" />
+                                                <Button fx:id="confermaPrezzoButton" mnemonicParsing="false" styleClass="generalButton" text="Conferma" />
                                                               </children>
                                                           </VBox>
                                                       </content>
