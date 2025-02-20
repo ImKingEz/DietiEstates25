@@ -1,1 +1,23 @@
 @import "global-style.css";
+
+/* Stili specifici per la home page */
+
+.searchTextField {
+    -fx-max-width: 300px; /*Larghezza del textfield*/
+    -fx-pref-width: 300px;
+    -fx-max-height: 40px; /*Altezza del textfield*/
+    -fx-min-height: 40px;
+    -fx-font-size: 16px;
+}
+
+.menuButton {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-font-size: 16px;
+}
+
+.generalButton {
+    -fx-font-size: 16px; /*Grandezza del font dei bottoni*/
+}
