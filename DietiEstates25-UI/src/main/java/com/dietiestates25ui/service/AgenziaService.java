@@ -75,7 +75,7 @@ public class AgenziaService extends ApiService {
 
     public String generateRandomPassword(int len) {
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        SecureRandom random = new SecureRandom(); // Usa SecureRandom
+        SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder();
 
         sb.append((char) (random.nextInt(26) + 'A'));

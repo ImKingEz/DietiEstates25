@@ -8,6 +8,10 @@ public class Utente {
     private String email;
     private String password;
 
+    public Utente() {
+        // Costruttore di default
+    }
+
     public Utente(String nome, String cognome, String citta, String email, String password) {
         this.nome = nome;
         this.cognome = cognome;

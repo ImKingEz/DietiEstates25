@@ -1,19 +1,23 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.UtenteDTO;
+import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.Utente;
+import com.dietiestates25ui.service.UtenteService;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.geometry.Rectangle2D;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -43,13 +47,31 @@ public class DashboardController extends AbstractController implements Initializ
     @FXML
     private ImageView annuncioImageView2;
 
-    private final double scrollAmount = 600.0;
+    @FXML
+    private HBox profileHBox;
+
+    @FXML
+    private MenuButton prezzoMenuButton;
+
+    @FXML
+    private TextField minPriceTextField;
+
+    @FXML
+    private TextField maxPriceTextField;
+
+    private static final double SCROLL_AMOUNT = 600.0;
     private final Duration scrollDuration = Duration.millis(500);
+
+    Utente utente;
+
+    UtenteService utenteService = new UtenteService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
         Platform.runLater(() -> currentStage = (Stage) primaryAnchorPane.getScene().getWindow());
+
+        Platform.runLater(this::updateProfileHBox);
 
         Platform.runLater(() -> setAnnuncioImageView(annuncioImageView));
         Platform.runLater(() -> setAnnuncioImageView(annuncioImageView1));
@@ -57,6 +79,57 @@ public class DashboardController extends AbstractController implements Initializ
 
         scrollLeftButton.setOnAction(this::scrollLeft);
         scrollRightButton.setOnAction(this::scrollRight);
+
+        Platform.runLater(this::initializePriceTextFieldListeners);
+    }
+
+    private void initializePriceTextFieldListeners() {
+        minPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (Boolean.FALSE.equals(newVal)) {
+                try {
+                    double minValue = Double.parseDouble(minPriceTextField.getText());
+                    System.out.println("Min price: " + minValue);
+                    // Qui puoi fare qualcosa con il valore minimo
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid min price.");
+                    minPriceTextField.setText("");
+                }
+            }
+        });
+
+        maxPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                try {
+                    double maxValue = Double.parseDouble(maxPriceTextField.getText());
+                    System.out.println("Max price: " + maxValue);
+                    // Qui puoi fare qualcosa con il valore massimo
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid max price.");
+                    maxPriceTextField.setText("");
+                }
+            }
+        });
+    }
+
+    private void setUtente(String token) {
+        try {
+            logger.info("Recupero dati utente con token: {}", token);
+            UtenteDTO utenteDTO = utenteService.getUtenteDetails(token);
+            utente = new Utente();
+            utente.setNome(utenteDTO.getNome());
+            utente.setCognome(utenteDTO.getCognome());
+            utente.setEmail(utenteDTO.getEmail());
+            utente.setCitta(utenteDTO.getCitta());
+        } catch (GenericServiceException e) {
+            logger.error("Errore durante il recupero dei dati dell'utente: {}", e.getMessage());
+        }
+    }
+
+    private void updateProfileHBox() {
+        Text ciaoNome = new Text();
+        ciaoNome.getStyleClass().add("profileName");
+        ciaoNome.setText("Ciao " + utente.getNome());
+        profileHBox.getChildren().addFirst(ciaoNome);
     }
 
     private void scroll(double deltaX) {
@@ -74,12 +147,12 @@ public class DashboardController extends AbstractController implements Initializ
 
     @FXML
     private void scrollLeft(ActionEvent event) {
-        scroll(scrollAmount);
+        scroll(SCROLL_AMOUNT);
     }
 
     @FXML
     private void scrollRight(ActionEvent event) {
-        scroll(-scrollAmount);
+        scroll(-SCROLL_AMOUNT);
     }
 
     private void setAnnuncioImageView(ImageView imageViewAnnuncio) {
@@ -114,6 +187,6 @@ public class DashboardController extends AbstractController implements Initializ
 
     public void setToken(String token) {
         this.token = token;
+        setUtente(token);
     }
-
 }

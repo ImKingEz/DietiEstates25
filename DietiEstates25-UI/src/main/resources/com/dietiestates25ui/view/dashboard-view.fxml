@@ -20,6 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.CustomMenuItem?>
 <AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.DashboardController">
     <GridPane prefHeight="80.0" prefWidth="1280.0" styleClass="navbarGridPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -30,6 +31,7 @@
         <rowConstraints>
             <RowConstraints maxHeight="80.0" minHeight="80.0" prefHeight="80.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="90.0" minHeight="90.0" prefHeight="90.0" vgrow="SOMETIMES" />
+         <RowConstraints />
          <RowConstraints />
         </rowConstraints>
       <HBox fx:id="backgroundNavbarRow" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2147483647" />
@@ -134,8 +136,10 @@
                                     <children>
                                         <MenuButton mnemonicParsing="false" text="Tipologia">
                                             <items>
-                                                <MenuItem mnemonicParsing="false" text="Casa" />
+                                                <MenuItem mnemonicParsing="false" text="Casa indipendente" />
                                                 <MenuItem mnemonicParsing="false" text="Appartamento" />
+                                    <MenuItem mnemonicParsing="false" text="Villa" />
+                                    <MenuItem mnemonicParsing="false" text="Terreno" />
                                             </items>
                                             <graphic>
                                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -147,88 +151,65 @@
                                         </MenuButton>
                                     </children>
                                 </HBox>
-                                <VBox alignment="CENTER" fillWidth="false" styleClass="filterGroupVBox">
-                                    <children>
-                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Prezzo (€)" />
-                                        <HBox alignment="CENTER" fillHeight="false" styleClass="filterGroupHBox">
-                                            <children>
-                                                <HBox alignment="CENTER">
-                                                    <children>
-                                                        <MenuButton mnemonicParsing="false" text="Min">
-                                                            <items>
-                                                                <MenuItem mnemonicParsing="false" text="20.000" />
-                                                                <MenuItem mnemonicParsing="false" text="40.000" />
-                                                            </items>
-                                                            <graphic>
-                                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                                    <image>
-                                                                        <Image url="@../images/priceIcon.png" />
-                                                                    </image>
-                                                                </ImageView>
-                                                            </graphic>
-                                                        </MenuButton>
-                                                    </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER">
-                                                    <children>
-                                                        <MenuButton mnemonicParsing="false" text="Max">
-                                                            <items>
-                                                                <MenuItem mnemonicParsing="false" text="20.000" />
-                                                                <MenuItem mnemonicParsing="false" text="40.000" />
-                                                            </items>
-                                                            <graphic>
-                                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                                    <image>
-                                                                        <Image url="@../images/priceIcon.png" />
-                                                                    </image>
-                                                                </ImageView>
-                                                            </graphic>
-                                                        </MenuButton>
-                                                    </children>
-                                                </HBox>
-                                            </children>
-                                        </HBox>
-                                    </children>
-                                </VBox>
+                                  <HBox alignment="CENTER" fillHeight="false" styleClass="filterGroupHBox">
+                                      <children>
+                                          <MenuButton fx:id="prezzoMenuButton" mnemonicParsing="false" text="Prezzo (€)">
+                                              <graphic>
+                                                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                      <image>
+                                                          <Image url="@../images/priceIcon.png" />
+                                                      </image>
+                                                  </ImageView>
+                                              </graphic>
+                                              <items>
+                                                  <CustomMenuItem fx:id="priceRangeMenuItem" hideOnClick="false">
+                                                      <content>
+                                                          <VBox spacing="5.0" styleClass="priceRangeVBox">
+                                                              <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                              </padding>
+                                                              <children>
+                                                                  <TextField fx:id="minPriceTextField" promptText="Min" />
+                                                                  <TextField fx:id="maxPriceTextField" promptText="Max" />
+                                                              </children>
+                                                          </VBox>
+                                                      </content>
+                                                  </CustomMenuItem>
+                                              </items>
+                                          </MenuButton>
+                                      </children>
+                                  </HBox>
                                 <VBox alignment="CENTER" fillWidth="false" styleClass="filterGroupVBox">
                                     <children>
                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Superficie (mq)" />
                                         <HBox alignment="CENTER" fillHeight="false" styleClass="filterGroupHBox">
                                             <children>
-                                                <HBox alignment="CENTER">
-                                                    <children>
-                                                        <MenuButton mnemonicParsing="false" text="Min">
-                                                            <items>
-                                                                <MenuItem mnemonicParsing="false" text="20" />
-                                                                <MenuItem mnemonicParsing="false" text="40" />
-                                                            </items>
-                                                            <graphic>
-                                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                                    <image>
-                                                                        <Image url="@../images/superficieIcon.png" />
-                                                                    </image>
-                                                                </ImageView>
-                                                            </graphic>
-                                                        </MenuButton>
-                                                    </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER">
-                                                    <children>
-                                                        <MenuButton mnemonicParsing="false" text="Max">
-                                                            <items>
-                                                                <MenuItem mnemonicParsing="false" text="20" />
-                                                                <MenuItem mnemonicParsing="false" text="40" />
-                                                            </items>
-                                                            <graphic>
-                                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                                    <image>
-                                                                        <Image url="@../images/superficieIcon.png" />
-                                                                    </image>
-                                                                </ImageView>
-                                                            </graphic>
-                                                        </MenuButton>
-                                                    </children>
-                                                </HBox>
+                                                  <MenuButton mnemonicParsing="false" text="Min">
+                                                      <items>
+                                                          <MenuItem mnemonicParsing="false" text="20" />
+                                                          <MenuItem mnemonicParsing="false" text="40" />
+                                                      </items>
+                                                      <graphic>
+                                                          <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                              <image>
+                                                                  <Image url="@../images/superficieIcon.png" />
+                                                              </image>
+                                                          </ImageView>
+                                                      </graphic>
+                                                  </MenuButton>
+                                                  <MenuButton mnemonicParsing="false" text="Max">
+                                                      <items>
+                                                          <MenuItem mnemonicParsing="false" text="20" />
+                                                          <MenuItem mnemonicParsing="false" text="40" />
+                                                      </items>
+                                                      <graphic>
+                                                          <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                              <image>
+                                                                  <Image url="@../images/superficieIcon.png" />
+                                                              </image>
+                                                          </ImageView>
+                                                      </graphic>
+                                                  </MenuButton>
                                             </children>
                                         </HBox>
                                     </children>
@@ -400,266 +381,262 @@
                 </Button>
          </children>
       </HBox>
-      <VBox fx:id="primaryVBox" prefWidth="1280.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
+      <AnchorPane fx:id="listaAnnunciAnchorPane" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
          <children>
-            <ScrollPane VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="annunciScrollPane" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="0.0">
                <content>
-                  <HBox fx:id="primaryHBox">
+                  <VBox fx:id="listaAnnunciVBox">
                      <children>
-                        <VBox fx:id="listaAnnunciVBox">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="&quot;N&quot; &quot;tipologia&quot; in &quot;tipo&quot; a  &quot;città&quot;" />
+                        <HBox styleClass="annuncioHBox">
                            <children>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="&quot;N&quot; &quot;tipologia&quot; in &quot;tipo&quot; a  &quot;città&quot;" />
-                              <HBox styleClass="annuncioHBox">
+                              <StackPane styleClass="annuncioImageStackPane">
                                  <children>
-                                    <StackPane styleClass="annuncioImageStackPane">
+                                    <ImageView fx:id="annuncioImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="annuncioImageView" />
+                                 </children>
+                              </StackPane>
+                              <VBox styleClass="annuncioDetailVBox">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Casa di Napoli enorme" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="500.000€" />
+                                    <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
                                        <children>
-                                          <ImageView fx:id="annuncioImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="annuncioImageView" />
-                                       </children>
-                                    </StackPane>
-                                    <VBox styleClass="annuncioDetailVBox">
-                                       <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Casa di Napoli enorme" />
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="500.000€" />
-                                          <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
+                                          <HBox styleClass="detailWithIconHBox">
                                              <children>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/roomIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="3 locali" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/superficieIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="120mq" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/bathroomIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="2 bagni" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/schoolIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Scuola vicina" />
-                                                   </children>
-                                                </HBox>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/roomIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="3 locali" />
                                              </children>
-                                          </FlowPane>
-                                          <HBox styleClass="annuncioButtonsHBox">
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
                                              <children>
-                                                <Button mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
-                                                   <graphic>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/calendarIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </graphic>
-                                                </Button>
-                                                <Button mnemonicParsing="false" styleClass="generalButton" text="Fai un'offerta">
-                                                   <graphic>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/euroIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </graphic>
-                                                </Button>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/superficieIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="120mq" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/bathroomIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="2 bagni" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/schoolIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Scuola vicina" />
                                              </children>
                                           </HBox>
                                        </children>
-                                    </VBox>
+                                    </FlowPane>
+                                    <HBox styleClass="annuncioButtonsHBox">
+                                       <children>
+                                          <Button mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
+                                             <graphic>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/calendarIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                          <Button mnemonicParsing="false" styleClass="generalButton" text="Fai un'offerta">
+                                             <graphic>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/euroIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </HBox>
                                  </children>
-                              </HBox>
-                              <HBox styleClass="annuncioHBox">
-                                 <children>
-                                    <StackPane styleClass="annuncioImageStackPane">
-                                       <children>
-                                          <ImageView fx:id="annuncioImageView1" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="annuncioImageView" />
-                                       </children>
-                                    </StackPane>
-                                    <VBox styleClass="annuncioDetailVBox">
-                                       <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Casa di Napoli enorme" />
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="500.000€" />
-                                          <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
-                                             <children>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/roomIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="3 locali" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/superficieIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="120mq" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/bathroomIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="2 bagni" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/schoolIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Scuola vicina" />
-                                                   </children>
-                                                </HBox>
-                                             </children>
-                                          </FlowPane>
-                                          <HBox styleClass="annuncioButtonsHBox">
-                                             <children>
-                                                <Button mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
-                                                   <graphic>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/calendarIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </graphic>
-                                                </Button>
-                                                <Button mnemonicParsing="false" styleClass="generalButton" text="Fai un'offerta">
-                                                   <graphic>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/euroIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </graphic>
-                                                </Button>
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </HBox>
-                              <HBox styleClass="annuncioHBox">
-                                 <children>
-                                    <StackPane styleClass="annuncioImageStackPane">
-                                       <children>
-                                          <ImageView fx:id="annuncioImageView2" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="annuncioImageView" />
-                                       </children>
-                                    </StackPane>
-                                    <VBox styleClass="annuncioDetailVBox">
-                                       <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Casa di Napoli enorme" />
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="500.000€" />
-                                          <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
-                                             <children>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/roomIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="3 locali" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/superficieIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="120mq" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/bathroomIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="2 bagni" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox styleClass="detailWithIconHBox">
-                                                   <children>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/schoolIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Scuola vicina" />
-                                                   </children>
-                                                </HBox>
-                                             </children>
-                                          </FlowPane>
-                                          <HBox styleClass="annuncioButtonsHBox">
-                                             <children>
-                                                <Button mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
-                                                   <graphic>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/calendarIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </graphic>
-                                                </Button>
-                                                <Button mnemonicParsing="false" styleClass="generalButton" text="Fai un'offerta">
-                                                   <graphic>
-                                                      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
-                                                         <image>
-                                                            <Image url="@../images/euroIcon.png" />
-                                                         </image>
-                                                      </ImageView>
-                                                   </graphic>
-                                                </Button>
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </HBox>
+                              </VBox>
                            </children>
-                        </VBox>
-                        <VBox fx:id="mappaImmobiliVBox" />
+                        </HBox>
+                        <HBox styleClass="annuncioHBox">
+                           <children>
+                              <StackPane styleClass="annuncioImageStackPane">
+                                 <children>
+                                    <ImageView fx:id="annuncioImageView1" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="annuncioImageView" />
+                                 </children>
+                              </StackPane>
+                              <VBox styleClass="annuncioDetailVBox">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Casa di Napoli enorme" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="500.000€" />
+                                    <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
+                                       <children>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/roomIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="3 locali" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/superficieIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="120mq" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/bathroomIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="2 bagni" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/schoolIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Scuola vicina" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </FlowPane>
+                                    <HBox styleClass="annuncioButtonsHBox">
+                                       <children>
+                                          <Button mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
+                                             <graphic>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/calendarIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                          <Button mnemonicParsing="false" styleClass="generalButton" text="Fai un'offerta">
+                                             <graphic>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/euroIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox styleClass="annuncioHBox">
+                           <children>
+                              <StackPane styleClass="annuncioImageStackPane">
+                                 <children>
+                                    <ImageView fx:id="annuncioImageView2" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="annuncioImageView" />
+                                 </children>
+                              </StackPane>
+                              <VBox styleClass="annuncioDetailVBox">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Casa di Napoli enorme" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="500.000€" />
+                                    <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
+                                       <children>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/roomIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="3 locali" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/superficieIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="120mq" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/bathroomIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="2 bagni" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="detailWithIconHBox">
+                                             <children>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/schoolIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Scuola vicina" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </FlowPane>
+                                    <HBox styleClass="annuncioButtonsHBox">
+                                       <children>
+                                          <Button mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
+                                             <graphic>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/calendarIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                          <Button mnemonicParsing="false" styleClass="generalButton" text="Fai un'offerta">
+                                             <graphic>
+                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                   <image>
+                                                      <Image url="@../images/euroIcon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
                      </children>
-                  </HBox>
+                  </VBox>
                </content>
             </ScrollPane>
+            <VBox fx:id="mappaImmobiliVBox" />
          </children>
-      </VBox>
+      </AnchorPane>
     </GridPane>
 </AnchorPane>
