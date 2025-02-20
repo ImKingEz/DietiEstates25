@@ -65,6 +65,7 @@ public class AnnuncioService extends ApiService {
         publisher.addFormDataPart("prezzo", String.valueOf(annuncio.getPrezzo()));
         publisher.addFormDataPart("descrizione", annuncio.getDescrizione());
         publisher.addFormDataPart("idImmobile", String.valueOf(annuncio.getIdImmobile()));
+        publisher.addFormDataPart("idAgente", String.valueOf(annuncio.getIdAgente()));
 
         for (File file : selectedImageList) {
             if (file != null) {

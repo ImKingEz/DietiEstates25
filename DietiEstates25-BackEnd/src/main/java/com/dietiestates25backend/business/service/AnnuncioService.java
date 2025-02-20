@@ -79,7 +79,7 @@ public class AnnuncioService {
                 registerAnnuncioDTO.getTipo(),
                 registerAnnuncioDTO.getPrezzo(),
                 registerAnnuncioDTO.getDescrizione(),
-                1L, //TODO
+                registerAnnuncioDTO.getIdAgente(),
                 registerAnnuncioDTO.getIdImmobile()
         );
     }
@@ -121,6 +121,7 @@ public class AnnuncioService {
     private AnnuncioDTO convertToDTO(Annuncio savedAnnuncio) {
         return new AnnuncioDTO(
                 savedAnnuncio.getIdImmobile(),
+                savedAnnuncio.getIdAgente(),
                 savedAnnuncio.getTitolo(),
                 savedAnnuncio.getTipo(),
                 savedAnnuncio.getPrezzo(),

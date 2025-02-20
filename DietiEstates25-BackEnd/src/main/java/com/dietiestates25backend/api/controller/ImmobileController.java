@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -27,8 +28,7 @@ public class ImmobileController extends BaseController {
     }
 
     @PostMapping(value = "/create")
-    //@PreAuthorize("hasRole('ROLE_AGENTE')")
-    @PermitAll //TODO: remove this line
+    @PreAuthorize("hasRole('ROLE_AGENTE')")
     public ResponseEntity<ApiResponse<ImmobileDTO>> registerImmobile(@RequestBody @Valid ImmobileDTO immobileDTO) {
         try {
             return successResponse(immobileService.saveImmobile(immobileDTO), HttpStatus.CREATED);

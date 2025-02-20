@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.GestioneImmobiliController">
+<AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.AgenteDashboardController">
     <GridPane prefHeight="80.0" prefWidth="1280.0" styleClass="navbarGridPane" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="160.53336334228516" minWidth="10.0" prefWidth="160.53336334228516" />

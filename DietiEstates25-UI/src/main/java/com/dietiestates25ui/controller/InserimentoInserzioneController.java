@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -109,6 +110,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     private String token;
 
+    private AgenteImmobiliare agente;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //focus sul logo
@@ -130,6 +133,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> {});
 
         createAndPlaceBackButton();
+    }
+
+    public void setAgente(AgenteImmobiliare agente) {
+        this.agente = agente;
     }
 
     private void setupTipoMenuButton() {
@@ -408,8 +415,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
     }
 
     private void openGestioneImmobiliPage() {
-        loadScene("/com/dietiestates25ui/view/gestione-immobili-view.fxml",
-                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/gestione-immobili-style.css");
+        loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
+                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 
     private void updateAvantiButtonState() {
@@ -602,6 +609,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     controller.setAnnuncio(annuncio);
                     controller.setSelectedImageList(selectedImageList);
                     controller.setToken(token);
+                    controller.setAgente(agente);
                     controller.setStage(stage);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");
     }

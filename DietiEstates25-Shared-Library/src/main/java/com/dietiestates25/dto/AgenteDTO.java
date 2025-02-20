@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AgenteDTO {
+    private Long id;
     private Long idAgenzia;
     private String nome;
     private String cognome;
