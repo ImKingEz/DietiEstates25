@@ -25,7 +25,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/DietiEstates25
     volumes:
       - ./target/dietiestates-backend-1.0-SNAPSHOT.jar:/app/app.jar
-      - uploads:/app/uploads/foto_immobili
-      - uploads:/app/uploads/logos
+      - uploads_foto_immobili:/app/uploads/foto_immobili
+      - uploads_logos:/app/uploads/logos
 volumes:
   postgres_data:
+  uploads_foto_immobili:
+  uploads_logos:
