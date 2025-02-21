@@ -73,19 +73,18 @@ public class DashboardController extends AbstractController implements Initializ
 
     // MenuButtons
     @FXML
-    private MenuButton tipoMenuButton; // Tipo (Vendita, Affitto)
+    private MenuButton tipoMenuButton;
     @FXML
-    private MenuButton tipologiaMenuButton; // Tipologia (Casa indipendente, Appartamento, Villa, Terreno)
+    private MenuButton tipologiaMenuButton;
     @FXML
-    private MenuButton localiMenuButton; // Locali (1, 2, 3, 4, 5 o più)
+    private MenuButton localiMenuButton;
     @FXML
-    private MenuButton bagniMenuButton; // Bagni (1, 2, 3, 4 o più)
+    private MenuButton bagniMenuButton;
     @FXML
-    private MenuButton pianoMenuButton; // Piano (Piano terra, Piani intermedi, Ultimo piano)
+    private MenuButton pianoMenuButton;
     @FXML
-    private MenuButton classeEnergeticaMenuButton; // Classe energetica (Alta, Media, Bassa)
+    private MenuButton classeEnergeticaMenuButton;
 
-    // CheckBoxes
     @FXML
     private CheckBox ascensoreCheckBox;
     @FXML
@@ -226,7 +225,7 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void setAnnunciScrollPanePrefWidth(double newValue) {
-        double scrollPaneWidth = newValue * 0.5; // 60% della larghezza
+        double scrollPaneWidth = newValue * 0.55;
         annunciScrollPane.setPrefWidth(scrollPaneWidth);
     }
 
@@ -338,19 +337,17 @@ public class DashboardController extends AbstractController implements Initializ
         updateAnnunci();
     }
 
-    // Utility method to handle MenuButton selections
     private void initializeMenuItems(MenuButton menuButton, Consumer<String> filterSetter) {
         for (MenuItem item : menuButton.getItems()) {
             item.setOnAction(event -> {
                 String selectedText = item.getText();
                 filterSetter.accept(selectedText);
-                menuButton.setText(selectedText); // Update MenuButton text
+                menuButton.setText(selectedText);
                 updateAnnunci();
             });
         }
     }
 
-    // Utility method to handle MenuButton selections
     private void initializeMenuItemsLocali(MenuButton menuButton, IntConsumer filterSetter) {
         for (MenuItem item : menuButton.getItems()) {
             item.setOnAction(event -> {
@@ -362,13 +359,12 @@ public class DashboardController extends AbstractController implements Initializ
                     value = Integer.parseInt(selectedText);
                 }
                 filterSetter.accept(value);
-                menuButton.setText("Locali: " + selectedText); // Update MenuButton text
+                menuButton.setText("Locali: " + selectedText);
                 updateAnnunci();
             });
         }
     }
 
-    // Utility method to handle MenuButton selections
     private void initializeMenuItemsBagni(MenuButton menuButton, IntConsumer filterSetter) {
         for (MenuItem item : menuButton.getItems()) {
             item.setOnAction(event -> {
@@ -380,13 +376,12 @@ public class DashboardController extends AbstractController implements Initializ
                     value = Integer.parseInt(selectedText);
                 }
                 filterSetter.accept(value);
-                menuButton.setText("Bagni: " + selectedText); // Update MenuButton text
+                menuButton.setText("Bagni: " + selectedText);
                 updateAnnunci();
             });
         }
     }
 
-    // Utility method to handle MenuButton selections
     private void initializeMenuItemsPiano(MenuButton menuButton, IntConsumer filterSetter) {
         for (MenuItem item : menuButton.getItems()) {
             item.setOnAction(event -> {
@@ -398,7 +393,7 @@ public class DashboardController extends AbstractController implements Initializ
                     default -> 0;
                 };
                 filterSetter.accept(value);
-                menuButton.setText(selectedText); // Update MenuButton text
+                menuButton.setText(selectedText);
                 updateAnnunci();
             });
         }
@@ -415,7 +410,7 @@ public class DashboardController extends AbstractController implements Initializ
                     default -> "Bassa";
                 };
                 filterSetter.accept(value);
-                classeEnergeticaMenuButton.setText("Classe energetica: " + selectedText); // Update MenuButton text
+                classeEnergeticaMenuButton.setText("Classe energetica: " + selectedText);
                 updateAnnunci();
             });
         }
