@@ -4,6 +4,8 @@ import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25ui.exception.*;
 import com.dietiestates25ui.model.Annuncio;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
@@ -79,6 +81,49 @@ public class AnnuncioService extends ApiService {
     @Override
     protected String getBaseUrl() {
         return "http://localhost:8080/api/annunci";
+    }
+
+    public List<AnnuncioDTO> searchAnnunciByCitta(String citta, String token) throws GenericServiceException {
+        try {
+            fetchCsrfToken();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(getBaseUrl() + "/search?citta=" + citta))
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
+                    .header(AUTHORIZATION, BEARER + token)
+                    .header(csrfTokenHeaderName, csrfTokenValue)
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = executeRequest(request);
+            int statusCode = response.statusCode();
+
+            if (statusCode == 200) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
+                ApiResponse<List<AnnuncioDTO>> apiResponse = null;
+                try {
+                    apiResponse = objectMapper.readValue(response.body(), typeReference);
+                } catch (IOException e) {
+                    logger.error("Errore durante la deserializzazione della risposta JSON: {}", e.getMessage(), e);
+                    throw new ApiClientException("Errore nella risposta del server. Impossibile leggere gli annunci.");
+                }
+
+
+                if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
+                    return apiResponse.getData();
+                } else {
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la ricerca.";
+                    logger.warn("Ricerca annunci fallita: {}", errorMessage);
+                    throw new GenericServiceException(errorMessage);
+                }
+            } else {
+                handleErrorResponse(statusCode, response);
+                throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
+            }
+        } catch (Exception e) {
+            throw handleGenericException("Errore durante la ricerca degli annunci: " + e.getMessage(), e);
+        }
     }
 
     @Override

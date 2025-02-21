@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Service
 public class AnnuncioService {
@@ -118,7 +119,7 @@ public class AnnuncioService {
         }
     }
 
-    private AnnuncioDTO convertToDTO(Annuncio savedAnnuncio) {
+    public AnnuncioDTO convertToDTO(Annuncio savedAnnuncio) {
         return new AnnuncioDTO(
                 savedAnnuncio.getIdImmobile(),
                 savedAnnuncio.getIdAgente(),
@@ -127,5 +128,10 @@ public class AnnuncioService {
                 savedAnnuncio.getPrezzo(),
                 savedAnnuncio.getDescrizione()
         );
+    }
+
+    public List<Annuncio> findAnnunciByCitta(String citta) {
+        logger.debug("Ricerca annunci per città: {}", citta);
+        return annuncioRepository.findByCittaInIndirizzo(citta);
     }
 }

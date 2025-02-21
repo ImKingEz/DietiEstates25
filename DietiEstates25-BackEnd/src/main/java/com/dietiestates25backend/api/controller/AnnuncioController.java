@@ -3,6 +3,7 @@ package com.dietiestates25backend.api.controller;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
+import com.dietiestates25backend.business.entity.Annuncio;
 import com.dietiestates25backend.business.service.AnnuncioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -36,6 +40,20 @@ public class AnnuncioController extends BaseController {
             logger.error("Errore durante la creazione dell'annuncio: {}", e.getMessage(), e);
             ApiResponse<AnnuncioDTO> response = new ApiResponse<>(false, null, "Errore durante la creazione dell'annuncio: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciByCitta(@RequestParam String citta) {
+        try {
+            List<Annuncio> annunci = annuncioService.findAnnunciByCitta(citta);
+            List<AnnuncioDTO> annuncioDTOs = annunci.stream()
+                    .map(annuncioService::convertToDTO)
+                    .collect(Collectors.toList());
+            return successResponse(annuncioDTOs);
+        } catch (Exception e) {
+            logger.error("Errore durante la ricerca degli annunci per città: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante la ricerca degli annunci per città", "Annuncio");
         }
     }
 }

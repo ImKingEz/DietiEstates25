@@ -1,8 +1,10 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.Utente;
+import com.dietiestates25ui.service.AnnuncioService;
 import com.dietiestates25ui.service.UtenteService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -18,20 +20,18 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 public class HomePageController extends AbstractController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(HomePageController.class);
 
     @FXML
-    private AnchorPane primaryAnchorPane;
-    @FXML
     private GridPane navbarGridPane;
     @FXML
     private HBox profileHBox;
-    @FXML
-    private ImageView logo;
     @FXML
     public ToggleButton venditaButton;
     @FXML
@@ -56,14 +56,14 @@ public class HomePageController extends AbstractController implements Initializa
     private MenuItem casaIndipendenteMenuItem;
     @FXML
     private Button tornaIndietroButton;
-
-    private Stage currentStage;
     private String token;
 
     private String selectedTipologiaText = "Appartamento"; // Imposta "Appartamento" come predefinito
 
     private Utente utente;
     private UtenteService utenteService = new UtenteService();
+
+    private AnnuncioService annuncioService = new AnnuncioService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -116,10 +116,6 @@ public class HomePageController extends AbstractController implements Initializa
         setUtente(token);
     }
 
-    public void setStage(Stage stage) {
-        this.currentStage = stage;
-    }
-
     private void setupTextFieldListeners() {
         ricercaTextField.focusedProperty().addListener((obs, oldVal, newVal) -> handleTextFieldFocusChange(newVal));
         ricercaTextField.textProperty().addListener((observable, oldValue, newValue) -> updateButtonStates());
@@ -159,8 +155,47 @@ public class HomePageController extends AbstractController implements Initializa
     }
 
     private void handleCercaButtonAction() {
-        System.out.println("Cerca cliccato!");
-        // Implementa la logica di ricerca
+        String citta = ricercaTextField.getText();
+
+        if (citta != null && !citta.isEmpty()) {
+            // Effettua la chiamata asincrona al backend
+            CompletableFuture<List<AnnuncioDTO>> futureAnnunci = CompletableFuture.supplyAsync(() -> {
+                try {
+                    return annuncioService.searchAnnunciByCitta(citta, token);
+                } catch (GenericServiceException e) {
+                    logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
+                    Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
+                    return null;
+                }
+            });
+
+            // Gestisci il risultato quando è disponibile
+            futureAnnunci.thenAccept(annunci -> {
+                if (annunci != null) {
+                    // Aggiorna l'interfaccia utente con i risultati
+                    Platform.runLater(() -> {
+                        if (annunci.isEmpty()) {
+                            showPopup("Nessun risultato", "Nessun annuncio trovato per la città di " + citta, null);
+                        } else {
+                            // Mostra i risultati (per ora nella console, poi nell'UI)
+                            annunci.forEach(annuncio -> {
+                                System.out.println("Titolo: " + annuncio.getTitolo());
+                                System.out.println("idImmobile: " + annuncio.getIdImmobile());
+                                //Ora devo usare l'idImmobile per mostrare l'indirizzo dell'immobile
+                            });
+                        }
+                    });
+                }
+            });
+
+            futureAnnunci.exceptionally(ex -> {
+                logger.error("Errore durante la chiamata al servizio: {}", ex.getMessage(), ex);
+                Platform.runLater(() -> showPopup("Errore", "Errore imprevisto: " + ex.getMessage(), ERROR_ICON));
+                return null;
+            });
+        } else {
+            showPopup("Attenzione", "Inserisci una città per effettuare la ricerca.", ERROR_ICON);
+        }
     }
 
     @FXML

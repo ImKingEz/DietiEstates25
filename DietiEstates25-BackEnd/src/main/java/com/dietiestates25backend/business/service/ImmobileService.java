@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
+import java.util.List;
+
 @Service
 public class ImmobileService {
 
@@ -60,7 +62,7 @@ public class ImmobileService {
         );
     }
 
-    private ImmobileDTO convertToDTO(Immobile savedImmobile) {
+    public ImmobileDTO convertToDTO(Immobile savedImmobile) {
         return new ImmobileDTO(
                 savedImmobile.getId(),
                 savedImmobile.getTipologia(),
@@ -79,5 +81,10 @@ public class ImmobileService {
                 savedImmobile.isVicinoParchi(),
                 savedImmobile.isVicinoTrasportoPubblico()
         );
+    }
+
+    public List<Immobile> findImmobiliByCitta(String citta) {
+        logger.debug("Ricerca immobili per città: {}", citta);
+        return immobileRepository.findByCittaInIndirizzo(citta);
     }
 }
