@@ -62,19 +62,19 @@
                 <children>
                     <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
                         <children>
-                            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="Cerca la casa che fa per te!" textAlignment="CENTER" />
+                            <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="Cerca l'immobile che fa per te!" textAlignment="CENTER" />
                             <VBox alignment="CENTER" prefWidth="1280.0">
                                 <children>
                                     <HBox alignment="CENTER" spacing="20.0">
                                         <children>
-                                            <HBox alignment="CENTER" maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="10.0" styleClass="toggle-group">
+                                            <HBox alignment="CENTER" maxHeight="60.0" minHeight="60.0" prefHeight="60.0" styleClass="toggle-group">
                                                 <children>
-                                                    <ToggleButton fx:id="venditaButton" mnemonicParsing="false" styleClass="toggle-button" text="Vendita">
+                                                    <ToggleButton fx:id="venditaButton" mnemonicParsing="false" prefHeight="40.0" styleClass="toggle-button" text="Vendita">
                                                         <toggleGroup>
                                                             <ToggleGroup fx:id="venditaAffittoToggleGroup" />
                                                         </toggleGroup>
                                                     </ToggleButton>
-                                                    <ToggleButton fx:id="affittoButton" mnemonicParsing="false" styleClass="toggle-button" text="Affitto" toggleGroup="$venditaAffittoToggleGroup" />
+                                                    <ToggleButton fx:id="affittoButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.6" styleClass="toggle-button" text="Affitto" toggleGroup="$venditaAffittoToggleGroup" />
                                                 </children>
                                             </HBox>
                                             <MenuButton fx:id="tipologiaMenuButton" maxHeight="40.0" minHeight="40.0" mnemonicParsing="false" prefHeight="40.0" styleClass="menuButton" text="Tipologia">

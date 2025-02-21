@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -10,11 +11,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javafx.scene.Scene;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.text.DecimalFormat;
@@ -32,7 +28,9 @@ public class RicercaConMappaController extends AbstractController implements Ini
     @FXML
     private Button tornaIndietroButton;
     @FXML
-    private Label raggioRicercaLabel; // Aggiungi il campo per la label
+    private Label raggioRicercaLabel;
+    @FXML
+    private Label titoloLabel;
 
     private boolean venditaSelezionato;
 
@@ -42,27 +40,28 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     private String token;
 
-    private HomePageController homePageController;
-
     private Stage currentStage;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        Platform.runLater(() -> {
+            titoloLabel.requestFocus();
+            currentStage = (Stage) primaryAnchorPane.getScene().getWindow();
+        });
+
+        setupSlider();
+
+        tornaIndietroButton.setOnAction(event -> openHomePage());
+        cercaButton.setOnAction(event -> handleCercaButtonAction());
+
+        loadMap();
+    }
 
     public void setToken(String token) {
         this.token = token;
     }
 
-    public void setStage(Stage stage) {
-        this.currentStage = stage;
-    }
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        setupUI();
-        setupButtonActions();
-        loadMap();
-    }
-
-    private void setupUI() {
+    private void setupSlider() {
         DecimalFormat df = new DecimalFormat("#");
         radiusSlider.setMin(100);
         radiusSlider.setMax(1000);
@@ -71,11 +70,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
         radiusSlider.valueProperty().addListener((ov, old_val, new_val) -> {
             raggioRicercaLabel.setText("Raggio di ricerca: " + df.format(new_val) + "mt");
         });
-    }
-
-    private void setupButtonActions() {
-        tornaIndietroButton.setOnAction(event -> openHomePage());
-        cercaButton.setOnAction(event -> handleCercaButtonAction());
     }
 
     private void loadMap() {
@@ -94,7 +88,14 @@ public class RicercaConMappaController extends AbstractController implements Ini
             HomePageController homeController = fxmlLoader.getController();
             homeController.setToken(token);
             homeController.setStage(currentStage);
-            homeController.setPreviousSelection(getVenditaSelezionato(), getAffittoSelezionato(), getTipologiaSelezionata());
+            if (venditaSelezionato) {
+                homeController.venditaButton.setSelected(true);
+                homeController.affittoButton.setSelected(false);
+            } else {
+                homeController.venditaButton.setSelected(false);
+                homeController.affittoButton.setSelected(true);
+            }
+            homeController.tipologiaMenuButton.setText(getTipologiaSelezionata());
         }, tornaIndietroButton, "/com/dietiestates25ui/styles/home-page-style.css");
     }
 
@@ -114,14 +115,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     public void setTipologiaSelezionata(String tipologiaSelezionata) {
         this.tipologiaSelezionata = tipologiaSelezionata;
-    }
-
-    public boolean getVenditaSelezionato() {
-        return venditaSelezionato;
-    }
-
-    public boolean getAffittoSelezionato() {
-        return affittoSelezionato;
     }
 
     public String getTipologiaSelezionata() {

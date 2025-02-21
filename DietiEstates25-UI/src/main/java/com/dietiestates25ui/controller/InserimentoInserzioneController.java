@@ -449,17 +449,19 @@ public class InserimentoInserzioneController extends AbstractController implemen
         String tipologia = tipologiaMenuButton.getText();
 
         boolean isPrezzoValid = false;
+        double prezzoValue = 0;
         try {
-            Double.parseDouble(prezzo);
-            isPrezzoValid = true;
+            prezzoValue = Double.parseDouble(prezzo);
+            isPrezzoValid = prezzoValue > 0;
         } catch (NumberFormatException e) {
             // Prezzo non valido
         }
 
         boolean isSuperficieValid = false;
+        double superficieValue = 0;
         try {
-            Double.parseDouble(superficie);
-            isSuperficieValid = true;
+            superficieValue = Double.parseDouble(superficie);
+            isSuperficieValid = superficieValue > 0;
         } catch (NumberFormatException e) {
             // Superficie non valida
         }
