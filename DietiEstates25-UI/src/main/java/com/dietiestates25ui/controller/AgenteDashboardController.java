@@ -50,6 +50,8 @@ public class AgenteDashboardController extends AbstractController implements Ini
 
         caricaImmobileButton.setOnAction(event -> openInserimentoDatiInserzionePage());
 
+        tornaLoginButton.setOnAction(event -> openLoginPage());
+
 //        offerteButton.setOnAction(event -> {
 //            // Azione per "Offerte"
 //            System.out.println("Offerte cliccato!");
@@ -88,5 +90,10 @@ public class AgenteDashboardController extends AbstractController implements Ini
                     controller.setToken(token); // Passa il token al InserimentoInserzioneController
                     controller.setAgente(agente); // Passa l'agente al InserimentoInserzioneController
                 }, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
+    }
+
+    private void openLoginPage() {
+        loadScene("/com/dietiestates25ui/view/login-view.fxml",
+                (fxmlLoader, stage) -> {}, tornaLoginButton, "/com/dietiestates25ui/styles/login-style.css");
     }
 }

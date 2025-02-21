@@ -156,12 +156,14 @@ public class HomePageController extends AbstractController implements Initializa
 
     private void handleCercaButtonAction() {
         String citta = ricercaTextField.getText();
+        String tipoAnnuncio = venditaButton.isSelected() ? "Vendita" : "Affitto"; // Ottieni il tipo di annuncio (vendita o affitto)
+        String tipologiaImmobile = tipologiaMenuButton.getText(); // Ottieni la tipologia dell'immobile
 
         if (citta != null && !citta.isEmpty()) {
             // Effettua la chiamata asincrona al backend
             CompletableFuture<List<AnnuncioDTO>> futureAnnunci = CompletableFuture.supplyAsync(() -> {
                 try {
-                    return annuncioService.searchAnnunciByCitta(citta, token);
+                    return annuncioService.searchAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile, token);
                 } catch (GenericServiceException e) {
                     logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
                     Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
@@ -175,7 +177,8 @@ public class HomePageController extends AbstractController implements Initializa
                     // Aggiorna l'interfaccia utente con i risultati
                     Platform.runLater(() -> {
                         if (annunci.isEmpty()) {
-                            showPopup("Nessun risultato", "Nessun annuncio trovato per la città di " + citta, null);
+                            showPopup("Errore", "Nessun immobile trovato con queste caratteristiche", ERROR_ICON); //Mostra il popup di errore
+                            System.out.println("Nessun immobile trovato con queste caratteristiche"); //Stampa il messaggio a video
                         } else {
                             // Mostra i risultati (per ora nella console, poi nell'UI)
                             annunci.forEach(annuncio -> {

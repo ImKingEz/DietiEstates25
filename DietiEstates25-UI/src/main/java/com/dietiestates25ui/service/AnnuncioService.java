@@ -83,12 +83,17 @@ public class AnnuncioService extends ApiService {
         return "http://localhost:8080/api/annunci";
     }
 
-    public List<AnnuncioDTO> searchAnnunciByCitta(String citta, String token) throws GenericServiceException {
+    public List<AnnuncioDTO> searchAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(String citta, String tipoAnnuncio, String tipologiaImmobile, String token) throws GenericServiceException {
         try {
             fetchCsrfToken();
 
+            // Costruisci l'URI con i parametri
+            String uri = getBaseUrl() + "/search?citta=" + citta +
+                    "&tipoAnnuncio=" + tipoAnnuncio +
+                    "&tipologiaImmobile=" + tipologiaImmobile;
+
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(getBaseUrl() + "/search?citta=" + citta))
+                    .uri(URI.create(uri))
                     .header(CONTENT_TYPE, APPLICATION_JSON)
                     .header(AUTHORIZATION, BEARER + token)
                     .header(csrfTokenHeaderName, csrfTokenValue)

@@ -44,16 +44,19 @@ public class AnnuncioController extends BaseController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciByCitta(@RequestParam String citta) {
+    public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunci(
+            @RequestParam String citta,
+            @RequestParam String tipoAnnuncio,
+            @RequestParam String tipologiaImmobile) {
         try {
-            List<Annuncio> annunci = annuncioService.findAnnunciByCitta(citta);
+            List<Annuncio> annunci = annuncioService.findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
             List<AnnuncioDTO> annuncioDTOs = annunci.stream()
                     .map(annuncioService::convertToDTO)
                     .collect(Collectors.toList());
             return successResponse(annuncioDTOs);
         } catch (Exception e) {
-            logger.error("Errore durante la ricerca degli annunci per città: {}", e.getMessage(), e);
-            return handleGenericException(e, "Errore durante la ricerca degli annunci per città", "Annuncio");
+            logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante la ricerca degli annunci", "Annuncio");
         }
     }
 }

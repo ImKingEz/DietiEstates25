@@ -130,8 +130,8 @@ public class AnnuncioService {
         );
     }
 
-    public List<Annuncio> findAnnunciByCitta(String citta) {
-        logger.debug("Ricerca annunci per città: {}", citta);
-        return annuncioRepository.findByCittaInIndirizzo(citta);
+    public List<Annuncio> findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(String citta, String tipoAnnuncio, String tipologiaImmobile) {
+        logger.debug("Ricerca annunci per città: {}, tipo: {}, tipologia: {}", citta, tipoAnnuncio, tipologiaImmobile);
+        return annuncioRepository.findByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
     }
 }
