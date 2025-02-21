@@ -3,6 +3,7 @@ package com.dietiestates25ui.controller;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.model.Utente;
 import com.dietiestates25ui.service.AnnuncioService;
 import com.dietiestates25ui.service.UtenteService;
@@ -156,14 +157,17 @@ public class HomePageController extends AbstractController implements Initializa
 
     private void handleCercaButtonAction() {
         String citta = ricercaTextField.getText();
-        String tipoAnnuncio = venditaButton.isSelected() ? "Vendita" : "Affitto"; // Ottieni il tipo di annuncio (vendita o affitto)
-        String tipologiaImmobile = tipologiaMenuButton.getText(); // Ottieni la tipologia dell'immobile
+
+        // Crea un oggetto FiltroAnnunci
+        FiltroAnnunci filtro = new FiltroAnnunci();
+        filtro.setTipo(venditaButton.isSelected() ? "Vendita" : "Affitto"); // Imposta il tipo di annuncio
+        filtro.setTipologia(tipologiaMenuButton.getText()); // Imposta la tipologia dell'immobile
 
         if (citta != null && !citta.isEmpty()) {
             // Effettua la chiamata asincrona al backend
             CompletableFuture<List<AnnuncioDTO>> futureAnnunci = CompletableFuture.supplyAsync(() -> {
                 try {
-                    return annuncioService.searchAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile, token);
+                    return annuncioService.searchAnnunciByCittaAndFiltro(citta, filtro, token);
                 } catch (GenericServiceException e) {
                     logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
                     Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));

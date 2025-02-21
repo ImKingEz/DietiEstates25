@@ -2,6 +2,7 @@ package com.dietiestates25backend.api.controller;
 
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
+import com.dietiestates25.dto.FiltroAnnunciDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.Annuncio;
 import com.dietiestates25backend.business.service.AnnuncioService;
@@ -43,13 +44,16 @@ public class AnnuncioController extends BaseController {
         }
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunci(
             @RequestParam String citta,
-            @RequestParam String tipoAnnuncio,
-            @RequestParam String tipologiaImmobile) {
+            @RequestBody FiltroAnnunciDTO filtro) {
         try {
-            List<Annuncio> annunci = annuncioService.findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
+            List<Annuncio> annunci = annuncioService.findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(
+                    citta,
+                    filtro.getTipo(),
+                    filtro.getTipologia()
+            );
             List<AnnuncioDTO> annuncioDTOs = annunci.stream()
                     .map(annuncioService::convertToDTO)
                     .collect(Collectors.toList());
