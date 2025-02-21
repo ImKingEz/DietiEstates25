@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface ImmobileRepository extends JpaRepository<Immobile, Long> {
-    @Query("SELECT i FROM Immobile i WHERE LOWER(i.indirizzo) LIKE LOWER(concat('%', :citta, '%'))")
+    @Query("SELECT i FROM Immobile i WHERE LOWER(i.indirizzo) LIKE LOWER(concat('%, ', :citta, ',%'))")
     List<Immobile> findByCittaInIndirizzo(@Param("citta") String citta);
 }
