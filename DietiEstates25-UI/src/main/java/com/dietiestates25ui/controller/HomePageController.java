@@ -184,6 +184,12 @@ public class HomePageController extends AbstractController implements Initializa
                             annunci.forEach(annuncio -> {
                                 System.out.println("Titolo: " + annuncio.getTitolo());
                                 System.out.println("idImmobile: " + annuncio.getIdImmobile());
+                                if (annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
+                                    System.out.println("Immagini:");
+                                    annuncio.getImmaginiUrls().forEach(System.out::println);
+                                } else {
+                                    System.out.println("Nessuna immagine disponibile per questo annuncio.");
+                                }
                                 //Ora devo usare l'idImmobile per mostrare l'indirizzo dell'immobile
                             });
                         }
