@@ -8,8 +8,6 @@ import com.dietiestates25ui.service.UtenteService;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,12 +24,13 @@ import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.function.UnaryOperator;
 
 public class DashboardController extends AbstractController implements Initializable {
 
+    public static final String TEXT_FIELD_ERROR_CSS_CLASS = "text-field-error";
     private String token;
 
     @FXML
@@ -125,56 +124,29 @@ public class DashboardController extends AbstractController implements Initializ
         Platform.runLater(() -> logo.requestFocus());
         Platform.runLater(() -> currentStage = (Stage) primaryAnchorPane.getScene().getWindow());
 
-        Platform.runLater(this::updateProfileHBox);
+        updateProfileHBox();
 
-        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView));
-        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView1));
-        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView2));
+        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView)); //test
+        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView1)); //test
+        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView2)); //test
 
         scrollLeftButton.setOnAction(this::scrollLeft);
         scrollRightButton.setOnAction(this::scrollRight);
 
-        setupTextFormatter(minPriceTextField);
-        setupTextFormatter(maxPriceTextField);
-        setupTextFormatter(minSuperficieTextField);
-        setupTextFormatter(maxSuperficieTextField);
+        handleFilter();
 
-        minPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (Boolean.FALSE.equals(newVal)) {
-                validatePriceFields();
-            }
-        });
-        maxPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (Boolean.FALSE.equals(newVal)) {
-                validatePriceFields();
-            }
-        });
-        minSuperficieTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (Boolean.FALSE.equals(newVal)) {
-                validateSuperficieFields();
-            }
-        });
-        maxSuperficieTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (Boolean.FALSE.equals(newVal)) {
-                validateSuperficieFields();
-            }
-        });
+        updateAnnunciScrollPanePrefWidth();
 
-        confermaPrezzoButton.setOnAction(event -> {
-            prezzoMenuButton.hide();
-        });
-        confermaSuperficieButton.setOnAction(event -> {
-            superficieMenuButton.hide();
-        });
+    }
 
-        // Initialize MenuItems and CheckBoxes
-        initializeMenuItems(tipoMenuButton, filtroAnnunci::setTipo);
-        initializeMenuItems(tipologiaMenuButton, filtroAnnunci::setTipologia);
-        initializeMenuItemsLocali(localiMenuButton, filtroAnnunci::setLocali);
-        initializeMenuItemsBagni(bagniMenuButton, filtroAnnunci::setBagni);
-        initializeMenuItemsPiano(pianoMenuButton, filtroAnnunci::setPiano);
-        initializeMenuItemsClasseEnergetica(classeEnergeticaMenuButton, filtroAnnunci::setClasseEnergetica);
+    private void handleFilter() {
+        handlePriceFilter();
+        handleSuperficeFilter();
+        handleMenuItemFilter();
+        handleCheckBoxFilter();
+    }
 
+    private void handleCheckBoxFilter() {
         ascensoreCheckBox.setOnAction(event -> {
             filtroAnnunci.setAscensore(ascensoreCheckBox.isSelected());
             updateAnnunci();
@@ -199,15 +171,56 @@ public class DashboardController extends AbstractController implements Initializ
             filtroAnnunci.setVicinoTrasportoPubblico(trasportoPubblicoCheckBox.isSelected());
             updateAnnunci();
         });
+    }
 
-        updateAnnunciScrollPanePrefWidth();
+    private void handleMenuItemFilter() {
+        initializeMenuItems(tipoMenuButton, filtroAnnunci::setTipo);
+        initializeMenuItems(tipologiaMenuButton, filtroAnnunci::setTipologia);
+        initializeMenuItemsLocali(localiMenuButton, filtroAnnunci::setLocali);
+        initializeMenuItemsBagni(bagniMenuButton, filtroAnnunci::setBagni);
+        initializeMenuItemsPiano(pianoMenuButton, filtroAnnunci::setPiano);
+        initializeMenuItemsClasseEnergetica(classeEnergeticaMenuButton, filtroAnnunci::setClasseEnergetica);
+    }
 
+    private void handleSuperficeFilter() {
+        setupTextFormatter(minSuperficieTextField);
+        setupTextFormatter(maxSuperficieTextField);
+
+        minSuperficieTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (Boolean.FALSE.equals(newVal)) {
+                validateSuperficieFields();
+            }
+        });
+        maxSuperficieTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (Boolean.FALSE.equals(newVal)) {
+                validateSuperficieFields();
+            }
+        });
+
+        confermaSuperficieButton.setOnAction(event -> superficieMenuButton.hide());
+    }
+
+    private void handlePriceFilter() {
+        setupTextFormatter(minPriceTextField);
+        setupTextFormatter(maxPriceTextField);
+
+        minPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (Boolean.FALSE.equals(newVal)) {
+                validatePriceFields();
+            }
+        });
+        maxPriceTextField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+            if (Boolean.FALSE.equals(newVal)) {
+                validatePriceFields();
+            }
+        });
+
+        confermaPrezzoButton.setOnAction(event -> prezzoMenuButton.hide());
     }
 
     private void updateAnnunciScrollPanePrefWidth() {
-        listaAnnunciAnchorPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-            setAnnunciScrollPanePrefWidth(newValue.doubleValue());
-        });
+        listaAnnunciAnchorPane.widthProperty().addListener((observable, oldValue, newValue) ->
+                setAnnunciScrollPanePrefWidth(newValue.doubleValue()));
 
         Platform.runLater(() -> setAnnunciScrollPanePrefWidth(listaAnnunciAnchorPane.getWidth()));
     }
@@ -225,7 +238,7 @@ public class DashboardController extends AbstractController implements Initializ
             }
             return null;
         };
-        TextFormatter textFormatter = new TextFormatter<>(numberFilter);
+        TextFormatter<Object> textFormatter = new TextFormatter<>(numberFilter);
         textField.setTextFormatter(textFormatter);
     }
 
@@ -239,10 +252,10 @@ public class DashboardController extends AbstractController implements Initializ
             if (minValue < 0) {
                 throw new NumberFormatException("Il valore minimo non può essere negativo.");
             }
-            minPriceTextField.getStyleClass().remove("text-field-error");
+            minPriceTextField.getStyleClass().remove(TEXT_FIELD_ERROR_CSS_CLASS);
         } catch (NumberFormatException e) {
             logger.error("Valore minimo non valido: {}", e.getMessage());
-            minPriceTextField.getStyleClass().add("text-field-error");
+            minPriceTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
             hasError = true;
         }
 
@@ -251,17 +264,17 @@ public class DashboardController extends AbstractController implements Initializ
             if (maxValue <= 0) {
                 throw new NumberFormatException("Il valore massimo deve essere maggiore di zero.");
             }
-            maxPriceTextField.getStyleClass().remove("text-field-error");
+            maxPriceTextField.getStyleClass().remove(TEXT_FIELD_ERROR_CSS_CLASS);
         } catch (NumberFormatException e) {
             logger.error("Valore massimo non valido: {}", e.getMessage());
-            maxPriceTextField.getStyleClass().add("text-field-error");
+            maxPriceTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
             hasError = true;
         }
 
-        if (!hasError && minValue != null && maxValue != null && minValue > maxValue) {
+        if (!hasError && minValue > maxValue) {
             logger.error("Il valore minimo è superiore al valore massimo.");
-            minPriceTextField.getStyleClass().add("text-field-error");
-            maxPriceTextField.getStyleClass().add("text-field-error");
+            minPriceTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
+            maxPriceTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
             hasError = true;
         }
 
@@ -280,10 +293,10 @@ public class DashboardController extends AbstractController implements Initializ
             if (minValue < 0) {
                 throw new NumberFormatException("Il valore minimo non può essere negativo.");
             }
-            minSuperficieTextField.getStyleClass().remove("text-field-error");
+            minSuperficieTextField.getStyleClass().remove(TEXT_FIELD_ERROR_CSS_CLASS);
         } catch (NumberFormatException e) {
             logger.error("Valore minimo non valido: {}", e.getMessage());
-            minSuperficieTextField.getStyleClass().add("text-field-error");
+            minSuperficieTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
             hasError = true;
         }
 
@@ -292,17 +305,17 @@ public class DashboardController extends AbstractController implements Initializ
             if (maxValue <= 0) {
                 throw new NumberFormatException("Il valore massimo deve essere maggiore di zero.");
             }
-            maxSuperficieTextField.getStyleClass().remove("text-field-error");
+            maxSuperficieTextField.getStyleClass().remove(TEXT_FIELD_ERROR_CSS_CLASS);
         } catch (NumberFormatException e) {
             logger.error("Valore massimo non valido: {}", e.getMessage());
-            maxSuperficieTextField.getStyleClass().add("text-field-error");
+            maxSuperficieTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
             hasError = true;
         }
 
-        if (!hasError && minValue != null && maxValue != null && minValue > maxValue) {
+        if (!hasError && minValue > maxValue) {
             logger.error("Il valore minimo è superiore al valore massimo.");
-            minSuperficieTextField.getStyleClass().add("text-field-error");
-            maxSuperficieTextField.getStyleClass().add("text-field-error");
+            minSuperficieTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
+            maxSuperficieTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
             hasError = true;
         }
 
@@ -338,7 +351,7 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     // Utility method to handle MenuButton selections
-    private void initializeMenuItemsLocali(MenuButton menuButton, Consumer<Integer> filterSetter) {
+    private void initializeMenuItemsLocali(MenuButton menuButton, IntConsumer filterSetter) {
         for (MenuItem item : menuButton.getItems()) {
             item.setOnAction(event -> {
                 String selectedText = item.getText();
@@ -356,7 +369,7 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     // Utility method to handle MenuButton selections
-    private void initializeMenuItemsBagni(MenuButton menuButton, Consumer<Integer> filterSetter) {
+    private void initializeMenuItemsBagni(MenuButton menuButton, IntConsumer filterSetter) {
         for (MenuItem item : menuButton.getItems()) {
             item.setOnAction(event -> {
                 String selectedText = item.getText();
@@ -374,25 +387,16 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     // Utility method to handle MenuButton selections
-    private void initializeMenuItemsPiano(MenuButton menuButton, Consumer<Integer> filterSetter) {
+    private void initializeMenuItemsPiano(MenuButton menuButton, IntConsumer filterSetter) {
         for (MenuItem item : menuButton.getItems()) {
             item.setOnAction(event -> {
                 String selectedText = item.getText();
-                int value;
-                switch (selectedText) {
-                    case "Piano terra":
-                        value = 0;
-                        break;
-                    case "Piani intermedi":
-                        value = 1;
-                        break;
-                    case "Ultimo piano":
-                        value = 2;
-                        break;
-                    default:
-                        value = 0;
-                        break;
-                }
+                int value = switch (selectedText) {
+                    case "Piano terra" -> 0;
+                    case "Piani intermedi" -> 1;
+                    case "Ultimo piano" -> 2;
+                    default -> 0;
+                };
                 filterSetter.accept(value);
                 menuButton.setText(selectedText); // Update MenuButton text
                 updateAnnunci();
@@ -404,21 +408,12 @@ public class DashboardController extends AbstractController implements Initializ
         for (MenuItem item : classeEnergeticaMenuButton.getItems()) {
             item.setOnAction(event -> {
                 String selectedText = item.getText();
-                String value;
-                switch (selectedText) {
-                    case "Alta (A, A+, A1-A4)":
-                        value = "Alta";
-                        break;
-                    case "Media (B, C, D e superiore)":
-                        value = "Media";
-                        break;
-                    case "Bassa (E, F, G e superiore)":
-                        value = "Bassa";
-                        break;
-                    default:
-                        value = "Bassa";
-                        break;
-                }
+                String value = switch (selectedText) {
+                    case "Alta (A, A+, A1-A4)" -> "Alta";
+                    case "Media (B, C, D e superiore)" -> "Media";
+                    case "Bassa (E, F, G e superiore)" -> "Bassa";
+                    default -> "Bassa";
+                };
                 filterSetter.accept(value);
                 classeEnergeticaMenuButton.setText("Classe energetica: " + selectedText); // Update MenuButton text
                 updateAnnunci();
@@ -441,10 +436,12 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void updateProfileHBox() {
-        Text ciaoNome = new Text();
-        ciaoNome.getStyleClass().add("profileName");
-        ciaoNome.setText("Ciao " + utente.getNome());
-        profileHBox.getChildren().addFirst(ciaoNome);
+        Platform.runLater(() -> {
+            Text ciaoNome = new Text();
+            ciaoNome.getStyleClass().add("profileName");
+            ciaoNome.setText("Ciao " + utente.getNome());
+            profileHBox.getChildren().addFirst(ciaoNome);
+        });
     }
 
     private void scroll(double deltaX) {
@@ -452,7 +449,7 @@ public class DashboardController extends AbstractController implements Initializ
         double targetX = currentX + deltaX;
 
         double minX = filterScrollPane.getWidth() - filterHBox.getWidth();
-        targetX = Math.max(minX, Math.min(0, targetX));
+        targetX = Math.clamp(targetX, minX, 0);
 
         TranslateTransition tt = new TranslateTransition(scrollDuration, filterHBox);
         tt.setToX(targetX);
@@ -483,19 +480,19 @@ public class DashboardController extends AbstractController implements Initializ
             // Determina se l'immagine è più larga che alta o più stretta
             if (aspectRatio > 1) { // Immagine più larga che alta
                 // Calcola la larghezza necessaria per riempire l'altezza
-                double viewportWidth = imageHeight * (200.0 / 200.0); // Fondamentalmente è sempre imageHeight visto che fitHeight è 200
+                // Fondamentalmente è sempre imageHeight visto che fitHeight è 200
 
                 // Calcola l'offset per centrare la porzione visibile
-                double offsetX = (imageWidth - viewportWidth) / 2;
+                double offsetX = (imageWidth - imageHeight) / 2;
 
                 // Imposta il viewport
-                imageViewAnnuncio.setViewport(new Rectangle2D(offsetX, 0, viewportWidth, imageHeight));
+                imageViewAnnuncio.setViewport(new Rectangle2D(offsetX, 0, imageHeight, imageHeight));
             } else { // Immagine più alta che larga o quadrata
                 //Non serve fare nulla, l'immagine si adatterà all'altezza senza ritagliare
             }
 
         } else {
-            System.err.println("ImageView annuncioImageView non iniettato! Controlla l'FXML.");
+            logger.error("ImageView annuncioImageView non iniettato! Controlla l'FXML.");
         }
     }
 
