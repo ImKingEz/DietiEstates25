@@ -86,9 +86,9 @@ public class AgenteDashboardController extends AbstractController implements Ini
         loadScene("/com/dietiestates25ui/view/inserimento-inserzione-view.fxml",
                 (fxmlLoader, stage) -> {
                     InserimentoInserzioneController controller = fxmlLoader.getController();
-                    controller.setStage(stage); // Imposta lo Stage!
-                    controller.setToken(token); // Passa il token al InserimentoInserzioneController
-                    controller.setAgente(agente); // Passa l'agente al InserimentoInserzioneController
+                    controller.setStage(stage);
+                    controller.setToken(token);
+                    controller.setAgente(agente);
                 }, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
     }
 

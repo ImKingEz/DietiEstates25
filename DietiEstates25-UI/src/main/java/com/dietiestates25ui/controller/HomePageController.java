@@ -3,6 +3,7 @@ package com.dietiestates25ui.controller;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.model.Utente;
 import com.dietiestates25ui.service.AnnuncioService;
@@ -21,6 +22,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -157,59 +159,73 @@ public class HomePageController extends AbstractController implements Initializa
 
     private void handleCercaButtonAction() {
         String citta = ricercaTextField.getText();
+        if (citta == null || citta.isEmpty()) {
+            showPopup("Attenzione", "Inserisci una città per effettuare la ricerca.", ERROR_ICON);
+            return;
+        }
 
-        // Crea un oggetto FiltroAnnunci
         FiltroAnnunci filtro = new FiltroAnnunci();
-        filtro.setTipo(venditaButton.isSelected() ? "Vendita" : "Affitto"); // Imposta il tipo di annuncio
-        filtro.setTipologia(tipologiaMenuButton.getText()); // Imposta la tipologia dell'immobile
+        filtro.setTipo(venditaButton.isSelected() ? "Vendita" : "Affitto");
+        filtro.setTipologia(tipologiaMenuButton.getText());
 
-        if (citta != null && !citta.isEmpty()) {
-            // Effettua la chiamata asincrona al backend
-            CompletableFuture<List<AnnuncioDTO>> futureAnnunci = CompletableFuture.supplyAsync(() -> {
-                try {
-                    return annuncioService.searchAnnunciByCittaAndFiltro(citta, filtro, token);
-                } catch (GenericServiceException e) {
-                    logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
-                    Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
-                    return null;
-                }
-            });
-
-            // Gestisci il risultato quando è disponibile
-            futureAnnunci.thenAccept(annunci -> {
-                if (annunci != null) {
-                    // Aggiorna l'interfaccia utente con i risultati
+        CompletableFuture.supplyAsync(() -> {
+                    try {
+                        List<AnnuncioDTO> annunciDTO = annuncioService.searchAnnunciByCittaAndFiltro(citta, filtro, token);
+                        return annunciDTO;
+                    } catch (GenericServiceException e) {
+                        logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
+                        Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
+                        return null;
+                    }
+                })
+                .thenAccept(annunciDTO -> {
                     Platform.runLater(() -> {
-                        if (annunci.isEmpty()) {
-                            showPopup("Errore", "Nessun immobile trovato con queste caratteristiche", ERROR_ICON); //Mostra il popup di errore
-                            System.out.println("Nessun immobile trovato con queste caratteristiche"); //Stampa il messaggio a video
+                        if (annunciDTO == null) {
+                            return;
+                        }
+                        if (annunciDTO.isEmpty()) {
+                            showPopup("Errore", "Nessun immobile trovato con queste caratteristiche", ERROR_ICON);
+                            logger.info("Nessun immobile trovato con queste caratteristiche");
                         } else {
-                            // Mostra i risultati (per ora nella console, poi nell'UI)
-                            annunci.forEach(annuncio -> {
-                                System.out.println("Titolo: " + annuncio.getTitolo());
-                                System.out.println("idImmobile: " + annuncio.getIdImmobile());
-                                if (annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
-                                    System.out.println("Immagini:");
-                                    annuncio.getImmaginiUrls().forEach(System.out::println);
-                                } else {
-                                    System.out.println("Nessuna immagine disponibile per questo annuncio.");
-                                }
-                                //Ora devo usare l'idImmobile per mostrare l'indirizzo dell'immobile
-                            });
+                            // TODO
+                            //List<Annuncio> annunci = convertDTO(annunciDTO);
+                            //openRisultatiRicercaPage(annunci);
                         }
                     });
-                }
-            });
-
-            futureAnnunci.exceptionally(ex -> {
-                logger.error("Errore durante la chiamata al servizio: {}", ex.getMessage(), ex);
-                Platform.runLater(() -> showPopup("Errore", "Errore imprevisto: " + ex.getMessage(), ERROR_ICON));
-                return null;
-            });
-        } else {
-            showPopup("Attenzione", "Inserisci una città per effettuare la ricerca.", ERROR_ICON);
-        }
+                })
+                .exceptionally(ex -> {
+                    logger.error("Errore durante la chiamata al servizio: {}", ex.getMessage(), ex);
+                    Platform.runLater(() -> showPopup("Errore", "Errore imprevisto: " + ex.getMessage(), ERROR_ICON));
+                    return null;
+                });
     }
+
+//    private List<Annuncio> convertDTO(List<AnnuncioDTO> annunciDTO) { TODO
+//        List<Annuncio> annunci = new ArrayList<>();
+//        for (AnnuncioDTO annuncioDTO : annunciDTO) {
+//            Annuncio annuncio = new Annuncio();
+//            annuncio.setTitolo(annuncioDTO.getTitolo());
+//            annuncio.setTipo(annuncioDTO.getTipo());
+//            annuncio.setPrezzo(annuncioDTO.getPrezzo());
+//            annuncio.setDescrizione(annuncioDTO.getDescrizione());
+//            annuncio.setIdImmobile(annuncioDTO.getIdImmobile());
+//            annuncio.setIdAgente(annuncioDTO.getIdAgente());
+//            annuncio.setImmaginiUrls(annuncioDTO.getImmaginiUrls());
+//
+//            annunci.add(annuncio);
+//        }
+//        return annunci;
+//    }
+
+//    private void openRisultatiRicercaPage(List<Annuncio> annunci) { TODO
+//        loadScene("/com/dietiestates25ui/view/risultati-ricerca-view.fxml",
+//                (fxmlLoader, stage) -> {
+//                    RisultatiRicercaController controller = fxmlLoader.getController();
+//                    controller.setAnnunci(annunci);
+//                    controller.setToken(token);
+//                    controller.setStage(currentStage);
+//                }, cercaButton, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
+//    }
 
     @FXML
     void handleTipologiaMenuItemAction(ActionEvent event) {

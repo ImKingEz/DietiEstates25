@@ -12,7 +12,7 @@ public class ImmobileDTO {
     private String tipologia;
     private String indirizzo;
     private double dimensione;
-    private int numeroCamere;
+    private int numeroLocali;
     private int numeroBagni;
     private String classeEnergetica;
     private Integer piano;
@@ -24,12 +24,13 @@ public class ImmobileDTO {
     private boolean vicinoScuole;
     private boolean vicinoParchi;
     private boolean vicinoTrasportoPubblico;
+    private String citta;
 
-    public ImmobileDTO(String tipologia, String indirizzo, double dimensione, int numeroCamere, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico) {
+    public ImmobileDTO(String tipologia, String indirizzo, double dimensione, int numeroLocali, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico, String citta) {
         this.tipologia = tipologia;
         this.indirizzo = indirizzo;
         this.dimensione = dimensione;
-        this.numeroCamere = numeroCamere;
+        this.numeroLocali = numeroLocali;
         this.numeroBagni = numeroBagni;
         this.classeEnergetica = classeEnergetica;
         this.piano = piano;
@@ -41,5 +42,6 @@ public class ImmobileDTO {
         this.vicinoScuole = vicinoScuole;
         this.vicinoParchi = vicinoParchi;
         this.vicinoTrasportoPubblico = vicinoTrasportoPubblico;
+        this.citta = citta;
     }
 }

@@ -250,6 +250,10 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private void openGestioneImmobiliPage() {
         loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
-                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
+                (fxmlLoader, stage) -> {
+                    AgenteDashboardController controller = fxmlLoader.getController();
+                    controller.setToken(token);
+                    controller.setAgente(agente);
+                }, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

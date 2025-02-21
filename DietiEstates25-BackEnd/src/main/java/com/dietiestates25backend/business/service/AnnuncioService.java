@@ -133,7 +133,7 @@ public class AnnuncioService {
                 savedAnnuncio.getTipo(),
                 savedAnnuncio.getPrezzo(),
                 savedAnnuncio.getDescrizione(),
-                immaginiUrls // Assegna la lista degli URL delle immagini
+                immaginiUrls
         );
     }
 

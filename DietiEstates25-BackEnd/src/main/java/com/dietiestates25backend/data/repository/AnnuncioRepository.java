@@ -12,7 +12,7 @@ import java.util.List;
 public interface AnnuncioRepository extends JpaRepository<Annuncio, Long> {
     @Query("SELECT a FROM Annuncio a " +
             "JOIN Immobile i ON a.idImmobile = i.id " +
-            "WHERE LOWER(i.indirizzo) LIKE LOWER(concat('%, ', :citta, ',%')) " +
+            "WHERE LOWER(i.citta) = LOWER(:citta) " +
             "AND LOWER(a.tipo) = LOWER(:tipoAnnuncio) " +
             "AND LOWER(i.tipologia) = LOWER(:tipologiaImmobile)")
     List<Annuncio> findByCittaAndTipoAnnuncioAndTipologiaImmobile(
