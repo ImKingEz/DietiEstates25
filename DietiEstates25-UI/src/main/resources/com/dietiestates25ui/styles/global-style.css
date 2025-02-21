@@ -57,6 +57,10 @@
 
 /* -- Fields -- */
 
+.text-field-error {
+    -fx-border-color: red;
+}
+
 .loginField, .registerField {
     -fx-max-width: 285;
     -fx-pref-width: 285;

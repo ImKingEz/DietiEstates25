@@ -148,4 +148,26 @@ public class FiltroAnnunci {
     public void setVicinoTrasportoPubblico(boolean vicinoTrasportoPubblico) {
         this.vicinoTrasportoPubblico = vicinoTrasportoPubblico;
     }
+
+    @Override
+    public String toString() {
+        return "FiltroAnnunci{" +
+                "tipo='" + tipo + '\'' +
+                ", tipologia='" + tipologia + '\'' +
+                ", prezzoMin=" + prezzoMin +
+                ", prezzoMax=" + prezzoMax +
+                ", superficieMin=" + superficieMin +
+                ", superficieMax=" + superficieMax +
+                ", locali=" + locali +
+                ", bagni=" + bagni +
+                ", piano=" + piano +
+                ", classeEnergetica='" + classeEnergetica + '\'' +
+                ", ascensore=" + ascensore +
+                ", portineria=" + portineria +
+                ", climatizzazione=" + climatizzazione +
+                ", vicinoScuola=" + vicinoScuola +
+                ", vicinoParco=" + vicinoParco +
+                ", vicinoTrasportoPubblico=" + vicinoTrasportoPubblico +
+                '}';
+    }
 }
