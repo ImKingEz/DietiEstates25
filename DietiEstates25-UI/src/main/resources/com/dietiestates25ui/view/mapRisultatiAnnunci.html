@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>OpenLayers Map - Select Point Only</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.5.1/ol.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.1/dist/ol.js"></script>
+</head>
+
+<body>
+<div id="map"></div>
+<script>
+    console.log("OpenLayers loaded");
+
+    var map;
+    var marker;
+    var selectedLongitude;
+    var selectedLatitude;
+    var targetZoom = 15; // Zoom desiderato al click
+
+    // Coordinate del centro dell'Italia (approssimative)
+    var italyCenter = ol.proj.fromLonLat([12.5674, 41.8719]);
+
+    function initMap() {
+        map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                center: italyCenter,  // Centra sulla'Italia
+                zoom: 6,             // Zoom per visualizzare l'intera Italia
+                minZoom: 5,          // Zoom minimo consentito (opzionale)
+                maxZoom: 18           // Zoom massimo consentito (opzionale)
+            })
+        });
+    }
+
+    function setMarker(longitude, latitude) {
+        var coordinate = ol.proj.fromLonLat([longitude, latitude]);
+
+        marker.getSource().clear();
+
+        var feature = new ol.Feature({
+            geometry: new ol.geom.Point(coordinate)
+        });
+
+        marker.getSource().addFeature(feature);
+    }
+
+    function zoomToLocation(longitude, latitude) {
+        var currentZoom = map.getView().getZoom(); // Ottieni lo zoom corrente
+        var newZoom = targetZoom; // Imposta il target zoom
+
+        map.getView().setCenter(ol.proj.fromLonLat([longitude, latitude]));
+        map.getView().setZoom(newZoom);
+    }
+
+    function addMarkersToMap(annunci) {
+        annunci.forEach(annuncio => {
+            var coordinate = ol.proj.fromLonLat([annuncio.longitudine, annuncio.latitudine]);
+
+            var feature = new ol.Feature({
+                geometry: new ol.geom.Point(coordinate),
+                name: annuncio.titolo,
+                prezzo: annuncio.prezzo,
+                descrizione: annuncio.descrizione,
+                idImmobile: annuncio.idImmobile
+            });
+
+            var markerSource = new ol.source.Vector({
+                features: [feature]
+            });
+
+            var markerStyle = new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: 'blue'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'white',
+                        width: 2
+                    })
+                }),
+                text: new ol.style.Text({
+                    text: '€' + annuncio.prezzo.toString(), // Mostra il prezzo con il simbolo dell'euro
+                    offsetY: -15, // Sposta il testo sopra il marker
+                    fill: new ol.style.Fill({
+                        color: '#000' // Colore del testo
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', // Bordo del testo
+                        width: 3
+                    })
+                })
+            });
+
+            var markerLayer = new ol.layer.Vector({
+                source: markerSource,
+                style: markerStyle //usa lo stile con il prezzo
+            });
+
+            map.addLayer(markerLayer);
+
+            // Gestione del click sui marker
+            map.on('click', function(evt) {
+                map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+                    // Recupera i dettagli dell'annuncio dalla feature
+                    var nome = feature.get('name');
+                    var prezzo = feature.get('prezzo');
+                    var descrizione = feature.get('descrizione');
+                    var idImmobile = feature.get('idImmobile');
+
+
+                    // Mostra i dettagli in un alert
+                    alert('Annuncio: ' + nome + '\nPrezzo: €' + prezzo + '\nDescrizione: ' + descrizione + '\nID: ' + idImmobile);
+                });
+            });
+        });
+    }
+
+    function reverseGeocode(longitude, latitude) {
+        var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.address) {
+                    var address = data.display_name;
+                    sendDataToJava(address, longitude, latitude); //Passa tutti i dati necessari
+                } else {
+                    sendDataToJava("Indirizzo non identificato per questo punto", longitude, latitude);
+                }
+            })
+            .catch(error => {
+                console.error("Errore nel reverse geocoding:", error);
+                sendDataToJava("Errore di connessione", longitude, latitude);
+            });
+    }
+
+    function sendDataToJava(address, longitude, latitude) {
+        window.alert(address + "|" + latitude + "|" + longitude);
+    }
+
+    function fitViewToExtent(extent) {
+        var extent3857 = ol.proj.transformExtent(extent, 'EPSG:4326', 'EPSG:3857');
+        map.getView().fit(extent3857, {
+            padding: [50, 50, 50, 50],
+            maxZoom: 12
+        });
+    }
+
+    window.onload = function() {
+        initMap();
+    };
+</script>
+</body>
+
+</html>

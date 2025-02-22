@@ -4,13 +4,18 @@ import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25ui.exception.*;
 import com.dietiestates25ui.model.Annuncio;
+import com.dietiestates25ui.model.FiltroAnnunci;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +23,7 @@ import java.security.SecureRandom;
 import java.util.List;
 
 public class AnnuncioService extends ApiService {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AnnuncioService.class);
 
     public void salvaAnnuncio(Annuncio annuncio, String token, List<File> selectedImageList) throws GenericServiceException {
@@ -65,6 +70,7 @@ public class AnnuncioService extends ApiService {
         publisher.addFormDataPart("prezzo", String.valueOf(annuncio.getPrezzo()));
         publisher.addFormDataPart("descrizione", annuncio.getDescrizione());
         publisher.addFormDataPart("idImmobile", String.valueOf(annuncio.getIdImmobile()));
+        publisher.addFormDataPart("idAgente", String.valueOf(annuncio.getIdAgente()));
 
         for (File file : selectedImageList) {
             if (file != null) {
@@ -78,6 +84,55 @@ public class AnnuncioService extends ApiService {
     @Override
     protected String getBaseUrl() {
         return "http://localhost:8080/api/annunci";
+    }
+
+    public List<AnnuncioDTO> searchAnnunciByCittaAndFiltro(String citta, FiltroAnnunci filtro, String token) throws GenericServiceException {
+        try {
+            fetchCsrfToken();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String filtroJson = objectMapper.writeValueAsString(filtro);
+
+            String encodedCitta = URLEncoder.encode(citta, StandardCharsets.UTF_8);
+            String uri = getBaseUrl() + "/search?citta=" + encodedCitta;
+
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(uri))
+                    .header("Content-Type", "application/json")
+                    .header(AUTHORIZATION, BEARER + token)
+                    .header(csrfTokenHeaderName, csrfTokenValue)
+                    .POST(HttpRequest.BodyPublishers.ofString(filtroJson))
+                    .build();
+
+            HttpResponse<String> response = executeRequest(request);
+            int statusCode = response.statusCode();
+
+            if (statusCode == 200) {
+                TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
+                ApiResponse<List<AnnuncioDTO>> apiResponse = null;
+                try {
+                    apiResponse = objectMapper.readValue(response.body(), typeReference);
+                } catch (IOException e) {
+                    logger.error("Errore durante la deserializzazione della risposta JSON: {}", e.getMessage(), e);
+                    throw new ApiClientException("Errore nella risposta del server. Impossibile leggere gli annunci.");
+                }
+
+
+                if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
+                    return apiResponse.getData();
+                } else {
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la ricerca.";
+                    logger.warn("Ricerca annunci fallita: {}", errorMessage);
+                    throw new GenericServiceException(errorMessage);
+                }
+            } else {
+                handleErrorResponse(statusCode, response);
+                throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
+            }
+        } catch (Exception e) {
+            throw handleGenericException("Errore durante la ricerca degli annunci: " + e.getMessage(), e);
+        }
     }
 
     @Override

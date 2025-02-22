@@ -19,6 +19,7 @@ public class Immobile {
     private boolean vicinoScuole;
     private boolean vicinoParchi;
     private boolean vicinoTrasportoPubblico;
+    private String citta;
 
     public Immobile() {
     }
@@ -141,5 +142,13 @@ public class Immobile {
 
     public void setVicinoTrasportoPubblico(boolean vicinoTrasportoPubblico) {
         this.vicinoTrasportoPubblico = vicinoTrasportoPubblico;
+    }
+
+    public String getCitta() {
+        return citta;
+    }
+
+    public void setCitta(String citta) {
+        this.citta = citta;
     }
 }

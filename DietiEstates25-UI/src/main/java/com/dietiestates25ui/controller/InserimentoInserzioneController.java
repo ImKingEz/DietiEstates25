@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -106,12 +107,15 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     private double latitudine;
     private double longitudine;
+    private String citta;
 
     private String token;
 
+    private AgenteImmobiliare agente;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //focus sul logo
+        logo.requestFocus();
 
         apriMappaButton.setOnAction(this::handleApriMappaButtonAction);
 
@@ -130,6 +134,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> {});
 
         createAndPlaceBackButton();
+    }
+
+    public void setAgente(AgenteImmobiliare agente) {
+        this.agente = agente;
     }
 
     private void setupTipoMenuButton() {
@@ -337,8 +345,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
             this.latitudine = lat;
             this.longitudine = lng;
 
-            // Chiama getNearbyPlaces *qui*, dopo aver impostato l'indirizzo e le coordinate
-            getNearbyPlaces(lat,lng);
+            // Chiama getCityFromAddress *qui*, dopo aver impostato l'indirizzo e le coordinate
+            getCityFromAddress(address, lat, lng);
+
+            // Chiama findNearbyFeatures *qui*, dopo aver impostato latitudine e longitudine
+            findNearbyFeatures(lat, lng);
 
             logo.requestFocus();
         }
@@ -407,11 +418,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         }
     }
 
-    private void openGestioneImmobiliPage() {
-        loadScene("/com/dietiestates25ui/view/gestione-immobili-view.fxml",
-                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/gestione-immobili-style.css");
-    }
-
     private void updateAvantiButtonState() {
         titoloTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
@@ -432,6 +438,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
     }
 
     public void checkFormValidity() {
+        //Rimuovere città dalla validazione.
         String titolo = titoloTextField.getText().trim();
         String indirizzo = indirizzoTextField.getText().trim();
         String prezzo = prezzoTextField.getText().trim();
@@ -442,17 +449,19 @@ public class InserimentoInserzioneController extends AbstractController implemen
         String tipologia = tipologiaMenuButton.getText();
 
         boolean isPrezzoValid = false;
+        double prezzoValue = 0;
         try {
-            Double.parseDouble(prezzo);
-            isPrezzoValid = true;
+            prezzoValue = Double.parseDouble(prezzo);
+            isPrezzoValid = prezzoValue > 0;
         } catch (NumberFormatException e) {
             // Prezzo non valido
         }
 
         boolean isSuperficieValid = false;
+        double superficieValue = 0;
         try {
-            Double.parseDouble(superficie);
-            isSuperficieValid = true;
+            superficieValue = Double.parseDouble(superficie);
+            isSuperficieValid = superficieValue > 0;
         } catch (NumberFormatException e) {
             // Superficie non valida
         }
@@ -465,8 +474,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
         avantiButton.setDisable(!requiredFieldsFilled || !isMaxImagesSelected);
     }
 
-    private void getNearbyPlaces(double latitude, double longitude) {
-        logger.info("getNearbyPlaces chiamato con Latitudine: {}, Longitudine: {}", latitude, longitude);
+    private void getCityFromAddress(String address, double latitude, double longitude) {
+        logger.info("getCityFromAddress chiamato con Indirizzo: {}, Latitudine: {}, Longitudine: {}", address, latitude, longitude);
 
         if (!isValidCoordinates(latitude, longitude)) {
             logger.warn("Latitudine o Longitudine non valide. Impossibile chiamare l'API Geoapify.");
@@ -474,7 +483,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         }
 
         String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac";
-        String url = buildGeoapifyUrl(longitude, latitude, apiKey);
+        String url = buildGeoapifyUrl(latitude, longitude, apiKey); // Use lat/lon instead of address directly
 
         logger.info("URL chiamata API Geoapify: {}", url);
 
@@ -484,7 +493,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     .build();
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenApply(HttpResponse::body)
-                    .thenAccept(this::processGeoapifyResponse)
+                    .thenAccept(this::processGeoapifyResponse) // Pass only the response body
                     .exceptionally(this::handleGeoapifyError);
         }
     }
@@ -493,31 +502,31 @@ public class InserimentoInserzioneController extends AbstractController implemen
         return latitude != 0 && longitude != 0;
     }
 
-    private String buildGeoapifyUrl(double longitude, double latitude, String apiKey) {
-        String url = String.format(Locale.US, "https://api.geoapify.com/v2/places?categories=education.school,leisure.park,public_transport&filter=circle:%f,%f,%d&limit=3&apiKey=%s",
-                longitude, latitude, GEOAPIFY_RADIUS, apiKey);
-        logger.info("URL formattato: {}", url); // Aggiungi questo log
+    private String buildGeoapifyUrl(double latitude, double longitude, String apiKey) {
+        // Cambio la chiamata per ricevere i dettagli dell'indirizzo e ottenere la città
+        String url = String.format(Locale.US, "https://api.geoapify.com/v1/geocode/reverse?lat=%f&lon=%f&apiKey=%s&lang=it",
+                latitude, longitude, apiKey);
+        logger.info("URL formattato: {}", url);
         return url;
     }
 
     private void processGeoapifyResponse(String responseBody) {
         logger.info("Risposta completa dall'API Geoapify: {}", responseBody);
 
-        boolean hasSchool = false;
-        boolean hasPark = false;
-        boolean hasPublicTransport = false;
+        String city = null;
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(responseBody);
 
-            if (root.has(FEATURES_GEOAPIFY) && root.get(FEATURES_GEOAPIFY).isArray()) {
-                for (JsonNode feature : root.get(FEATURES_GEOAPIFY)) {
+            if (root.has("features") && root.get("features").isArray()) {
+                for (JsonNode feature : root.get("features")) {
                     JsonNode properties = feature.get("properties");
-                    if (properties != null && properties.has(CATEGORIES_GEOAPIFY)) {
-                        hasSchool |= containsCategory(properties.get(CATEGORIES_GEOAPIFY), "education.school");
-                        hasPark |= containsCategory(properties.get(CATEGORIES_GEOAPIFY), "leisure.park");
-                        hasPublicTransport |= containsCategory(properties.get(CATEGORIES_GEOAPIFY), "public_transport");
+
+                    // Extract city from the properties
+                    if (properties != null && properties.has("city")) {
+                        city = properties.get("city").asText();
+                        break;
                     }
                 }
             } else {
@@ -531,35 +540,119 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        final boolean finalHasSchool = hasSchool;
-        final boolean finalHasPark = hasPark;
-        final boolean finalHasPublicTransport = hasPublicTransport;
+        final String finalCity = city; // Make city final for use in Platform.runLater
 
         Platform.runLater(() -> {
-            vicinoScuoleCheckBox.setSelected(finalHasSchool);
-            vicinoParchiCheckBox.setSelected(finalHasPark);
-            vicinoTrasportoPubblicoCheckBox.setSelected(finalHasPublicTransport);
+            if (finalCity != null && !finalCity.isEmpty()) {
+                this.citta = finalCity;
+                logger.info("Città trovata: {}", finalCity);
+            } else {
+                this.citta = "Città non trovata";
+                logger.warn("Città non trovata per l'indirizzo specificato.");
+            }
         });
 
-        logger.info("Vicino a scuole: {}, Vicino a parchi: {}, Vicino a trasporto pubblico: {}", hasSchool, hasPark, hasPublicTransport);
-    }
-
-    private boolean containsCategory(JsonNode categories, String categoryToFind) {
-        if (categories == null || !categories.isArray()) {
-            return false;
-        }
-        for (JsonNode categoryNode : categories) {
-            if (categoryToFind.equals(categoryNode.asText())) {
-                return true;
-            }
-        }
-        return false;
+        logger.info("Città estratta dall'API Geoapify: {}", city);
     }
 
     private Void handleGeoapifyError(Throwable e) {
         Platform.runLater(() -> {
             showPopup(POPUP_ERROR_TITLE, "Errore durante la chiamata all'API di Geoapify: " + e.getMessage(), ERROR_ICON);
             logger.error("Errore durante la chiamata all'API di Geoapify: {}", e.getMessage());
+        });
+        return null;
+    }
+
+    private void findNearbyFeatures(double latitude, double longitude) {
+        logger.info("findNearbyFeatures chiamato con Latitudine: {}, Longitudine: {}", latitude, longitude);
+
+        if (!isValidCoordinates(latitude, longitude)) {
+            logger.warn("Latitudine o Longitudine non valide. Impossibile chiamare l'API Geoapify Places.");
+            return;
+        }
+
+        String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac"; // Sostituisci con la tua API key
+        String baseUrl = "https://api.geoapify.com/v2/places?";
+        int radius = GEOAPIFY_RADIUS;
+
+        // Categories to search for
+        String[] categories = {"education.school", "leisure.park", "public_transport"};
+
+        for (String category : categories) {
+            String url = baseUrl +
+                    "categories=" + category +
+                    "&filter=circle:" + longitude + "," + latitude + "," + radius +
+                    "&limit=1" + // Just check if at least one is present
+                    "&apiKey=" + apiKey;
+
+            logger.info("URL chiamata API Geoapify Places ({}): {}", category, url);
+
+            final String currentCategory = category; // Needed for lambda expression
+
+            try (HttpClient client = HttpClient.newHttpClient()) {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .build();
+
+                client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                        .thenApply(HttpResponse::body)
+                        .thenAccept(responseBody -> processPlacesApiResponse(responseBody, currentCategory))
+                        .exceptionally(e -> {
+                            handleGeoapifyPlacesError(e, currentCategory);
+                            return null;
+                        });
+
+            } catch (Exception e) {
+                handleGeoapifyPlacesError(e, currentCategory);
+            }
+        }
+    }
+
+    private void processPlacesApiResponse(String responseBody, String category) {
+        logger.info("Risposta API Geoapify Places ({}): {}", category, responseBody);
+        boolean found = false;
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(responseBody);
+
+            if (root.has(FEATURES_GEOAPIFY) && root.get(FEATURES_GEOAPIFY).isArray() && root.get(FEATURES_GEOAPIFY).size() > 0) {
+                found = true; // At least one feature found
+            }
+
+        } catch (IOException e) {
+            Platform.runLater(() -> {
+                showPopup(POPUP_ERROR_TITLE, "Errore nell'elaborazione della risposta API Geoapify Places (" + category + "): " + e.getMessage(), ERROR_ICON);
+                logger.error("Errore nell'elaborazione della risposta API Geoapify Places ({}): {}", category, e.getMessage());
+            });
+            return;
+        }
+
+        final boolean isFound = found; // Make final for use in lambda
+
+        Platform.runLater(() -> {
+            logger.info("Categoria: {}, Feature Trovata: {}", category, isFound);
+            switch (category) {
+                case "education.school":
+                    vicinoScuoleCheckBox.setSelected(isFound);
+                    logger.info("Impostando vicinoScuoleCheckBox a: {}", isFound);
+                    break;
+                case "leisure.park":
+                    vicinoParchiCheckBox.setSelected(isFound);
+                    logger.info("Impostando vicinoParchiCheckBox a: {}", isFound);
+                    break;
+                case "public_transport":
+                    vicinoTrasportoPubblicoCheckBox.setSelected(isFound);
+                    logger.info("Impostando vicinoTrasportoPubblicoCheckBox a: {}", isFound);
+                    break;
+            }
+        });
+    }
+
+    private Void handleGeoapifyPlacesError(Throwable e, String category) {
+        Platform.runLater(() -> {
+            showPopup(POPUP_ERROR_TITLE, "Errore nella chiamata API Geoapify Places (" + category + "): " + e.getMessage(), ERROR_ICON);
+            logger.error("Errore nella chiamata API Geoapify Places ({}): {}", category, e.getMessage());
         });
         return null;
     }
@@ -573,6 +666,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
         Immobile immobile = new Immobile();
         immobile.setTipologia(tipologiaMenuButton.getText());
         immobile.setIndirizzo(indirizzoTextField.getText());
+
+        immobile.setCitta(this.citta);
         immobile.setDimensione(Double.parseDouble(superficieTextField.getText()));
         immobile.setNumeroLocali(camereSpinner.getValue());
         immobile.setNumeroBagni(bagniSpinner.getValue());
@@ -602,7 +697,17 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     controller.setAnnuncio(annuncio);
                     controller.setSelectedImageList(selectedImageList);
                     controller.setToken(token);
+                    controller.setAgente(agente);
                     controller.setStage(stage);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");
+    }
+
+    private void openGestioneImmobiliPage() {
+        loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
+                (fxmlLoader, stage) -> {
+                    AgenteDashboardController controller = fxmlLoader.getController();
+                    controller.setAgente(agente);
+                    controller.setToken(token);
+                }, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

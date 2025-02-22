@@ -144,14 +144,14 @@
 
 .detailAnnuncioFlowPane {
     -fx-spacing: 50;
-    -fx-pref-width: 350;
+    -fx-pref-width: 400;
     -fx-vgap: 3;
 }
 
 .detailWithIconHBox {
     -fx-spacing: 10;
     -fx-alignment: center-left;
-    -fx-pref-width: 150;
+    -fx-pref-width: 200;
 }
 
 .textDetailAnnuncio {

@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class ImmobileService {
 
@@ -45,7 +48,7 @@ public class ImmobileService {
                 immobileDTO.getTipologia(),
                 immobileDTO.getIndirizzo(),
                 immobileDTO.getDimensione(),
-                immobileDTO.getNumeroCamere(),
+                immobileDTO.getNumeroLocali(),
                 immobileDTO.getNumeroBagni(),
                 immobileDTO.getClasseEnergetica(),
                 immobileDTO.getPiano(),
@@ -56,11 +59,12 @@ public class ImmobileService {
                 immobileDTO.getLongitudine(),
                 immobileDTO.isVicinoScuole(),
                 immobileDTO.isVicinoParchi(),
-                immobileDTO.isVicinoTrasportoPubblico()
+                immobileDTO.isVicinoTrasportoPubblico(),
+                immobileDTO.getCitta()
         );
     }
 
-    private ImmobileDTO convertToDTO(Immobile savedImmobile) {
+    public ImmobileDTO convertToDTO(Immobile savedImmobile) {
         return new ImmobileDTO(
                 savedImmobile.getId(),
                 savedImmobile.getTipologia(),
@@ -77,7 +81,21 @@ public class ImmobileService {
                 savedImmobile.getLongitudine(),
                 savedImmobile.isVicinoScuole(),
                 savedImmobile.isVicinoParchi(),
-                savedImmobile.isVicinoTrasportoPubblico()
+                savedImmobile.isVicinoTrasportoPubblico(),
+                savedImmobile.getCitta()
         );
+    }
+
+    public ImmobileDTO getImmobileDetails(Long id) {
+        Optional<Immobile> immobileOptional = immobileRepository.findById(id);
+
+        if (immobileOptional.isEmpty()) {
+            logger.warn("Immobile non trovato con ID: {}", id);
+            throw new IllegalArgumentException("Immobile non trovato con ID: " + id);
+        }
+
+        Immobile immobile = immobileOptional.get();
+
+        return convertToDTO(immobile);
     }
 }

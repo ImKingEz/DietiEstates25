@@ -18,6 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AnnuncioService {
@@ -79,7 +81,7 @@ public class AnnuncioService {
                 registerAnnuncioDTO.getTipo(),
                 registerAnnuncioDTO.getPrezzo(),
                 registerAnnuncioDTO.getDescrizione(),
-                1L, //TODO
+                registerAnnuncioDTO.getIdAgente(),
                 registerAnnuncioDTO.getIdImmobile()
         );
     }
@@ -118,13 +120,25 @@ public class AnnuncioService {
         }
     }
 
-    private AnnuncioDTO convertToDTO(Annuncio savedAnnuncio) {
+    public AnnuncioDTO convertToDTO(Annuncio savedAnnuncio) {
+        List<FotoImmobile> fotoImmobili = fotoImmobileRepository.findByIdAnnuncio(savedAnnuncio.getId());
+        List<String> immaginiUrls = fotoImmobili.stream()
+                .map(FotoImmobile::getUrl)
+                .collect(Collectors.toList());
+
         return new AnnuncioDTO(
                 savedAnnuncio.getIdImmobile(),
+                savedAnnuncio.getIdAgente(),
                 savedAnnuncio.getTitolo(),
                 savedAnnuncio.getTipo(),
                 savedAnnuncio.getPrezzo(),
-                savedAnnuncio.getDescrizione()
+                savedAnnuncio.getDescrizione(),
+                immaginiUrls
         );
+    }
+
+    public List<Annuncio> findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(String citta, String tipoAnnuncio, String tipologiaImmobile) {
+        logger.debug("Ricerca annunci per cittÃ : {}, tipo: {}, tipologia: {}", citta, tipoAnnuncio, tipologiaImmobile);
+        return annuncioRepository.findByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
     }
 }

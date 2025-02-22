@@ -1,15 +1,23 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.AnnuncioDTO;
+import com.dietiestates25.dto.FotoImmobileDTO;
+import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.model.Utente;
+import com.dietiestates25ui.service.AnnuncioService;
+import com.dietiestates25ui.service.ImmobileService;
 import com.dietiestates25ui.service.UtenteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
@@ -17,13 +25,17 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.scene.control.TextFormatter;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.UnaryOperator;
@@ -57,7 +69,6 @@ public class DashboardController extends AbstractController implements Initializ
     @FXML
     private HBox profileHBox;
 
-    // Price and Surface
     @FXML
     private TextField minPriceTextField;
     @FXML
@@ -71,7 +82,6 @@ public class DashboardController extends AbstractController implements Initializ
     @FXML
     private Button confermaSuperficieButton;
 
-    // MenuButtons
     @FXML
     private MenuButton tipoMenuButton;
     @FXML
@@ -109,6 +119,18 @@ public class DashboardController extends AbstractController implements Initializ
     @FXML
     private ScrollPane annunciScrollPane;
 
+    @FXML
+    private VBox mappaImmobiliVBox;
+    @FXML
+    private WebView map;
+
+    @FXML
+    private VBox listaAnnunciVBox;
+    @FXML
+    private Text numeroAnnunciText;
+
+    private String cittaDiRicerca = "Roma";
+
     private static final double SCROLL_AMOUNT = 600.0;
     private final Duration scrollDuration = Duration.millis(500);
 
@@ -118,6 +140,12 @@ public class DashboardController extends AbstractController implements Initializ
 
     private UtenteService utenteService = new UtenteService();
 
+    private AnnuncioService annuncioService = new AnnuncioService();
+
+    private ImmobileService immobileService = new ImmobileService();
+
+    private List<AnnuncioDTO> annunci;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
@@ -125,17 +153,43 @@ public class DashboardController extends AbstractController implements Initializ
 
         updateProfileHBox();
 
-        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView)); //test
-        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView1)); //test
-        Platform.runLater(() -> setAnnuncioImageView(annuncioImageView2)); //test
-
         scrollLeftButton.setOnAction(this::scrollLeft);
         scrollRightButton.setOnAction(this::scrollRight);
 
         handleFilter();
 
         updateAnnunciScrollPanePrefWidth();
+        updateMap();
+    }
 
+    private void updateMap() {
+        listaAnnunciAnchorPane.widthProperty().addListener((observable, oldValue, newValue) ->
+                setMappaImmobiliVBox(newValue.doubleValue()));
+
+        setMappaImmobiliVBox(mappaImmobiliVBox.getWidth());
+
+        Platform.runLater(this::loadMap);
+    }
+
+    private void setMappaImmobiliVBox(double newValue) {
+        double vboxWidth = newValue * 0.4;
+        mappaImmobiliVBox.setPrefWidth(vboxWidth);
+    }
+
+    private void loadMap() {
+        WebEngine webEngine = map.getEngine();
+        webEngine.load(getClass().getResource("/com/dietiestates25ui/view/mapRisultatiAnnunci.html").toExternalForm());
+
+        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == Worker.State.SUCCEEDED) {
+                Platform.runLater(this::updateAnnunci);
+            }
+        });
+
+        webEngine.setOnAlert(event -> {
+            String data = event.getData();
+            logger.info("Data from WebView: {}", data);
+        });
     }
 
     private void handleFilter() {
@@ -221,7 +275,7 @@ public class DashboardController extends AbstractController implements Initializ
         listaAnnunciAnchorPane.widthProperty().addListener((observable, oldValue, newValue) ->
                 setAnnunciScrollPanePrefWidth(newValue.doubleValue()));
 
-        Platform.runLater(() -> setAnnunciScrollPanePrefWidth(listaAnnunciAnchorPane.getWidth()));
+        setAnnunciScrollPanePrefWidth(listaAnnunciAnchorPane.getWidth());
     }
 
     private void setAnnunciScrollPanePrefWidth(double newValue) {
@@ -439,7 +493,8 @@ public class DashboardController extends AbstractController implements Initializ
         });
     }
 
-    private void scroll(double deltaX) {
+    private void scroll(ActionEvent event) {
+        double deltaX = (event.getSource() == scrollLeftButton) ? SCROLL_AMOUNT : -SCROLL_AMOUNT;
         double currentX = filterHBox.getTranslateX();
         double targetX = currentX + deltaX;
 
@@ -454,52 +509,119 @@ public class DashboardController extends AbstractController implements Initializ
 
     @FXML
     private void scrollLeft(ActionEvent event) {
-        scroll(SCROLL_AMOUNT);
+        scroll(event);
     }
 
     @FXML
     private void scrollRight(ActionEvent event) {
-        scroll(-SCROLL_AMOUNT);
+        scroll(event);
     }
-
-    private void setAnnuncioImageView(ImageView imageViewAnnuncio) {
-        if (imageViewAnnuncio != null) {
-            Image image = new Image("file:C:\\Users\\WIN10\\Pictures\\Screenshots\\casa.png");
-            imageViewAnnuncio.setImage(image);
-
-            // Calcola le proporzioni
-            double imageWidth = image.getWidth();
-            double imageHeight = image.getHeight();
-            double aspectRatio = imageWidth / imageHeight;
-
-            // Determina se l'immagine è più larga che alta o più stretta
-            if (aspectRatio > 1) { // Immagine più larga che alta
-                // Calcola la larghezza necessaria per riempire l'altezza
-                // Fondamentalmente è sempre imageHeight visto che fitHeight è 200
-
-                // Calcola l'offset per centrare la porzione visibile
-                double offsetX = (imageWidth - imageHeight) / 2;
-
-                // Imposta il viewport
-                imageViewAnnuncio.setViewport(new Rectangle2D(offsetX, 0, imageHeight, imageHeight));
-            } else { // Immagine più alta che larga o quadrata
-                //Non serve fare nulla, l'immagine si adatterà all'altezza senza ritagliare
-            }
-
-        } else {
-            logger.error("ImageView annuncioImageView non iniettato! Controlla l'FXML.");
-        }
-    }
-
 
     public void setToken(String token) {
         this.token = token;
         setUtente(token);
+        //TODO: Rimuovere sotto dopo la merge se viene passato dalla schermata precedente una lista di annunci
+        filtroAnnunci.setTipo("Vendita");
+        filtroAnnunci.setTipologia("Casa indipendente");
     }
 
-    //TODO: implementa l'update degli annunci
     private void updateAnnunci() {
-        logger.info("Aggiornamento degli annunci con i seguenti filtri: {}", filtroAnnunci);
-        // Qui andrebbe la logic per filtrare e visualizzare gli annunci
+        try {
+            logger.info("Aggiornamento degli annunci per la città: {} con i seguenti filtri: {}", cittaDiRicerca, filtroAnnunci);
+            annunci = annuncioService.searchAnnunciByCittaAndFiltro(cittaDiRicerca, filtroAnnunci, token);
+
+            Platform.runLater(() -> {
+                if (annunci != null && !annunci.isEmpty()) {
+                    visualizzaAnnunciSullaMappa(annunci);
+                    visualizzaAnnunciNellaLista(annunci);
+                } else {
+                    showPopup("Nessun risultato trovato.", "Prova a cambiare i filtri.", ERROR_ICON);
+                    logger.warn("Nessun annuncio trovato per la città: {}", cittaDiRicerca);
+                    visualizzaAnnunciSullaMappa(Collections.emptyList());
+                    visualizzaAnnunciNellaLista(Collections.emptyList());
+                }
+            });
+        } catch (GenericServiceException e) {
+            logger.error("Errore durante il recupero degli annunci: {}", e.getMessage(), e);
+        }
+    }
+
+    private void visualizzaAnnunciSullaMappa(List<AnnuncioDTO> annunci) {
+        double minLon = Double.MAX_VALUE;
+        double minLat = Double.MAX_VALUE;
+        double maxLon = Double.MIN_VALUE;
+        double maxLat = Double.MIN_VALUE;
+
+        List<Map<String, Object>> annunciPerLaMappa = new ArrayList<>();
+        for (AnnuncioDTO annuncio : annunci) {
+            Map<String, Object> annuncioMap = new HashMap<>();
+            ImmobileDTO immobile = null;
+            try {
+                immobile = immobileService.getImmobileDetails(annuncio.getIdImmobile(), token);
+            } catch (GenericServiceException e) {
+                logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
+                continue;
+            }
+            double latitudine = immobile.getLatitudine();
+            double longitudine = immobile.getLongitudine();
+
+            minLon = Math.min(minLon, longitudine);
+            minLat = Math.min(minLat, latitudine);
+            maxLon = Math.max(maxLon, longitudine);
+            maxLat = Math.max(maxLat, latitudine);
+
+            annuncioMap.put("latitudine", latitudine);
+            annuncioMap.put("longitudine", longitudine);
+            annuncioMap.put("titolo", annuncio.getTitolo());
+            annuncioMap.put("prezzo", annuncio.getPrezzo());
+            annuncioMap.put("descrizione", annuncio.getDescrizione());
+            annuncioMap.put("idImmobile", annuncio.getIdImmobile());
+            annunciPerLaMappa.add(annuncioMap);
+        }
+
+        if (!annunci.isEmpty()) {
+            double[] extent = {minLon, minLat, maxLon, maxLat};
+
+            String extentString = Arrays.toString(extent);
+
+            WebEngine webEngine = map.getEngine();
+            webEngine.executeScript("fitViewToExtent(" + extentString + ");");
+        }
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String annunciJson = objectMapper.writeValueAsString(annunciPerLaMappa);
+            WebEngine webEngine = map.getEngine();
+            webEngine.executeScript("addMarkersToMap(" + annunciJson + ");");
+        } catch (Exception e) {
+            logger.error("Errore serializzazione JSON annunci:", e);
+        }
+    }
+
+    private void visualizzaAnnunciNellaLista(List<AnnuncioDTO> annunci) {
+        listaAnnunciVBox.getChildren().clear();
+        numeroAnnunciText.setText(annunci.size() + " risultati");
+        listaAnnunciVBox.getChildren().add(numeroAnnunciText);
+        for (AnnuncioDTO annuncio : annunci) {
+            ImmobileDTO immobile = null;
+            FotoImmobileDTO fotoImmobile = null;
+            try {
+                immobile = immobileService.getImmobileDetails(annuncio.getIdImmobile(), token);
+            } catch (GenericServiceException e) {
+                logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
+                continue;
+            }
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dietiestates25ui/view/annuncio-item-view.fxml"));
+                HBox annuncioItem = loader.load();
+
+                AnnuncioItemController controller = loader.getController();
+                controller.setAnnuncio(annuncio, immobile);
+
+                listaAnnunciVBox.getChildren().add(annuncioItem);
+            } catch (IOException e) {
+                logger.error("Errore durante il caricamento del layout dell'annuncio:", e);
+            }
+        }
     }
 }

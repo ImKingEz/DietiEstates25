@@ -1,8 +1,11 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25.dto.ImmobileDTO;
+import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
+import com.dietiestates25ui.service.AgenteService;
 import com.dietiestates25ui.service.AnnuncioService;
 import com.dietiestates25ui.service.ImmobileService;
 import javafx.animation.PauseTransition;
@@ -72,6 +75,13 @@ public class ConfermaInserzioneController extends AbstractController implements 
     private Annuncio annuncio;
     private AnnuncioService annuncioService = new AnnuncioService();
 
+    private AgenteImmobiliare agente;
+    private AgenteService agenteService = new AgenteService();
+
+    public void setAgente(AgenteImmobiliare agente) {
+        this.agente = agente;
+    }
+
     public void setImmobile(Immobile immobile) {
         this.immobile = immobile;
     }
@@ -119,12 +129,12 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
             tipoLabel.setText(annuncio.getTipo());
             tipologiaLabel.setText(immobile.getTipologia());
-            
+
             numeroCamereLabel.setText(String.valueOf(immobile.getNumeroLocali()));
             numeroBagniLabel.setText(String.valueOf(immobile.getNumeroBagni()));
             classeEnergeticaLabel.setText(immobile.getClasseEnergetica());
 
-            // Gestione del piano: se il piano è -1 (interrato) visualizzare "Interrato", altrimenti il numero del piano
+            // Gestione del piano: se il piano Ã¨ -1 (interrato) visualizzare "Interrato", altrimenti il numero del piano
             String pianoText = (immobile.getPiano() == -1) ? "Interrato" : String.valueOf(immobile.getPiano());
             pianoLabel.setText(pianoText);
 
@@ -224,6 +234,8 @@ public class ConfermaInserzioneController extends AbstractController implements 
         try {
             ImmobileDTO immobileDTO = immobileService.salvaImmobile(immobile, token);
             annuncio.setIdImmobile(immobileDTO.getId());
+            AgenteDTO agenteDTO = agenteService.getAgenteDetails(token);
+            annuncio.setIdAgente(agenteDTO.getId());
             annuncioService.salvaAnnuncio(annuncio, token, selectedImageList);
             showPopup("immobile e Annuncio salvati correttamente!", "Reindirizzamento alla gestione immobili", SUCCESS_ICON);
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
@@ -237,7 +249,11 @@ public class ConfermaInserzioneController extends AbstractController implements 
     }
 
     private void openGestioneImmobiliPage() {
-        loadScene("/com/dietiestates25ui/view/gestione-immobili-view.fxml",
-                (fxmlLoader, stage) -> {}, indietroButton, "/com/dietiestates25ui/styles/gestione-immobili-style.css");
+        loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
+                (fxmlLoader, stage) -> {
+                    AgenteDashboardController controller = fxmlLoader.getController();
+                    controller.setToken(token);
+                    controller.setAgente(agente);
+                }, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

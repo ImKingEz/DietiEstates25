@@ -1,0 +1,2 @@
+ALTER TABLE immobile
+    ADD COLUMN citta VARCHAR(255) NOT NULL;

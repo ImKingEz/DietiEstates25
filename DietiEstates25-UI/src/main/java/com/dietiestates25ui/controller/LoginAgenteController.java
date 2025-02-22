@@ -117,9 +117,9 @@ public class LoginAgenteController extends AbstractController implements Initial
     private void openAgenteDashboard(String token, AgenteImmobiliare agente) {
         loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
                 (fxmlLoader, stage) -> {
-//                    AgenteDashboardController controller = fxmlLoader.getController();
-//                    controller.setAgente(agente);
-//                    controller.setToken(token);
+                    AgenteDashboardController controller = fxmlLoader.getController();
+                    controller.setAgente(agente);
+                    controller.setToken(token);
                 }, loginButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }
