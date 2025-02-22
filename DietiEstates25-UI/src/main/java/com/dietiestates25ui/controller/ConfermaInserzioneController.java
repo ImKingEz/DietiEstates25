@@ -210,7 +210,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
                     controller.setSuperficieTextField(String.valueOf(immobile.getDimensione()));
                     controller.setCamereSpinner(immobile.getNumeroLocali());
                     controller.setBagniSpinner(immobile.getNumeroBagni());
-                    controller.setClasseEnergeticaTextField(immobile.getClasseEnergetica());
+                    controller.setClasseEnergeticaMenuButton(immobile.getClasseEnergetica());
                     controller.setPianoSpinner(immobile.getPiano());
                     controller.setAscensoreCheckBox(immobile.isAscensore());
                     controller.setPortineriaCheckBox(immobile.isPortineria());
@@ -237,7 +237,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
             AgenteDTO agenteDTO = agenteService.getAgenteDetails(token);
             annuncio.setIdAgente(agenteDTO.getId());
             annuncioService.salvaAnnuncio(annuncio, token, selectedImageList);
-            showPopup("immobile e Annuncio salvati correttamente!", "Reindirizzamento alla gestione immobili", SUCCESS_ICON);
+            showPopup("Immobile e annuncio salvati correttamente!", "Reindirizzamento alla gestione immobili", SUCCESS_ICON);
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
             delay.setOnFinished(event -> openGestioneImmobiliPage());
             delay.play();

@@ -64,7 +64,7 @@
 
                                         <HBox fx:id="indirizzoHBox" alignment="CENTER" spacing="5.0">
                                             <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="* " />
-                                            <TextField fx:id="indirizzoTextField" editable="false" prefHeight="25.6" prefWidth="270.0" promptText="Indirizzo">
+                                            <TextField fx:id="indirizzoTextField" editable="false" prefHeight="25.8" prefWidth="270.0" promptText="Indirizzo">
                                                 <HBox.margin>
                                                     <Insets />
                                                 </HBox.margin>
@@ -93,12 +93,25 @@
                                                 <TextField fx:id="superficieTextField" promptText="Superficie (mq)" styleClass="registerField" />
                                             
                                         </HBox>
-                                        <HBox alignment="CENTER" styleClass="HBoxField">
-                                            
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
-                                                <TextField fx:id="classeEnergeticaTextField" promptText="Classe energetica" styleClass="registerField" />
-                                            
-                                        </HBox>
+               <HBox alignment="CENTER" styleClass="HBoxField">
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                     <MenuButton fx:id="classeEnergeticaMenubutton" mnemonicParsing="false" prefHeight="25.6" prefWidth="285.6" text="Classe energetica">
+                        <items>
+                           <MenuItem fx:id="a4MenuItem" mnemonicParsing="false" text="A4" />
+                           <MenuItem fx:id="a3MenuItem" mnemonicParsing="false" text="A3" />
+                           <MenuItem fx:id="a2MenuItem" mnemonicParsing="false" text="A2" />
+                           <MenuItem fx:id="a1MenuItem" mnemonicParsing="false" text="A1" />
+                           <MenuItem fx:id="bMenuItem" mnemonicParsing="false" text="B" />
+                           <MenuItem fx:id="cMenuItem" mnemonicParsing="false" text="C" />
+                           <MenuItem fx:id="dMenuItem" mnemonicParsing="false" text="D" />
+                           <MenuItem fx:id="eMenuItem" mnemonicParsing="false" text="E" />
+                           <MenuItem fx:id="fMenuItem" mnemonicParsing="false" text="F" />
+                           <MenuItem fx:id="gMenuItem" mnemonicParsing="false" text="G" />
+                        </items>
+                     </MenuButton>
+                  </children>
+               </HBox>
                                         <VBox alignment="CENTER" prefWidth="350.0" spacing="3.0">
                                             
                                                 <HBox alignment="CENTER" spacing="30.0">
@@ -166,7 +179,7 @@
                </HBox>
                                         <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
                                             
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Numero camere" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Numero locali" />
                                                 <HBox alignment="CENTER" styleClass="HBoxField">
                                                     
                                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />

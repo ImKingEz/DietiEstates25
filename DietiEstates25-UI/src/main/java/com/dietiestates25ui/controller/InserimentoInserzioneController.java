@@ -1,5 +1,4 @@
 package com.dietiestates25ui.controller;
-
 import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
@@ -33,6 +32,7 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
 public class InserimentoInserzioneController extends AbstractController implements Initializable {
 
@@ -83,7 +83,27 @@ public class InserimentoInserzioneController extends AbstractController implemen
     @FXML
     private Spinner<Integer> bagniSpinner;
     @FXML
-    private TextField classeEnergeticaTextField;
+    private MenuButton classeEnergeticaMenubutton;
+    @FXML
+    private MenuItem a4MenuItem;
+    @FXML
+    private MenuItem a3MenuItem;
+    @FXML
+    private MenuItem a2MenuItem;
+    @FXML
+    private MenuItem a1MenuItem;
+    @FXML
+    private MenuItem bMenuItem;
+    @FXML
+    private MenuItem cMenuItem;
+    @FXML
+    private MenuItem dMenuItem;
+    @FXML
+    private MenuItem eMenuItem;
+    @FXML
+    private MenuItem fMenuItem;
+    @FXML
+    private MenuItem gMenuItem;
     @FXML
     private Spinner<Integer> pianoSpinner;
     @FXML
@@ -125,6 +145,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
         setupTipoMenuButton();
         setupTipologiaMenuButton();
+        setupClasseEnergeticaMenuButton();
         setupSpinners();
 
         selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
@@ -161,6 +182,24 @@ public class InserimentoInserzioneController extends AbstractController implemen
         tipologiaMenuButton.setText(tipo);
         tipologiaMenuButton.setStyle("-fx-text-fill: black;");
     }
+    
+    private void setupClasseEnergeticaMenuButton() {
+        a4MenuItem.setOnAction(event -> impostaClasseEnergetica("A4"));
+        a3MenuItem.setOnAction(event -> impostaClasseEnergetica("A3"));
+        a2MenuItem.setOnAction(event -> impostaClasseEnergetica("A2"));
+        a1MenuItem.setOnAction(event -> impostaClasseEnergetica("A1"));
+        bMenuItem.setOnAction(event -> impostaClasseEnergetica("B"));
+        cMenuItem.setOnAction(event -> impostaClasseEnergetica("C"));
+        dMenuItem.setOnAction(event -> impostaClasseEnergetica("D"));
+        eMenuItem.setOnAction(event -> impostaClasseEnergetica("E"));
+        fMenuItem.setOnAction(event -> impostaClasseEnergetica("F"));
+        gMenuItem.setOnAction(event -> impostaClasseEnergetica("G"));
+    }
+    
+    private void impostaClasseEnergetica(String classeEnergetica) {
+        classeEnergeticaMenubutton.setText(classeEnergetica);
+        classeEnergeticaMenubutton.setStyle("-fx-text-fill: black;");
+    }
 
     public void setTitoloTextField(String titolo) {
         this.titoloTextField.setText(titolo);
@@ -190,12 +229,12 @@ public class InserimentoInserzioneController extends AbstractController implemen
         this.bagniSpinner.getValueFactory().setValue(bagni);
     }
 
-    public void setClasseEnergeticaTextField(String classeEnergetica) {
-        this.classeEnergeticaTextField.setText(classeEnergetica);
-    }
-
     public void setPianoSpinner(int piano) {
         this.pianoSpinner.getValueFactory().setValue(piano);
+    }
+
+    public void setClasseEnergeticaMenuButton(String classeEnergetica) {
+        this.classeEnergeticaMenubutton.setText(classeEnergetica);
     }
 
     public void setTipoMenuButton(String tipologia) {
@@ -421,9 +460,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private void updateAvantiButtonState() {
         titoloTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        setupTextFormatter(prezzoTextField);
         prezzoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        setupTextFormatter(superficieTextField);
         superficieTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
-        classeEnergeticaTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        classeEnergeticaMenubutton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         descrizioneTextArea.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
 
         tipoMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
@@ -437,13 +478,24 @@ public class InserimentoInserzioneController extends AbstractController implemen
         avantiButton.setDisable(true);
     }
 
+    private void setupTextFormatter(TextField textField) {
+        UnaryOperator<TextFormatter.Change> numberFilter = change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("\\d*(\\.\\d*)?")) {
+                return change;
+            }
+            return null;
+        };
+        TextFormatter<Object> textFormatter = new TextFormatter<>(numberFilter);
+        textField.setTextFormatter(textFormatter);
+    }
+
     public void checkFormValidity() {
-        //Rimuovere città dalla validazione.
         String titolo = titoloTextField.getText().trim();
         String indirizzo = indirizzoTextField.getText().trim();
         String prezzo = prezzoTextField.getText().trim();
         String superficie = superficieTextField.getText().trim();
-        String classeEnergetica = classeEnergeticaTextField.getText().trim();
+        String classeEnergetica = classeEnergeticaMenubutton.getText();
         String descrizione = descrizioneTextArea.getText().trim();
         String tipo = tipoMenuButton.getText();
         String tipologia = tipologiaMenuButton.getText();
@@ -466,8 +518,12 @@ public class InserimentoInserzioneController extends AbstractController implemen
             // Superficie non valida
         }
 
+        boolean isClasseEnergeticaValid = classeEnergetica.equals("A4") || classeEnergetica.equals("A3") || classeEnergetica.equals("A2") ||
+                classeEnergetica.equals("A1") || classeEnergetica.equals("B") || classeEnergetica.equals("C") || classeEnergetica.equals("D") ||
+                classeEnergetica.equals("E") || classeEnergetica.equals("F") || classeEnergetica.equals("G");
+
         boolean requiredFieldsFilled = !titolo.isEmpty() && !indirizzo.isEmpty() && !descrizione.isEmpty() && isPrezzoValid && isSuperficieValid &&
-                !classeEnergetica.isEmpty() && (!selectedImageList.isEmpty()) && (tipo.equals("Vendita") || tipo.equals("Affitto")) &&
+                isClasseEnergeticaValid && (!selectedImageList.isEmpty()) && (tipo.equals("Vendita") || tipo.equals("Affitto")) &&
                 (tipologia.equals("Villa") || tipologia.equals("Appartamento") || tipologia.equals("Terreno") || tipologia.equals("Casa indipendente"));
         boolean isMaxImagesSelected = selectedImageList.size() <= 5;
 
@@ -503,7 +559,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
     }
 
     private String buildGeoapifyUrl(double latitude, double longitude, String apiKey) {
-        // Cambio la chiamata per ricevere i dettagli dell'indirizzo e ottenere la città
         String url = String.format(Locale.US, "https://api.geoapify.com/v1/geocode/reverse?lat=%f&lon=%f&apiKey=%s&lang=it",
                 latitude, longitude, apiKey);
         logger.info("URL formattato: {}", url);
@@ -523,7 +578,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
                 for (JsonNode feature : root.get("features")) {
                     JsonNode properties = feature.get("properties");
 
-                    // Extract city from the properties
                     if (properties != null && properties.has("city")) {
                         city = properties.get("city").asText();
                         break;
@@ -540,7 +594,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        final String finalCity = city; // Make city final for use in Platform.runLater
+        final String finalCity = city;
 
         Platform.runLater(() -> {
             if (finalCity != null && !finalCity.isEmpty()) {
@@ -571,23 +625,21 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac"; // Sostituisci con la tua API key
+        String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac";
         String baseUrl = "https://api.geoapify.com/v2/places?";
         int radius = GEOAPIFY_RADIUS;
 
-        // Categories to search for
         String[] categories = {"education.school", "leisure.park", "public_transport"};
 
         for (String category : categories) {
             String url = baseUrl +
                     "categories=" + category +
                     "&filter=circle:" + longitude + "," + latitude + "," + radius +
-                    "&limit=1" + // Just check if at least one is present
                     "&apiKey=" + apiKey;
 
             logger.info("URL chiamata API Geoapify Places ({}): {}", category, url);
 
-            final String currentCategory = category; // Needed for lambda expression
+            final String currentCategory = category;
 
             try (HttpClient client = HttpClient.newHttpClient()) {
                 HttpRequest request = HttpRequest.newBuilder()
@@ -671,7 +723,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         immobile.setDimensione(Double.parseDouble(superficieTextField.getText()));
         immobile.setNumeroLocali(camereSpinner.getValue());
         immobile.setNumeroBagni(bagniSpinner.getValue());
-        immobile.setClasseEnergetica(classeEnergeticaTextField.getText());
+        immobile.setClasseEnergetica(classeEnergeticaMenubutton.getText());
         immobile.setPiano(pianoSpinner.getValue());
         immobile.setAscensore(ascensoreCheckBox.isSelected());
         immobile.setPortineria(portineriaCheckBox.isSelected());

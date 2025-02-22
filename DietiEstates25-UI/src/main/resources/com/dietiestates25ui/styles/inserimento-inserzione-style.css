@@ -4,6 +4,13 @@
 #apriMappaButton {
     -fx-pref-height: 20;
     -fx-pref-width: 60;
+    -fx-border-radius: 0 8px 8px 0;
+    -fx-background-radius: 0 8px 8px 0;
+}
+
+#indirizzoTextField {
+    -fx-border-radius: 3px 0 0 3px;
+    -fx-background-radius: 3px 0 0 3px;
 }
 
 /* Stili per i suggerimenti */
