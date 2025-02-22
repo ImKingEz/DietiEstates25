@@ -10,10 +10,10 @@ import java.io.IOException;
 public class MainDashboardApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainDashboardApplication.class.getResource("/com/dietiestates25ui/view/inserimento-inserzione-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MainDashboardApplication.class.getResource("/com/dietiestates25ui/view/ricerca-con-mappa-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 
-        scene.getStylesheets().add(getClass().getResource("/com/dietiestates25ui/styles/inserimento-inserzione-style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/com/dietiestates25ui/styles/ricerca-con-mappa-style.css").toExternalForm());
 
         stage.setTitle("DietiEstates25");
         stage.setScene(scene);

@@ -23,7 +23,7 @@ import java.security.SecureRandom;
 import java.util.List;
 
 public class AnnuncioService extends ApiService {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AnnuncioService.class);
 
     public void salvaAnnuncio(Annuncio annuncio, String token, List<File> selectedImageList) throws GenericServiceException {

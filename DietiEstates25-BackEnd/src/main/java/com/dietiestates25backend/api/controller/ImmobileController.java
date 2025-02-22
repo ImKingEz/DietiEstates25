@@ -6,6 +6,7 @@ import com.dietiestates25backend.business.entity.Immobile;
 import com.dietiestates25backend.business.service.ImmobileService;
 import com.dietiestates25backend.business.service.AuthService;
 import com.dietiestates25backend.business.service.JwtService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,17 +42,21 @@ public class ImmobileController extends BaseController {
         }
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<ImmobileDTO>>> searchImmobiliByCitta(@RequestParam String citta) {
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<ImmobileDTO>> getImmobileDetails(@PathVariable Long id) {
         try {
-            List<Immobile> immobili = immobileService.findImmobiliByCitta(citta);
-            List<ImmobileDTO> immobileDTOs = immobili.stream()
-                    .map(immobileService::convertToDTO)
-                    .collect(Collectors.toList());
-            return successResponse(immobileDTOs);
-        } catch (Exception e) {
-            logger.error("Errore durante la ricerca degli immobili per città: {}", e.getMessage(), e);
-            return handleGenericException(e, "Errore durante la ricerca degli immobili per città", ENTITY_TYPE);
+            ImmobileDTO immobileDTO = immobileService.getImmobileDetails(id);
+            ApiResponse<ImmobileDTO> response = new ApiResponse<>(true, immobileDTO, null);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("Immobile non trovato con ID: {}", id);
+            ApiResponse<ImmobileDTO> response = new ApiResponse<>(false, null, "Immobile non trovato");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception ex) {
+            logger.error("Errore durante il recupero dei dettagli dell'immobile con ID: {}", id, ex);
+            ApiResponse<ImmobileDTO> response = new ApiResponse<>(false, null, "Errore durante il recupero dei dettagli dell'immobile: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

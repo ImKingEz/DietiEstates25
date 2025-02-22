@@ -45,6 +45,7 @@ public class AnnuncioController extends BaseController {
     }
 
     @PostMapping("/search")
+    @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunci(
             @RequestParam String citta,
             @RequestBody FiltroAnnunciDTO filtro) {

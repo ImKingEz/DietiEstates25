@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface ImmobileRepository extends JpaRepository<Immobile, Long> {
-    List<Immobile> findByCittaIgnoreCase(String citta); // Corrispondenza esatta, case-insensitive
 }

@@ -42,6 +42,9 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     private Stage currentStage;
 
+    private double selectedLatitude;
+    private double selectedLongitude;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> {
@@ -69,18 +72,50 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         radiusSlider.valueProperty().addListener((ov, old_val, new_val) -> {
             raggioRicercaLabel.setText("Raggio di ricerca: " + df.format(new_val) + "mt");
+
+            // Invia il nuovo valore del raggio alla mappa
+            Platform.runLater(() -> {
+                WebEngine webEngine = mapWebView.getEngine();
+                String script = "updateRadius(" + new_val.doubleValue() + ");";
+                webEngine.executeScript(script);
+            });
         });
     }
 
     private void loadMap() {
         WebEngine webEngine = mapWebView.getEngine();
+
+        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == javafx.concurrent.Worker.State.SUCCEEDED) {
+                // La pagina è stata caricata completamente, ora possiamo chiamare setInitialRadius()
+                Platform.runLater(() -> {
+                    double initialRadius = radiusSlider.getValue();
+                    String script = "setInitialRadius(" + initialRadius + ");";
+                    webEngine.executeScript(script);
+                });
+            }
+        });
+
         webEngine.load(getClass().getResource("/com/dietiestates25ui/view/map2.html").toExternalForm());
 
         webEngine.setOnAlert(event -> {
             String data = event.getData();
             System.out.println("Data from WebView: " + data);
-            // Process Data (Coordinates, address) from WebView
+            String[] parts = data.split("\\|"); // Splitta la stringa usando "|" come delimitatore
+            if (parts.length == 3) {
+                try {
+                    String address = parts[0];
+                    selectedLatitude = Double.parseDouble(parts[1]);
+                    selectedLongitude = Double.parseDouble(parts[2]);
+                    System.out.println("Address: " + address + ", Latitude: " + selectedLatitude + ", Longitude: " + selectedLongitude);
+                } catch (NumberFormatException e) {
+                    logger.error("Errore durante la conversione delle coordinate: ", e);
+                }
+            } else {
+                logger.warn("Formato dati inatteso ricevuto dalla WebView: {}", data);
+            }
         });
+
     }
 
     private void openHomePage() {
@@ -100,9 +135,10 @@ public class RicercaConMappaController extends AbstractController implements Ini
     }
 
     private void handleCercaButtonAction() {
-        System.out.println("Slider Value: " + radiusSlider.getValue());
+        double radius = radiusSlider.getValue();
+        System.out.println("Slider Value: " + radius);
         System.out.println("Selections: Vendita: " + venditaSelezionato + ", Affitto: " + affittoSelezionato + ", Tipologia: " + tipologiaSelezionata);
-        logger.info("Performing map search with radius: {} meters", radiusSlider.getValue());
+        logger.info("Performing map search with radius: {} meters", radius);
     }
 
     public void setVenditaSelezionato(boolean venditaSelezionato) {

@@ -86,11 +86,6 @@ public class ImmobileService {
         );
     }
 
-    public List<Immobile> findImmobiliByCitta(String citta) {
-        logger.debug("Ricerca immobili per città  : {}", citta);
-        return immobileRepository.findByCittaIgnoreCase(citta);
-    }
-
     public ImmobileDTO getImmobileDetails(Long id) {
         Optional<Immobile> immobileOptional = immobileRepository.findById(id);
 

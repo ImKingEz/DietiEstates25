@@ -83,7 +83,9 @@ public abstract class ApiService {
 
     protected <D> D executeAndHandle(String path, String method, Object body, String token, Class<D> dtoClass) throws GenericServiceException {
         try {
-            fetchCsrfToken();
+            if (!method.equalsIgnoreCase("GET") && (csrfTokenValue == null || csrfTokenHeaderName == null)) {
+                fetchCsrfToken();
+            }
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + path))
                     .header(CONTENT_TYPE, APPLICATION_JSON)

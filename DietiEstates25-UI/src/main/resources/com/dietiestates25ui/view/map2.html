@@ -47,6 +47,9 @@
     var selectedLongitude;
     var selectedLatitude;
     var targetZoom = 15; // Zoom desiderato al click
+    var circle;  // Variabile per memorizzare il cerchio
+    var circleLayer; // Layer per il cerchio
+    var currentRadius; // Variabile per memorizzare il raggio corrente
 
     // Coordinate del centro dell'Italia (approssimative)
     var italyCenter = ol.proj.fromLonLat([12.5674, 41.8719]);
@@ -84,6 +87,12 @@
         });
         map.addLayer(marker);
 
+        // Crea un layer vettoriale per il cerchio
+        circleLayer = new ol.layer.Vector({
+            source: new ol.source.Vector()
+        });
+        map.addLayer(circleLayer);
+
         // Listener per il click sulla mappa
         map.on('click', function(evt) {
             var coordinate = ol.proj.toLonLat(evt.coordinate);
@@ -91,7 +100,7 @@
             selectedLatitude = coordinate[1];
             setMarker(selectedLongitude, selectedLatitude);
             zoomToLocation(selectedLongitude, selectedLatitude); //Zoom al click
-            addConfirmationOverlay();
+            addConfirmationOverlay(); // Aggiungi l'overlay qui
         });
     }
 
@@ -141,6 +150,7 @@
 
         confirmButton.addEventListener('click', function() {
             reverseGeocode(selectedLongitude, selectedLatitude);
+            removeConfirmationOverlay(); // Rimuovi l'overlay dopo la conferma
         });
 
         element.appendChild(confirmButton);
@@ -155,20 +165,63 @@
             .then(data => {
                 if (data && data.address) {
                     var address = data.display_name;
-                    sendDataToJava(address, longitude, latitude); //Passa tutti i dati necessari
+                    sendDataToJava(address, latitude, longitude); //Passa tutti i dati necessari
+                    drawCircle(latitude, longitude, currentRadius); // Disegna il cerchio qui
                 } else {
-                    sendDataToJava("Indirizzo non identificato per questo punto", longitude, latitude);
+                    sendDataToJava("Indirizzo non identificato per questo punto", latitude, longitude);
                 }
             })
             .catch(error => {
                 console.error("Errore nel reverse geocoding:", error);
-                sendDataToJava("Errore di connessione", longitude, latitude);
+                sendDataToJava("Errore di connessione", latitude, longitude);
             });
     }
 
-    function sendDataToJava(address, longitude, latitude) {
+    function sendDataToJava(address, latitude, longitude) {
         window.alert(address + "|" + latitude + "|" + longitude);
     }
+
+    function drawCircle(latitude, longitude, radius) {
+        // Converte le coordinate geografiche in coordinate della mappa
+        var center = ol.proj.fromLonLat([longitude, latitude]);
+
+        // Rimuovi il cerchio precedente, se esiste
+        circleLayer.getSource().clear();
+
+        // Crea una nuova feature Circle
+        circle = new ol.Feature({
+            geometry: new ol.geom.Circle(center, radius) // radius in meters
+        });
+
+        // Aggiungi la feature al layer del cerchio
+        circleLayer.getSource().addFeature(circle);
+
+        // Definisci lo stile del cerchio (opzionale)
+        circle.setStyle(new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(0, 0, 255, 0.1)' // Blu trasparente
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'blue',
+                width: 1
+            })
+        }));
+    }
+
+    // Imposta il raggio iniziale dalla JavaFX application
+    function setInitialRadius(radius) {
+        currentRadius = radius;
+    }
+
+    // Aggiorna il raggio quando lo slider cambia
+    function updateRadius(radius) {
+        currentRadius = radius;
+        // Ridraw the circle with the new radius if a location is already selected
+        if (selectedLatitude && selectedLongitude) {
+            drawCircle(selectedLatitude, selectedLongitude, currentRadius);
+        }
+    }
+
 
     window.onload = function() {
         initMap();
