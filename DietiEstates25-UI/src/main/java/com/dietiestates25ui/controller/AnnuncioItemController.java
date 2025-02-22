@@ -42,7 +42,13 @@ public class AnnuncioItemController {
     private ImageView imageVicinanzaDetailAnnuncio;
 
     public void setAnnuncio(AnnuncioDTO annuncio, ImmobileDTO immobile) {
-        setAnnuncioImageView(annuncio.getImmaginiUrls().getFirst());
+        if (annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
+            setAnnuncioImageView(annuncio.getImmaginiUrls().getFirst());
+        } else {
+            // Imposta un'immagine di placeholder o nascondi l'ImageView
+            logger.warn("Nessuna immagine disponibile per l'annuncio: {}", annuncio.getTitolo());
+            annuncioImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/placeholder.png")))); // Assicurati di avere un'immagine placeholder
+        }
         annuncioTitle.setText(annuncio.getTitolo());
         prezzoAnnuncio.setText(String.valueOf(annuncio.getPrezzo()));
         textLocaliDetailAnnuncio.setText(immobile.getNumeroLocali() + " locali");
@@ -73,9 +79,10 @@ public class AnnuncioItemController {
     }
 
     private void setAnnuncioImageView(String imageUrl) {
-        logger.debug("Setting image: {}", imageUrl);
+        logger.debug("Setting image: http://localhost:8080{}", imageUrl);
         if (annuncioImageView != null) {
-            Image image = new Image("file:/app" + imageUrl);
+            // Modifica qui: carica l'immagine direttamente dall'URL restituito dal backend
+            Image image = new Image("http://localhost:8080" + imageUrl); // Assicurati che l'URL sia corretto
             annuncioImageView.setImage(image);
 
             double imageWidth = image.getWidth();

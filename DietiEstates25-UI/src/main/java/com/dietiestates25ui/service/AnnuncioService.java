@@ -28,7 +28,7 @@ public class AnnuncioService extends ApiService {
 
     public void salvaAnnuncio(Annuncio annuncio, String token, List<File> selectedImageList) throws GenericServiceException {
         try {
-            AnnuncioService.MultipartBodyPublisher publisher = new AnnuncioService.MultipartBodyPublisher();
+            MultipartBodyPublisher publisher = new MultipartBodyPublisher();
             addFormDataPartAndFilePartForPublisher(annuncio, selectedImageList, publisher);
 
             fetchCsrfToken();
@@ -64,7 +64,7 @@ public class AnnuncioService extends ApiService {
         }
     }
 
-    private static void addFormDataPartAndFilePartForPublisher(Annuncio annuncio, List<File> selectedImageList, AnnuncioService.MultipartBodyPublisher publisher) throws IOException {
+    private void addFormDataPartAndFilePartForPublisher(Annuncio annuncio, List<File> selectedImageList, MultipartBodyPublisher publisher) throws IOException {
         publisher.addFormDataPart("titolo", annuncio.getTitolo());
         publisher.addFormDataPart("tipo", annuncio.getTipo());
         publisher.addFormDataPart("prezzo", String.valueOf(annuncio.getPrezzo()));

@@ -9,6 +9,7 @@ import com.dietiestates25backend.data.repository.AnnuncioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -28,6 +29,9 @@ public class AnnuncioService {
     private final AnnuncioRepository annuncioRepository;
 
     private final FotoImmobileRepository fotoImmobileRepository;
+
+    @Value("${file.upload.directory}")
+    private String uploadDirectory;
 
     @Autowired
     public AnnuncioService(AnnuncioRepository annuncioRepository, FotoImmobileRepository fotoImmobileRepository) {
@@ -104,7 +108,7 @@ public class AnnuncioService {
             fileExtension = originalFileName.substring(dotIndex);
         }
         String fileName = "image_" + numeroImmagine + "_" + annuncioId + fileExtension;
-        Path uploadDir = Paths.get("uploads/foto_immobili");
+        Path uploadDir = Paths.get(uploadDirectory);
 
         try {
             if (!Files.exists(uploadDir)) {
@@ -114,7 +118,7 @@ public class AnnuncioService {
             Path targetLocation = uploadDir.resolve(fileName);
             Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             logger.info("Saved image to: {}", targetLocation.toAbsolutePath());
-            return "/uploads/foto_immobili/" + fileName;
+            return "/" + uploadDirectory + "/" + fileName; // Restituisce il percorso completo
         } catch (IOException e) {
             throw new IOException("Could not save image: " + e.getMessage(), e); // Lancia l'eccezione
         }
@@ -138,7 +142,7 @@ public class AnnuncioService {
     }
 
     public List<Annuncio> findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(String citta, String tipoAnnuncio, String tipologiaImmobile) {
-        logger.debug("Ricerca annunci per cittÃ : {}, tipo: {}, tipologia: {}", citta, tipoAnnuncio, tipologiaImmobile);
+        logger.debug("Ricerca annunci per città : {}, tipo: {}, tipologia: {}", citta, tipoAnnuncio, tipologiaImmobile);
         return annuncioRepository.findByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
     }
 }

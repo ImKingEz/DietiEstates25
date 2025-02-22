@@ -111,7 +111,7 @@
 
 .annuncioImageStackPane {
     -fx-border-color: transparent;
-    -fx-background-color: #2e2e2e;
+    -fx-background-color: transparent;
     -fx-border-radius: 5 0 0 5;
     -fx-background-radius: 5 0 0 5;
 }
