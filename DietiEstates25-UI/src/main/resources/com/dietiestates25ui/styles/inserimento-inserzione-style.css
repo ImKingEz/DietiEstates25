@@ -13,7 +13,7 @@
     -fx-background-radius: 3px 0 0 3px;
 }
 
-/* Stili per i suggerimenti */
+
 .tipsVBox {
     -fx-max-width: 300;
     -fx-min-width: 300;
@@ -23,12 +23,12 @@
     -fx-spacing: 0;
 }
 
-/* Stili per l'asterisco */
+
 .textAsterisco {
     -fx-fill: #3A5F7D;
 }
 
-/* Stili per il testo secondario */
+
 .textSecondari {
     -fx-font-size: 10;
     -fx-fill:  #3A5F7D;

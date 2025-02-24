@@ -3,7 +3,6 @@ package com.dietiestates25ui.controller;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
-import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.service.AnnuncioService;
 import javafx.application.Platform;
@@ -107,7 +106,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
             }
         });
 
-        webEngine.load(getClass().getResource("/com/dietiestates25ui/view/map2.html").toExternalForm());
+        webEngine.load(getClass().getResource("/com/dietiestates25ui/view/map-for-radius.html").toExternalForm());
 
         webEngine.setOnAlert(event -> {
             String data = event.getData();

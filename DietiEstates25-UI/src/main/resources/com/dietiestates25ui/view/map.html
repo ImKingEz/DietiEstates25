@@ -46,9 +46,8 @@
     var marker;
     var selectedLongitude;
     var selectedLatitude;
-    var targetZoom = 15; // Zoom desiderato al click
+    var targetZoom = 15;
 
-    // Coordinate del centro dell'Italia (approssimative)
     var italyCenter = ol.proj.fromLonLat([12.5674, 41.8719]);
 
     function initMap() {
@@ -60,10 +59,10 @@
                 })
             ],
             view: new ol.View({
-                center: italyCenter,  // Centra sulla'Italia
-                zoom: 6,             // Zoom per visualizzare l'intera Italia
-                minZoom: 5,          // Zoom minimo consentito (opzionale)
-                maxZoom: 18           // Zoom massimo consentito (opzionale)
+                center: italyCenter,
+                zoom: 6,
+                minZoom: 5,
+                maxZoom: 18
             })
         });
 
@@ -84,13 +83,12 @@
         });
         map.addLayer(marker);
 
-        // Listener per il click sulla mappa
         map.on('click', function(evt) {
             var coordinate = ol.proj.toLonLat(evt.coordinate);
             selectedLongitude = coordinate[0];
             selectedLatitude = coordinate[1];
             setMarker(selectedLongitude, selectedLatitude);
-            zoomToLocation(selectedLongitude, selectedLatitude); //Zoom al click
+            zoomToLocation(selectedLongitude, selectedLatitude);
             addConfirmationOverlay();
         });
     }
@@ -108,8 +106,8 @@
     }
 
     function zoomToLocation(longitude, latitude) {
-        var currentZoom = map.getView().getZoom(); // Ottieni lo zoom corrente
-        var newZoom = targetZoom; // Imposta il target zoom
+        var currentZoom = map.getView().getZoom();
+        var newZoom = targetZoom;
 
         map.getView().setCenter(ol.proj.fromLonLat([longitude, latitude]));
         map.getView().setZoom(newZoom);
@@ -117,7 +115,6 @@
     }
 
     function addConfirmationOverlay() {
-        //Se esiste già un overlay di conferma, rimuovilo
         const existingOverlay = document.getElementById('confirmOverlay');
         if (existingOverlay) {
             existingOverlay.remove();
@@ -155,7 +152,7 @@
             .then(data => {
                 if (data && data.address) {
                     var address = data.display_name;
-                    sendDataToJava(address, longitude, latitude); //Passa tutti i dati necessari
+                    sendDataToJava(address, longitude, latitude);
                 } else {
                     sendDataToJava("Indirizzo non identificato per questo punto", longitude, latitude);
                 }

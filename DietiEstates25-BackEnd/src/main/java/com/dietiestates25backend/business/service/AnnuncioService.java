@@ -118,7 +118,7 @@ public class AnnuncioService {
             logger.info("Saved image to: {}", targetLocation.toAbsolutePath());
             return "/uploads/foto_immobili/" + fileName;
         } catch (IOException e) {
-            throw new IOException("Could not save image: " + e.getMessage(), e); // Lancia l'eccezione
+            throw new IOException("Could not save image: " + e.getMessage(), e);
         }
     }
 

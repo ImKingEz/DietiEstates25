@@ -317,12 +317,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
         if (mapView == null) {
             logger.error("WebView mapView è null. Controllare il file FXML.");
-            return; // Esci dal metodo se mapView è null
+            return;
         }
 
         WebEngine webEngine = mapView.getEngine();
 
-        // Listener per lo stato di caricamento della pagina web
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> handleWebEngineStateChange(newValue, webEngine));
 
         webEngine.setJavaScriptEnabled(true);
@@ -384,10 +383,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
             this.latitudine = lat;
             this.longitudine = lng;
 
-            // Chiama getCityFromAddress *qui*, dopo aver impostato l'indirizzo e le coordinate
             getCityFromAddress(address, lat, lng);
 
-            // Chiama findNearbyFeatures *qui*, dopo aver impostato latitudine e longitudine
             findNearbyFeatures(lat, lng);
 
             logo.requestFocus();
@@ -506,7 +503,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
             prezzoValue = Double.parseDouble(prezzo);
             isPrezzoValid = prezzoValue > 0;
         } catch (NumberFormatException e) {
-            // Prezzo non valido
+            logger.error("Prezzo non valido: {}", e.getMessage());
         }
 
         boolean isSuperficieValid = false;
@@ -515,7 +512,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
             superficieValue = Double.parseDouble(superficie);
             isSuperficieValid = superficieValue > 0;
         } catch (NumberFormatException e) {
-            // Superficie non valida
+            logger.error("Superficie non valida: {}", e.getMessage());
         }
 
         boolean isClasseEnergeticaValid = classeEnergetica.equals("A4") || classeEnergetica.equals("A3") || classeEnergetica.equals("A2") ||
@@ -539,7 +536,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
         }
 
         String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac";
-        String url = buildGeoapifyUrl(latitude, longitude, apiKey); // Use lat/lon instead of address directly
+        String url = buildGeoapifyUrl(latitude, longitude, apiKey);
 
         logger.info("URL chiamata API Geoapify: {}", url);
 
@@ -549,7 +546,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     .build();
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenApply(HttpResponse::body)
-                    .thenAccept(this::processGeoapifyResponse) // Pass only the response body
+                    .thenAccept(this::processGeoapifyResponse)
                     .exceptionally(this::handleGeoapifyError);
         }
     }
@@ -669,7 +666,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
             JsonNode root = mapper.readTree(responseBody);
 
             if (root.has(FEATURES_GEOAPIFY) && root.get(FEATURES_GEOAPIFY).isArray() && root.get(FEATURES_GEOAPIFY).size() > 0) {
-                found = true; // At least one feature found
+                found = true;
             }
 
         } catch (IOException e) {
@@ -680,7 +677,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        final boolean isFound = found; // Make final for use in lambda
+        final boolean isFound = found;
 
         Platform.runLater(() -> {
             logger.info("Categoria: {}, Feature Trovata: {}", category, isFound);

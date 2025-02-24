@@ -51,19 +51,19 @@ public class ConfermaInserzioneController extends AbstractController implements 
     @FXML
     private Label vicinanzeLabel;
     @FXML
-    private Label serviziLabel; // NUOVA ETICHETTA
+    private Label serviziLabel;
     @FXML
-    private Label tipoLabel;  // NUOVA ETICHETTA
+    private Label tipoLabel;
     @FXML
     private Label tipologiaLabel;
     @FXML
-    private Label numeroCamereLabel;  // NUOVA ETICHETTA
+    private Label numeroCamereLabel;
     @FXML
-    private Label numeroBagniLabel;  // NUOVA ETICHETTA
+    private Label numeroBagniLabel;
     @FXML
-    private Label classeEnergeticaLabel;  // NUOVA ETICHETTA
+    private Label classeEnergeticaLabel;
     @FXML
-    private Label pianoLabel;  // NUOVA ETICHETTA
+    private Label pianoLabel;
 
     private String token;
 
@@ -111,50 +111,35 @@ public class ConfermaInserzioneController extends AbstractController implements 
     }
 
     private void mostraDettagliImmobile() {
-        if (immobile != null && annuncio != null) {
-            titoloLabel.setText(annuncio.getTitolo());
-            indirizzoLabel.setText(immobile.getIndirizzo());
-            // Formatta il prezzo con il simbolo dell'euro
-            NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.ITALY);
-            prezzoLabel.setText(currencyFormatter.format(annuncio.getPrezzo()));
+        titoloLabel.setText(annuncio.getTitolo());
+        indirizzoLabel.setText(immobile.getIndirizzo());
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.ITALY);
+        prezzoLabel.setText(currencyFormatter.format(annuncio.getPrezzo()));
+        superficieLabel.setText(String.format("%.2f mq", immobile.getDimensione()));
+        descrizioneLabel.setText(annuncio.getDescrizione());
+        vicinanzeLabel.setText(getVicinanzeText());
+        String serviziText = getServiziText();
+        serviziLabel.setText(serviziText);
 
-            // Formatta la superficie con "mq"
-            superficieLabel.setText(String.format("%.2f mq", immobile.getDimensione()));
-            descrizioneLabel.setText(annuncio.getDescrizione());
-            vicinanzeLabel.setText(getVicinanzeText());
+        tipoLabel.setText(annuncio.getTipo());
+        tipologiaLabel.setText(immobile.getTipologia());
 
-            // Gestione dei servizi aggiuntivi
-            String serviziText = getServiziText();
-            serviziLabel.setText(serviziText);
-
-            tipoLabel.setText(annuncio.getTipo());
-            tipologiaLabel.setText(immobile.getTipologia());
-            
-            numeroCamereLabel.setText(String.valueOf(immobile.getNumeroLocali()));
-            numeroBagniLabel.setText(String.valueOf(immobile.getNumeroBagni()));
-            classeEnergeticaLabel.setText(immobile.getClasseEnergetica());
-
-            // Gestione del piano: se il piano è -1 (interrato) visualizzare "Interrato", altrimenti il numero del piano
-            String pianoText = (immobile.getPiano() == -1) ? "Interrato" : String.valueOf(immobile.getPiano());
-            pianoLabel.setText(pianoText);
-
-            // Gestione dell'immagine: mostra solo la prima immagine
-            if (annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
-                String firstImageUrl = annuncio.getImmaginiUrls().get(0);
-                try {
-                    Image image = new Image(firstImageUrl);
-                    immobileImageView.setImage(image);
-                } catch (Exception e) {
-                    logger.error("Errore durante il caricamento dell'immagine: {}", e.getMessage());
-                    // In caso di errore, cancella l'immagine
-                    immobileImageView.setImage(null);
-                }
-            } else {
-                // Se non ci sono immagini, cancella l'immagine
+        numeroCamereLabel.setText(String.valueOf(immobile.getNumeroLocali()));
+        numeroBagniLabel.setText(String.valueOf(immobile.getNumeroBagni()));
+        classeEnergeticaLabel.setText(immobile.getClasseEnergetica());
+        String pianoText = (immobile.getPiano() == -1) ? "Interrato" : String.valueOf(immobile.getPiano());
+        pianoLabel.setText(pianoText);
+        if (annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
+            String firstImageUrl = annuncio.getImmaginiUrls().get(0);
+            try {
+                Image image = new Image(firstImageUrl);
+                immobileImageView.setImage(image);
+            } catch (Exception e) {
+                logger.error("Errore durante il caricamento dell'immagine: {}", e.getMessage());
                 immobileImageView.setImage(null);
             }
         } else {
-            // ... codice per i valori di default ...
+            immobileImageView.setImage(null);
         }
     }
 
@@ -172,7 +157,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
         }
 
         if (!serviziText.isEmpty()) {
-            serviziText.delete(serviziText.length() - 2, serviziText.length()); // Remove last comma and space
+            serviziText.delete(serviziText.length() - 2, serviziText.length());
         }
 
         return serviziText.toString();

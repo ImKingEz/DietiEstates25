@@ -1,7 +1,5 @@
 @import "global-style.css";
 
-/* Stili specifici per la home page */
-
 .searchTextField {
     -fx-max-width: 300px;
     -fx-pref-width: 300px;
@@ -48,14 +46,14 @@
 }
 
 .toggle-button {
-    -fx-background-color: white; /* Imposta il colore di sfondo predefinito a bianco */
+    -fx-background-color: white;
     -fx-border-radius: 3px;
     -fx-font-size: 16px;
     -fx-text-fill: #444;
 }
 
 .toggle-button:selected {
-    -fx-background-color: #5075a0; /* Colore quando selezionato */
+    -fx-background-color: #5075a0;
     -fx-text-fill: white;
 }
 

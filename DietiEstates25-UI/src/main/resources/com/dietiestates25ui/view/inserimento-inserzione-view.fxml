@@ -94,7 +94,7 @@
                                             
                                         </HBox>
                <HBox alignment="CENTER" styleClass="HBoxField">
-                  <children>
+                  
                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                      <MenuButton fx:id="classeEnergeticaMenubutton" mnemonicParsing="false" prefHeight="25.6" prefWidth="285.6" text="Classe energetica">
                         <items>
@@ -110,7 +110,7 @@
                            <MenuItem fx:id="gMenuItem" mnemonicParsing="false" text="G" />
                         </items>
                      </MenuButton>
-                  </children>
+                  
                </HBox>
                                         <VBox alignment="CENTER" prefWidth="350.0" spacing="3.0">
                                             

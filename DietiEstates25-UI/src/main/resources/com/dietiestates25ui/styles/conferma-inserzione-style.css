@@ -6,7 +6,7 @@
 }
 
 .section {
-    -fx-padding: 8px; /* Ancora più piccolo! */
+    -fx-padding: 8px;
     -fx-border-width: 1px;
     -fx-border-color: #ddd;
     -fx-background-color: white;

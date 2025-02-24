@@ -3,7 +3,6 @@ package com.dietiestates25ui.controller;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
-import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.model.Utente;
 import com.dietiestates25ui.service.AnnuncioService;
@@ -13,8 +12,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -22,7 +19,6 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -61,8 +57,7 @@ public class HomePageController extends AbstractController implements Initializa
     private Button tornaIndietroButton;
     private String token;
 
-    private String selectedTipologiaText = "Appartamento"; // Imposta "Appartamento" come predefinito
-
+    private String selectedTipologiaText = "Appartamento";
     private Utente utente;
     private UtenteService utenteService = new UtenteService();
 
@@ -87,8 +82,8 @@ public class HomePageController extends AbstractController implements Initializa
     }
 
     private void setupTipologie() {
-        venditaButton.setSelected(true);  // Seleziona "Vendita" come predefinito
-        tipologiaMenuButton.setText(selectedTipologiaText); // Imposta il testo del MenuButton
+        venditaButton.setSelected(true);
+        tipologiaMenuButton.setText(selectedTipologiaText);
         ricercaTextField.setPromptText("Effettua una ricerca inserendo una città");
         updateButtonStates();
     }
@@ -128,7 +123,7 @@ public class HomePageController extends AbstractController implements Initializa
         if (newVal) {
             ricercaTextField.setPromptText("");
         }
-        // updateButtonStates(); // Chiama updateButtonStates anche qui
+        // updateButtonStates();
     }
 
     private void updateButtonStates() {
