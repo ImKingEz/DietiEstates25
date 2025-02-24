@@ -3,9 +3,11 @@ package com.dietiestates25backend.api.controller;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.FiltroAnnunciDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.Annuncio;
 import com.dietiestates25backend.business.service.AnnuncioService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,6 +64,22 @@ public class AnnuncioController extends BaseController {
         } catch (Exception e) {
             logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
             return handleGenericException(e, "Errore durante la ricerca degli annunci", "Annuncio");
+        }
+    }
+
+    @PostMapping("/search-map")
+    @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciInRadius(
+            @RequestBody MapSearchDTO mapSearchDTO) {
+        try {
+            List<Annuncio> annunci = annuncioService.findAnnunciInRadius(mapSearchDTO);
+            List<AnnuncioDTO> annuncioDTOs = annunci.stream()
+                    .map(annuncioService::convertToDTO)
+                    .collect(Collectors.toList());
+            return successResponse(annuncioDTOs);
+        } catch (Exception e) {
+            logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante la ricerca degli annunci con mappa", "Annuncio");
         }
     }
 }

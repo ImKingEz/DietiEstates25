@@ -187,6 +187,9 @@ public class HomePageController extends AbstractController implements Initializa
                             showPopup("Errore", "Nessun immobile trovato con queste caratteristiche", ERROR_ICON);
                             logger.info("Nessun immobile trovato con queste caratteristiche");
                         } else {
+                            for (AnnuncioDTO annuncioDTO : annunciDTO) {
+                                logger.info("Annuncio trovato: {}", annuncioDTO);
+                            }
                             // TODO
                             //List<Annuncio> annunci = convertDTO(annunciDTO);
                             //openRisultatiRicercaPage(annunci);

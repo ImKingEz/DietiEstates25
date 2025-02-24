@@ -2,6 +2,7 @@ package com.dietiestates25ui.service;
 
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25ui.exception.*;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.FiltroAnnunci;
@@ -132,6 +133,50 @@ public class AnnuncioService extends ApiService {
             }
         } catch (Exception e) {
             throw handleGenericException("Errore durante la ricerca degli annunci: " + e.getMessage(), e);
+        }
+    }
+
+    public List<AnnuncioDTO> searchAnnunciByMap(MapSearchDTO mapSearchDTO, String token) throws GenericServiceException {
+        try {
+            fetchCsrfToken();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String mapSearchJson = objectMapper.writeValueAsString(mapSearchDTO);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(getBaseUrl() + "/search-map"))
+                    .header("Content-Type", "application/json")
+                    .header(AUTHORIZATION, BEARER + token)
+                    .header(csrfTokenHeaderName, csrfTokenValue)
+                    .POST(HttpRequest.BodyPublishers.ofString(mapSearchJson))
+                    .build();
+
+            HttpResponse<String> response = executeRequest(request);
+            int statusCode = response.statusCode();
+
+            if (statusCode == 200) {
+                TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
+                ApiResponse<List<AnnuncioDTO>> apiResponse = null;
+                try {
+                    apiResponse = objectMapper.readValue(response.body(), typeReference);
+                } catch (IOException e) {
+                    logger.error("Errore durante la deserializzazione della risposta JSON: {}", e.getMessage(), e);
+                    throw new ApiClientException("Errore nella risposta del server. Impossibile leggere gli annunci.");
+                }
+
+                if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
+                    return apiResponse.getData();
+                } else {
+                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la ricerca.";
+                    logger.warn("Ricerca annunci fallita: {}", errorMessage);
+                    throw new GenericServiceException(errorMessage);
+                }
+            } else {
+                handleErrorResponse(statusCode, response);
+                throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
+            }
+        } catch (Exception e) {
+            throw handleGenericException("Errore durante la ricerca degli annunci con mappa: " + e.getMessage(), e);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.dietiestates25backend.business.service;
 
 import com.dietiestates25.dto.AnnuncioDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.FotoImmobile;
 import com.dietiestates25backend.business.entity.Annuncio;
@@ -138,7 +139,19 @@ public class AnnuncioService {
     }
 
     public List<Annuncio> findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(String citta, String tipoAnnuncio, String tipologiaImmobile) {
-        logger.debug("Ricerca annunci per cittÃ : {}, tipo: {}, tipologia: {}", citta, tipoAnnuncio, tipologiaImmobile);
+        logger.debug("Ricerca annunci per città : {}, tipo: {}, tipologia: {}", citta, tipoAnnuncio, tipologiaImmobile);
         return annuncioRepository.findByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
+    }
+
+    public List<Annuncio> findAnnunciInRadius(MapSearchDTO mapSearchDTO) {
+        logger.debug("Ricerca annunci nel raggio: {}, {}, {}, tipo: {}, tipologia: {}",
+                mapSearchDTO.getLatitude(), mapSearchDTO.getLongitude(), mapSearchDTO.getRadius(), mapSearchDTO.getTipoAnnuncio(), mapSearchDTO.getTipologiaImmobile());
+        return annuncioRepository.findAnnunciInRadius(
+                mapSearchDTO.getLatitude(),
+                mapSearchDTO.getLongitude(),
+                mapSearchDTO.getRadius(),
+                mapSearchDTO.getTipoAnnuncio(),
+                mapSearchDTO.getTipologiaImmobile()
+        );
     }
 }

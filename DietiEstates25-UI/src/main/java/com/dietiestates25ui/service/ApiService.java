@@ -83,13 +83,19 @@ public abstract class ApiService {
 
     protected <D> D executeAndHandle(String path, String method, Object body, String token, Class<D> dtoClass) throws GenericServiceException {
         try {
-            if (!method.equalsIgnoreCase("GET") && (csrfTokenValue == null || csrfTokenHeaderName == null)) {
-                fetchCsrfToken();
+            // Forza il recupero del token CSRF prima di qualsiasi richiesta POST/PUT
+            if (!method.equalsIgnoreCase("GET")) {
+                fetchCsrfToken(); // Forza il recupero
             }
+
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + path))
-                    .header(CONTENT_TYPE, APPLICATION_JSON)
-                    .header(csrfTokenHeaderName, csrfTokenValue);
+                    .header(CONTENT_TYPE, APPLICATION_JSON);
+
+            // Aggiungi l'header CSRF solo se è presente un token valido
+            if (csrfTokenValue != null && !csrfTokenValue.isEmpty() && csrfTokenHeaderName != null && !csrfTokenHeaderName.isEmpty()) {
+                requestBuilder.header(csrfTokenHeaderName, csrfTokenValue);
+            }
 
             if (token != null && !token.isEmpty()) {
                 requestBuilder.header(AUTHORIZATION, BEARER + token);

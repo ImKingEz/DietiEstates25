@@ -1,5 +1,10 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.AnnuncioDTO;
+import com.dietiestates25.dto.MapSearchDTO;
+import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.Annuncio;
+import com.dietiestates25ui.service.AnnuncioService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,9 +16,12 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.net.URL;
-import java.util.ResourceBundle;
 import java.text.DecimalFormat;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
 
 public class RicercaConMappaController extends AbstractController implements Initializable {
 
@@ -44,6 +52,8 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     private double selectedLatitude;
     private double selectedLongitude;
+
+    private AnnuncioService annuncioService = new AnnuncioService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -139,6 +149,50 @@ public class RicercaConMappaController extends AbstractController implements Ini
         System.out.println("Slider Value: " + radius);
         System.out.println("Selections: Vendita: " + venditaSelezionato + ", Affitto: " + affittoSelezionato + ", Tipologia: " + tipologiaSelezionata);
         logger.info("Performing map search with radius: {} meters", radius);
+
+        // Costruisci il DTO per la ricerca con mappa
+        MapSearchDTO mapSearchDTO = new MapSearchDTO(
+                selectedLatitude,
+                selectedLongitude,
+                radius,
+                venditaSelezionato ? "Vendita" : "Affitto",
+                tipologiaSelezionata
+        );
+
+        // Esegui la chiamata al servizio
+        CompletableFuture.supplyAsync(() -> {
+                    try {
+                        List<AnnuncioDTO> annunciDTO = annuncioService.searchAnnunciByMap(mapSearchDTO, token);
+                        return annunciDTO;
+                    } catch (GenericServiceException e) {
+                        logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);
+                        Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
+                        return null;
+                    }
+                })
+                .thenAccept(annunciDTO -> {
+                    Platform.runLater(() -> {
+                        if (annunciDTO == null) {
+                            return;
+                        }
+                        if (annunciDTO.isEmpty()) {
+                            showPopup("Info", "Nessun immobile trovato nella zona.", ERROR_ICON);
+                            logger.info("Nessun immobile trovato nella zona.");
+                        } else {
+                            logger.info("Trovati {} immobili nella zona.", annunciDTO.size());
+                            for (AnnuncioDTO annuncioDTO : annunciDTO) {
+                                logger.info("Immobile trovato: {}", annuncioDTO);
+                            }
+                            // TODO : apri una pagina con i risultati della ricerca
+                            //openRisultatiRicercaPage(annunciDTO);
+                        }
+                    });
+                })
+                .exceptionally(ex -> {
+                    logger.error("Errore durante la chiamata al servizio: {}", ex.getMessage(), ex);
+                    Platform.runLater(() -> showPopup("Errore", "Errore imprevisto: " + ex.getMessage(), ERROR_ICON));
+                    return null;
+                });
     }
 
     public void setVenditaSelezionato(boolean venditaSelezionato) {
@@ -155,5 +209,9 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     public String getTipologiaSelezionata() {
         return tipologiaSelezionata;
+    }
+
+    private void openRisultatiRicercaPage(List<AnnuncioDTO> annunciDTO) {
+        // TODO
     }
 }
