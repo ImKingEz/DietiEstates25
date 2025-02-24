@@ -18,6 +18,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +128,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
         numeroCamereLabel.setText(String.valueOf(immobile.getNumeroLocali()));
         numeroBagniLabel.setText(String.valueOf(immobile.getNumeroBagni()));
         classeEnergeticaLabel.setText(immobile.getClasseEnergetica());
-        String pianoText = (immobile.getPiano() == -1) ? "Interrato" : String.valueOf(immobile.getPiano());
+        String pianoText = getPianoText();
         pianoLabel.setText(pianoText);
         if (annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
             String firstImageUrl = annuncio.getImmaginiUrls().get(0);
@@ -140,6 +141,17 @@ public class ConfermaInserzioneController extends AbstractController implements 
             }
         } else {
             immobileImageView.setImage(null);
+        }
+    }
+
+    @NotNull
+    private String getPianoText() {
+        if(immobile.getPiano() == 0) {
+            return "Piano terra";
+        } else if(immobile.getPiano() == 1) {
+            return "Piano intermedio";
+        } else {
+            return "Ultimo piano";
         }
     }
 
@@ -196,7 +208,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
                     controller.setCamereSpinner(immobile.getNumeroLocali());
                     controller.setBagniSpinner(immobile.getNumeroBagni());
                     controller.setClasseEnergeticaMenuButton(immobile.getClasseEnergetica());
-                    controller.setPianoSpinner(immobile.getPiano());
+                    controller.setPianoMenubutton(getPianoText());
                     controller.setAscensoreCheckBox(immobile.isAscensore());
                     controller.setPortineriaCheckBox(immobile.isPortineria());
                     controller.setClimatizzazioneCheckBox(immobile.isClimatizzazione());

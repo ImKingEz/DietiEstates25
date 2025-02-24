@@ -96,7 +96,7 @@
                <HBox alignment="CENTER" styleClass="HBoxField">
                   
                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
-                     <MenuButton fx:id="classeEnergeticaMenubutton" mnemonicParsing="false" prefHeight="25.6" prefWidth="285.6" text="Classe energetica">
+                     <MenuButton fx:id="classeEnergeticaMenuButton" mnemonicParsing="false" prefHeight="25.6" prefWidth="285.6" text="Classe energetica">
                         <items>
                            <MenuItem fx:id="a4MenuItem" mnemonicParsing="false" text="A4" />
                            <MenuItem fx:id="a3MenuItem" mnemonicParsing="false" text="A3" />
@@ -177,6 +177,18 @@
                      <Insets top="5.0" />
                   </VBox.margin>
                </HBox>
+               <HBox alignment="CENTER" styleClass="HBoxField">
+                  <children>
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
+                     <MenuButton fx:id="pianoMenuButton" mnemonicParsing="false" prefHeight="25.6" prefWidth="285.6" text="Piano">
+                        <items>
+                           <MenuItem fx:id="pianoTerraMenuItem" mnemonicParsing="false" text="Piano terra" />
+                           <MenuItem fx:id="pianoIntermedioMenuItem" mnemonicParsing="false" text="Piano intermedio" />
+                           <MenuItem fx:id="ultimoPianoMenuItem" mnemonicParsing="false" text="Ultimo piano" />
+                        </items>
+                     </MenuButton>
+                  </children>
+               </HBox>
                                         <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
                                             
                                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Numero locali" />
@@ -195,17 +207,6 @@
                                                     
                                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                                                         <Spinner fx:id="bagniSpinner" prefWidth="300.0" />
-                                                    
-                                                </HBox>
-                                            
-                                        </VBox>
-                                        <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
-                                            
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Piano" />
-                                                <HBox alignment="CENTER" styleClass="HBoxField">
-                                                    
-                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text=" " />
-                                                        <Spinner fx:id="pianoSpinner" prefWidth="300.0" />
                                                     
                                                 </HBox>
                                             

@@ -39,7 +39,7 @@ public class AnnuncioService extends ApiService {
             HttpRequest request;
             request = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8080/api/annunci/create"))
-                    .header("Content-Type", publisher.getContentType())
+                    .header(CONTENT_TYPE, publisher.getContentType())
                     .header("Authorization", "Bearer " + token)
                     .header(csrfTokenHeaderName, csrfTokenValue)
                     .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))
@@ -100,7 +100,7 @@ public class AnnuncioService extends ApiService {
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(uri))
-                    .header("Content-Type", "application/json")
+                    .header(CONTENT_TYPE, "application/json")
                     .header(AUTHORIZATION, BEARER + token)
                     .header(csrfTokenHeaderName, csrfTokenValue)
                     .POST(HttpRequest.BodyPublishers.ofString(filtroJson))
@@ -112,14 +112,7 @@ public class AnnuncioService extends ApiService {
             if (statusCode == 200) {
                 TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
                 ApiResponse<List<AnnuncioDTO>> apiResponse = null;
-                try {
-                    apiResponse = objectMapper.readValue(response.body(), typeReference);
-                } catch (IOException e) {
-                    logger.error("Errore durante la deserializzazione della risposta JSON: {}", e.getMessage(), e);
-                    throw new ApiClientException("Errore nella risposta del server. Impossibile leggere gli annunci.");
-                }
-
-
+                apiResponse = getListApiResponse(objectMapper, response, typeReference);
                 if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
                     return apiResponse.getData();
                 } else {
@@ -146,7 +139,7 @@ public class AnnuncioService extends ApiService {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + "/search-map?tipoAnnuncio=" + URLEncoder.encode(filtro.getTipo(), StandardCharsets.UTF_8) +
                             "&tipologiaImmobile=" + URLEncoder.encode(filtro.getTipologia(), StandardCharsets.UTF_8)))
-                    .header("Content-Type", "application/json")
+                    .header(CONTENT_TYPE, "application/json")
                     .header(AUTHORIZATION, BEARER + token)
                     .header(csrfTokenHeaderName, csrfTokenValue)
                     .POST(HttpRequest.BodyPublishers.ofString(mapSearchJson))
@@ -158,13 +151,7 @@ public class AnnuncioService extends ApiService {
             if (statusCode == 200) {
                 TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
                 ApiResponse<List<AnnuncioDTO>> apiResponse = null;
-                try {
-                    apiResponse = objectMapper.readValue(response.body(), typeReference);
-                } catch (IOException e) {
-                    logger.error("Errore durante la deserializzazione della risposta JSON: {}", e.getMessage(), e);
-                    throw new ApiClientException("Errore nella risposta del server. Impossibile leggere gli annunci.");
-                }
-
+                apiResponse = getListApiResponse(objectMapper, response, typeReference);
                 if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
                     return apiResponse.getData();
                 } else {
@@ -179,6 +166,17 @@ public class AnnuncioService extends ApiService {
         } catch (Exception e) {
             throw handleGenericException("Errore durante la ricerca degli annunci con mappa: " + e.getMessage(), e);
         }
+    }
+
+    private static ApiResponse<List<AnnuncioDTO>> getListApiResponse(ObjectMapper objectMapper, HttpResponse<String> response, TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference) throws ApiClientException {
+        ApiResponse<List<AnnuncioDTO>> apiResponse;
+        try {
+            apiResponse = objectMapper.readValue(response.body(), typeReference);
+        } catch (IOException e) {
+            logger.error("Errore durante la deserializzazione della risposta JSON: {}", e.getMessage(), e);
+            throw new ApiClientException("Errore nella risposta del server. Impossibile leggere gli annunci.");
+        }
+        return apiResponse;
     }
 
     @Override

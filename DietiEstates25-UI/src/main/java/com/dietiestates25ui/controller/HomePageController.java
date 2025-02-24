@@ -123,7 +123,7 @@ public class HomePageController extends AbstractController implements Initializa
         if (newVal) {
             ricercaTextField.setPromptText("");
         }
-        // updateButtonStates();
+        //updateButtonStates();
     }
 
     private void updateButtonStates() {
@@ -165,37 +165,38 @@ public class HomePageController extends AbstractController implements Initializa
 
         CompletableFuture.supplyAsync(() -> {
                     try {
-                        List<AnnuncioDTO> annunciDTO = annuncioService.searchAnnunciByCittaAndFiltro(citta, filtro, token);
-                        return annunciDTO;
+                        return annuncioService.searchAnnunciByCittaAndFiltro(citta, filtro, token);
                     } catch (GenericServiceException e) {
                         logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
-                        Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
+                        Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
                         return null;
                     }
                 })
-                .thenAccept(annunciDTO -> {
-                    Platform.runLater(() -> {
-                        if (annunciDTO == null) {
-                            return;
-                        }
-                        if (annunciDTO.isEmpty()) {
-                            showPopup("Errore", "Nessun immobile trovato con queste caratteristiche", ERROR_ICON);
-                            logger.info("Nessun immobile trovato con queste caratteristiche");
-                        } else {
-                            for (AnnuncioDTO annuncioDTO : annunciDTO) {
-                                logger.info("Annuncio trovato: {}", annuncioDTO);
-                            }
-                            // TODO
-                            //List<Annuncio> annunci = convertDTO(annunciDTO);
-                            //openRisultatiRicercaPage(annunci);
-                        }
-                    });
-                })
+                .thenAccept(annunciDTO ->
+                    Platform.runLater(() ->
+                        handleAnnunci(annunciDTO)))
                 .exceptionally(ex -> {
                     logger.error("Errore durante la chiamata al servizio: {}", ex.getMessage(), ex);
-                    Platform.runLater(() -> showPopup("Errore", "Errore imprevisto: " + ex.getMessage(), ERROR_ICON));
+                    Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Errore imprevisto: " + ex.getMessage(), ERROR_ICON));
                     return null;
                 });
+    }
+
+    private void handleAnnunci(List<AnnuncioDTO> annunciDTO) {
+        if (annunciDTO == null) {
+            return;
+        }
+        if (annunciDTO.isEmpty()) {
+            showPopup(POPUP_ERROR_TITLE, "Nessun immobile trovato con queste caratteristiche", ERROR_ICON);
+            logger.info("Nessun immobile trovato con queste caratteristiche");
+        } else {
+            for (AnnuncioDTO annuncioDTO : annunciDTO) {
+                logger.info("Annuncio trovato: {}", annuncioDTO);
+            }
+            // TODO
+            //List<Annuncio> annunci = convertDTO(annunciDTO);
+            //openRisultatiRicercaPage(annunci);
+        }
     }
 
 //    private List<Annuncio> convertDTO(List<AnnuncioDTO> annunciDTO) { TODO

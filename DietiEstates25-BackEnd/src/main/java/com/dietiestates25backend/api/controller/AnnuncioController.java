@@ -7,7 +7,6 @@ import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.Annuncio;
 import com.dietiestates25backend.business.service.AnnuncioService;
-import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -59,7 +57,7 @@ public class AnnuncioController extends BaseController {
             );
             List<AnnuncioDTO> annuncioDTOs = annunci.stream()
                     .map(annuncioService::convertToDTO)
-                    .collect(Collectors.toList());
+                    .toList();
             return successResponse(annuncioDTOs);
         } catch (Exception e) {
             logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
@@ -80,7 +78,7 @@ public class AnnuncioController extends BaseController {
             List<Annuncio> annunci = annuncioService.findAnnunciInRadius(mapSearchDTO, filtro);
             List<AnnuncioDTO> annuncioDTOs = annunci.stream()
                     .map(annuncioService::convertToDTO)
-                    .collect(Collectors.toList());
+                    .toList();
             return successResponse(annuncioDTOs);
         } catch (Exception e) {
             logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);

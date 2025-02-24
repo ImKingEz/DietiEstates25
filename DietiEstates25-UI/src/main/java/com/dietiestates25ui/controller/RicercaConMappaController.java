@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,8 +46,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
     private String tipologiaSelezionata;
 
     private String token;
-
-    private Stage currentStage;
 
     private double selectedLatitude;
     private double selectedLongitude;
@@ -80,13 +77,13 @@ public class RicercaConMappaController extends AbstractController implements Ini
         radiusSlider.setMax(1000);
         radiusSlider.setValue(100);
 
-        radiusSlider.valueProperty().addListener((ov, old_val, new_val) -> {
-            raggioRicercaLabel.setText("Raggio di ricerca: " + df.format(new_val) + "mt");
+        radiusSlider.valueProperty().addListener((ov, oldVal, newVal) -> {
+            raggioRicercaLabel.setText("Raggio di ricerca: " + df.format(newVal) + "mt");
 
             // Invia il nuovo valore del raggio alla mappa
             Platform.runLater(() -> {
                 WebEngine webEngine = mapWebView.getEngine();
-                String script = "updateRadius(" + new_val.doubleValue() + ");";
+                String script = "updateRadius(" + newVal.doubleValue() + ");";
                 webEngine.executeScript(script);
             });
         });
@@ -110,14 +107,11 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         webEngine.setOnAlert(event -> {
             String data = event.getData();
-            System.out.println("Data from WebView: " + data);
-            String[] parts = data.split("\\|"); // Splitta la stringa usando "|" come delimitatore
+            String[] parts = data.split("\\|");
             if (parts.length == 3) {
                 try {
-                    String address = parts[0];
                     selectedLatitude = Double.parseDouble(parts[1]);
                     selectedLongitude = Double.parseDouble(parts[2]);
-                    System.out.println("Address: " + address + ", Latitude: " + selectedLatitude + ", Longitude: " + selectedLongitude);
                 } catch (NumberFormatException e) {
                     logger.error("Errore durante la conversione delle coordinate: ", e);
                 }
@@ -146,8 +140,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     private void handleCercaButtonAction() {
         double radius = radiusSlider.getValue();
-        System.out.println("Slider Value: " + radius);
-        System.out.println("Selections: Vendita: " + venditaSelezionato + ", Affitto: " + affittoSelezionato + ", Tipologia: " + tipologiaSelezionata);
         logger.info("Performing map search with radius: {} meters", radius);
 
         FiltroAnnunci filtro = new FiltroAnnunci();
@@ -162,15 +154,14 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         CompletableFuture.supplyAsync(() -> {
                     try {
-                        List<AnnuncioDTO> annunciDTO = annuncioService.searchAnnunciByMap(mapSearchDTO, filtro, token);
-                        return annunciDTO;
+                        return annuncioService.searchAnnunciByMap(mapSearchDTO, filtro, token);
                     } catch (GenericServiceException e) {
                         logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);
                         Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
                         return null;
                     }
                 })
-                .thenAccept(annunciDTO -> {
+                .thenAccept(annunciDTO ->
                     Platform.runLater(() -> {
                         if (annunciDTO == null) {
                             return;
@@ -186,8 +177,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
                             //List<Annuncio> annunci = convertDTO(annunciDTO);
                             //openRisultatiRicercaPage(annunci);
                         }
-                    });
-                })
+                    }))
                 .exceptionally(ex -> {
                     logger.error("Errore durante la chiamata al servizio: {}", ex.getMessage(), ex);
                     Platform.runLater(() -> showPopup("Errore", "Errore imprevisto: " + ex.getMessage(), ERROR_ICON));

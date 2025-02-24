@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AnnuncioService {
@@ -126,7 +125,7 @@ public class AnnuncioService {
         List<FotoImmobile> fotoImmobili = fotoImmobileRepository.findByIdAnnuncio(savedAnnuncio.getId());
         List<String> immaginiUrls = fotoImmobili.stream()
                 .map(FotoImmobile::getUrl)
-                .collect(Collectors.toList());
+                .toList();
 
         return new AnnuncioDTO(
                 savedAnnuncio.getIdImmobile(),

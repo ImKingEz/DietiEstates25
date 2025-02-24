@@ -41,6 +41,10 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private static final int GEOAPIFY_RADIUS = 500;
     public static final String FEATURES_GEOAPIFY = "features";
     public static final String CATEGORIES_GEOAPIFY = "categories";
+    public static final String PIANO_TERRA_ITEM = "Piano terra";
+    public static final String PIANO_INTERMEDIO_ITEM = "Piano intermedio";
+    public static final String ULTIMO_PIANO_ITEM = "Ultimo piano";
+    public static final String FX_TEXT_FILL_MENU_BUTTON = "-fx-text-fill: black;";
 
     @FXML
     private TextField titoloTextField;
@@ -83,7 +87,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
     @FXML
     private Spinner<Integer> bagniSpinner;
     @FXML
-    private MenuButton classeEnergeticaMenubutton;
+    private MenuButton classeEnergeticaMenuButton;
     @FXML
     private MenuItem a4MenuItem;
     @FXML
@@ -105,7 +109,13 @@ public class InserimentoInserzioneController extends AbstractController implemen
     @FXML
     private MenuItem gMenuItem;
     @FXML
-    private Spinner<Integer> pianoSpinner;
+    private MenuButton pianoMenuButton;
+    @FXML
+    private MenuItem pianoTerraMenuItem;
+    @FXML
+    private MenuItem pianoIntermedioMenuItem;
+    @FXML
+    private MenuItem ultimoPianoMenuItem;
     @FXML
     private CheckBox ascensoreCheckBox;
     @FXML
@@ -144,8 +154,13 @@ public class InserimentoInserzioneController extends AbstractController implemen
         mapBackButton.setOnAction(event -> hideMapView());
 
         setupTipoMenuButton();
+
         setupTipologiaMenuButton();
+
         setupClasseEnergeticaMenuButton();
+
+        setupPianoMenuButton();
+
         setupSpinners();
 
         selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
@@ -161,6 +176,17 @@ public class InserimentoInserzioneController extends AbstractController implemen
         this.agente = agente;
     }
 
+    private void setupPianoMenuButton() {
+        pianoTerraMenuItem.setOnAction(event -> impostaPiano(PIANO_TERRA_ITEM));
+        pianoIntermedioMenuItem.setOnAction(event -> impostaPiano(PIANO_INTERMEDIO_ITEM));
+        ultimoPianoMenuItem.setOnAction(event -> impostaPiano(ULTIMO_PIANO_ITEM));
+    }
+
+    private void impostaPiano(String piano) {
+        pianoMenuButton.setText(piano);
+        pianoMenuButton.setStyle(FX_TEXT_FILL_MENU_BUTTON);
+    }
+
     private void setupTipoMenuButton() {
         venditaMenuItem.setOnAction(event -> impostaTipo("Vendita"));
         affittoMenuItem.setOnAction(event -> impostaTipo("Affitto"));
@@ -168,7 +194,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     private void impostaTipo(String tipo) {
         tipoMenuButton.setText(tipo);
-        tipoMenuButton.setStyle("-fx-text-fill: black;");
+        tipoMenuButton.setStyle(FX_TEXT_FILL_MENU_BUTTON);
     }
 
     private void setupTipologiaMenuButton() {
@@ -180,7 +206,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     private void impostaTipologia(String tipo) {
         tipologiaMenuButton.setText(tipo);
-        tipologiaMenuButton.setStyle("-fx-text-fill: black;");
+        tipologiaMenuButton.setStyle(FX_TEXT_FILL_MENU_BUTTON);
     }
     
     private void setupClasseEnergeticaMenuButton() {
@@ -197,8 +223,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
     }
     
     private void impostaClasseEnergetica(String classeEnergetica) {
-        classeEnergeticaMenubutton.setText(classeEnergetica);
-        classeEnergeticaMenubutton.setStyle("-fx-text-fill: black;");
+        classeEnergeticaMenuButton.setText(classeEnergetica);
+        classeEnergeticaMenuButton.setStyle(FX_TEXT_FILL_MENU_BUTTON);
     }
 
     public void setTitoloTextField(String titolo) {
@@ -229,12 +255,12 @@ public class InserimentoInserzioneController extends AbstractController implemen
         this.bagniSpinner.getValueFactory().setValue(bagni);
     }
 
-    public void setPianoSpinner(int piano) {
-        this.pianoSpinner.getValueFactory().setValue(piano);
+    public void setPianoMenubutton(String piano) {
+        this.pianoMenuButton.setText(piano);
     }
 
     public void setClasseEnergeticaMenuButton(String classeEnergetica) {
-        this.classeEnergeticaMenubutton.setText(classeEnergetica);
+        this.classeEnergeticaMenuButton.setText(classeEnergetica);
     }
 
     public void setTipoMenuButton(String tipologia) {
@@ -394,7 +420,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private void setupSpinners() {
         camereSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
         bagniSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 1));
-        pianoSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(-6, 50, 0));
     }
 
     private void handleImageSelection() {
@@ -461,14 +486,14 @@ public class InserimentoInserzioneController extends AbstractController implemen
         prezzoTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         setupTextFormatter(superficieTextField);
         superficieTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
-        classeEnergeticaMenubutton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        classeEnergeticaMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         descrizioneTextArea.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
 
         tipoMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         tipologiaMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         camereSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
         bagniSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
-        pianoSpinner.valueProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
+        pianoMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFormValidity());
 
         selezionaImmaginiButton.disableProperty().bind(Bindings.size(selectedImageList).greaterThanOrEqualTo(5));
 
@@ -492,10 +517,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
         String indirizzo = indirizzoTextField.getText().trim();
         String prezzo = prezzoTextField.getText().trim();
         String superficie = superficieTextField.getText().trim();
-        String classeEnergetica = classeEnergeticaMenubutton.getText();
+        String classeEnergetica = classeEnergeticaMenuButton.getText();
         String descrizione = descrizioneTextArea.getText().trim();
         String tipo = tipoMenuButton.getText();
         String tipologia = tipologiaMenuButton.getText();
+        String piano = pianoMenuButton.getText();
 
         boolean isPrezzoValid = false;
         double prezzoValue = 0;
@@ -515,13 +541,16 @@ public class InserimentoInserzioneController extends AbstractController implemen
             logger.error("Superficie non valida: {}", e.getMessage());
         }
 
+        boolean isPianoValid = piano.equals(PIANO_TERRA_ITEM) || piano.equals(PIANO_INTERMEDIO_ITEM) || piano.equals(ULTIMO_PIANO_ITEM);
+
         boolean isClasseEnergeticaValid = classeEnergetica.equals("A4") || classeEnergetica.equals("A3") || classeEnergetica.equals("A2") ||
                 classeEnergetica.equals("A1") || classeEnergetica.equals("B") || classeEnergetica.equals("C") || classeEnergetica.equals("D") ||
                 classeEnergetica.equals("E") || classeEnergetica.equals("F") || classeEnergetica.equals("G");
 
         boolean requiredFieldsFilled = !titolo.isEmpty() && !indirizzo.isEmpty() && !descrizione.isEmpty() && isPrezzoValid && isSuperficieValid &&
                 isClasseEnergeticaValid && (!selectedImageList.isEmpty()) && (tipo.equals("Vendita") || tipo.equals("Affitto")) &&
-                (tipologia.equals("Villa") || tipologia.equals("Appartamento") || tipologia.equals("Terreno") || tipologia.equals("Casa indipendente"));
+                (tipologia.equals("Villa") || tipologia.equals("Appartamento") || tipologia.equals("Terreno") || tipologia.equals("Casa indipendente")) && isPianoValid;
+
         boolean isMaxImagesSelected = selectedImageList.size() <= 5;
 
         avantiButton.setDisable(!requiredFieldsFilled || !isMaxImagesSelected);
@@ -571,8 +600,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(responseBody);
 
-            if (root.has("features") && root.get("features").isArray()) {
-                for (JsonNode feature : root.get("features")) {
+            if (root.has(FEATURES_GEOAPIFY) && root.get(FEATURES_GEOAPIFY).isArray()) {
+                for (JsonNode feature : root.get(FEATURES_GEOAPIFY)) {
                     JsonNode properties = feature.get("properties");
 
                     if (properties != null && properties.has("city")) {
@@ -665,7 +694,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(responseBody);
 
-            if (root.has(FEATURES_GEOAPIFY) && root.get(FEATURES_GEOAPIFY).isArray() && root.get(FEATURES_GEOAPIFY).size() > 0) {
+            if (root.has(FEATURES_GEOAPIFY) && root.get(FEATURES_GEOAPIFY).isArray() && !root.get(FEATURES_GEOAPIFY).isEmpty()) {
                 found = true;
             }
 
@@ -694,6 +723,9 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     vicinoTrasportoPubblicoCheckBox.setSelected(isFound);
                     logger.info("Impostando vicinoTrasportoPubblicoCheckBox a: {}", isFound);
                     break;
+                default:
+                    logger.info("Categoria non riconosciuta");
+                    break;
             }
         });
     }
@@ -720,8 +752,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
         immobile.setDimensione(Double.parseDouble(superficieTextField.getText()));
         immobile.setNumeroLocali(camereSpinner.getValue());
         immobile.setNumeroBagni(bagniSpinner.getValue());
-        immobile.setClasseEnergetica(classeEnergeticaMenubutton.getText());
-        immobile.setPiano(pianoSpinner.getValue());
+        immobile.setClasseEnergetica(classeEnergeticaMenuButton.getText());
+        immobile.setPiano(getPianoNumber());
         immobile.setAscensore(ascensoreCheckBox.isSelected());
         immobile.setPortineria(portineriaCheckBox.isSelected());
         immobile.setClimatizzazione(climatizzazioneCheckBox.isSelected());
@@ -749,6 +781,16 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     controller.setAgente(agente);
                     controller.setStage(stage);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");
+    }
+
+    private int getPianoNumber() {
+        if (pianoMenuButton.getText().equals(PIANO_TERRA_ITEM)) {
+            return 0;
+        } else if (pianoMenuButton.getText().equals(PIANO_INTERMEDIO_ITEM)) {
+            return 1;
+        } else {
+            return 2;
+        }
     }
 
     private void openGestioneImmobiliPage() {

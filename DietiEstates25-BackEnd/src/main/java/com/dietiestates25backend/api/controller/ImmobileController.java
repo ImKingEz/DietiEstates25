@@ -2,20 +2,15 @@ package com.dietiestates25backend.api.controller;
 
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.ImmobileDTO;
-import com.dietiestates25backend.business.entity.Immobile;
 import com.dietiestates25backend.business.service.ImmobileService;
 import com.dietiestates25backend.business.service.AuthService;
 import com.dietiestates25backend.business.service.JwtService;
-import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
