@@ -237,27 +237,51 @@ public class DashboardController extends AbstractController implements Initializ
 
     private void handleCheckBoxFilter() {
         ascensoreCheckBox.setOnAction(event -> {
-            filtroAnnunci.setAscensore(ascensoreCheckBox.isSelected());
+            if (ascensoreCheckBox.isSelected()) {
+                filtroAnnunci.setAscensore(true);
+            } else {
+                filtroAnnunci.setAscensore(null);
+            }
             updateAnnunci();
         });
         portineriaCheckBox.setOnAction(event -> {
-            filtroAnnunci.setPortineria(portineriaCheckBox.isSelected());
+            if (portineriaCheckBox.isSelected()) {
+                filtroAnnunci.setPortineria(true);
+            } else {
+                filtroAnnunci.setPortineria(null);
+            }
             updateAnnunci();
         });
         climatizzazioneCheckBox.setOnAction(event -> {
-            filtroAnnunci.setClimatizzazione(climatizzazioneCheckBox.isSelected());
+            if (climatizzazioneCheckBox.isSelected()) {
+                filtroAnnunci.setClimatizzazione(true);
+            } else {
+                filtroAnnunci.setClimatizzazione(null);
+            }
             updateAnnunci();
         });
         scuolaCheckBox.setOnAction(event -> {
-            filtroAnnunci.setVicinoScuola(scuolaCheckBox.isSelected());
+            if (scuolaCheckBox.isSelected()) {
+                filtroAnnunci.setVicinoScuola(true);
+            } else {
+                filtroAnnunci.setVicinoScuola(null);
+            }
             updateAnnunci();
         });
         parcoCheckBox.setOnAction(event -> {
-            filtroAnnunci.setVicinoParco(parcoCheckBox.isSelected());
+            if (parcoCheckBox.isSelected()) {
+                filtroAnnunci.setVicinoParco(true);
+            } else {
+                filtroAnnunci.setVicinoParco(null);
+            }
             updateAnnunci();
         });
         trasportoPubblicoCheckBox.setOnAction(event -> {
-            filtroAnnunci.setVicinoTrasportoPubblico(trasportoPubblicoCheckBox.isSelected());
+            if (trasportoPubblicoCheckBox.isSelected()) {
+                filtroAnnunci.setVicinoTrasportoPubblico(true);
+            } else {
+                filtroAnnunci.setVicinoTrasportoPubblico(null);
+            }
             updateAnnunci();
         });
     }

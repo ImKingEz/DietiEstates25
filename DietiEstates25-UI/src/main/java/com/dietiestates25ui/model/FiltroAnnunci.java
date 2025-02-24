@@ -3,20 +3,20 @@ package com.dietiestates25ui.model;
 public class FiltroAnnunci {
     private String tipo;
     private String tipologia;
-    private double prezzoMin;
-    private double prezzoMax;
-    private double superficieMin;
-    private double superficieMax;
-    private int locali;
-    private int bagni;
-    private int piano;
+    private Double prezzoMin;
+    private Double prezzoMax;
+    private Double superficieMin;
+    private Double superficieMax;
+    private Integer locali;
+    private Integer bagni;
+    private Integer piano;
     private String classeEnergetica;
-    private boolean ascensore;
-    private boolean portineria;
-    private boolean climatizzazione;
-    private boolean vicinoScuola;
-    private boolean vicinoParco;
-    private boolean vicinoTrasportoPubblico;
+    private Boolean ascensore;
+    private Boolean portineria;
+    private Boolean climatizzazione;
+    private Boolean vicinoScuola;
+    private Boolean vicinoParco;
+    private Boolean vicinoTrasportoPubblico;
 
     public FiltroAnnunci() {
     }
@@ -37,59 +37,59 @@ public class FiltroAnnunci {
         this.tipologia = tipologia;
     }
 
-    public double getPrezzoMin() {
+    public Double getPrezzoMin() {
         return prezzoMin;
     }
 
-    public void setPrezzoMin(double prezzoMin) {
+    public void setPrezzoMin(Double prezzoMin) {
         this.prezzoMin = prezzoMin;
     }
 
-    public double getPrezzoMax() {
+    public Double getPrezzoMax() {
         return prezzoMax;
     }
 
-    public void setPrezzoMax(double prezzoMax) {
+    public void setPrezzoMax(Double prezzoMax) {
         this.prezzoMax = prezzoMax;
     }
 
-    public double getSuperficieMin() {
+    public Double getSuperficieMin() {
         return superficieMin;
     }
 
-    public void setSuperficieMin(double superficieMin) {
+    public void setSuperficieMin(Double superficieMin) {
         this.superficieMin = superficieMin;
     }
 
-    public double getSuperficieMax() {
+    public Double getSuperficieMax() {
         return superficieMax;
     }
 
-    public void setSuperficieMax(double superficieMax) {
+    public void setSuperficieMax(Double superficieMax) {
         this.superficieMax = superficieMax;
     }
 
-    public int getLocali() {
+    public Integer getLocali() {
         return locali;
     }
 
-    public void setLocali(int locali) {
+    public void setLocali(Integer locali) {
         this.locali = locali;
     }
 
-    public int getBagni() {
+    public Integer getBagni() {
         return bagni;
     }
 
-    public void setBagni(int bagni) {
+    public void setBagni(Integer bagni) {
         this.bagni = bagni;
     }
 
-    public int getPiano() {
+    public Integer getPiano() {
         return piano;
     }
 
-    public void setPiano(int piano) {
+    public void setPiano(Integer piano) {
         this.piano = piano;
     }
 
@@ -101,51 +101,51 @@ public class FiltroAnnunci {
         this.classeEnergetica = classeEnergetica;
     }
 
-    public boolean isAscensore() {
+    public Boolean getAscensore() {
         return ascensore;
     }
 
-    public void setAscensore(boolean ascensore) {
+    public void setAscensore(Boolean ascensore) {
         this.ascensore = ascensore;
     }
 
-    public boolean isPortineria() {
+    public Boolean getPortineria() {
         return portineria;
     }
 
-    public void setPortineria(boolean portineria) {
+    public void setPortineria(Boolean portineria) {
         this.portineria = portineria;
     }
 
-    public boolean isClimatizzazione() {
+    public Boolean getClimatizzazione() {
         return climatizzazione;
     }
 
-    public void setClimatizzazione(boolean climatizzazione) {
+    public void setClimatizzazione(Boolean climatizzazione) {
         this.climatizzazione = climatizzazione;
     }
 
-    public boolean isVicinoScuola() {
+    public Boolean getVicinoScuola() {
         return vicinoScuola;
     }
 
-    public void setVicinoScuola(boolean vicinoScuola) {
+    public void setVicinoScuola(Boolean vicinoScuola) {
         this.vicinoScuola = vicinoScuola;
     }
 
-    public boolean isVicinoParco() {
+    public Boolean getVicinoParco() {
         return vicinoParco;
     }
 
-    public void setVicinoParco(boolean vicinoParco) {
+    public void setVicinoParco(Boolean vicinoParco) {
         this.vicinoParco = vicinoParco;
     }
 
-    public boolean isVicinoTrasportoPubblico() {
+    public Boolean getVicinoTrasportoPubblico() {
         return vicinoTrasportoPubblico;
     }
 
-    public void setVicinoTrasportoPubblico(boolean vicinoTrasportoPubblico) {
+    public void setVicinoTrasportoPubblico(Boolean vicinoTrasportoPubblico) {
         this.vicinoTrasportoPubblico = vicinoTrasportoPubblico;
     }
 

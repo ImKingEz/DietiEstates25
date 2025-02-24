@@ -10,5 +10,18 @@ import lombok.NoArgsConstructor;
 public class FiltroAnnunciDTO {
     private String tipo;
     private String tipologia;
-    // Aggiungi altri campi filtro qui in futuro
+    private Double prezzoMin;
+    private Double prezzoMax;
+    private Double superficieMin;
+    private Double superficieMax;
+    private Integer locali;
+    private Integer bagni;
+    private Integer piano;
+    private String classeEnergetica;
+    private Boolean ascensore;
+    private Boolean portineria;
+    private Boolean climatizzazione;
+    private Boolean vicinoScuola;
+    private Boolean vicinoParco;
+    private Boolean vicinoTrasportoPubblico;
 }
