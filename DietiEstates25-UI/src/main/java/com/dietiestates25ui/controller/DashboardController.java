@@ -540,17 +540,29 @@ public class DashboardController extends AbstractController implements Initializ
         }
     }
 
-    private void initializeMenuItemsClasseEnergetica(MenuButton classeEnergeticaMenuButton, Consumer<String> filterSetter) {
+    private void initializeMenuItemsClasseEnergetica(MenuButton classeEnergeticaMenuButton, Consumer<List<String>> filterSetter) {
         for (MenuItem item : classeEnergeticaMenuButton.getItems()) {
             item.setOnAction(event -> {
                 String selectedText = item.getText();
-                String value = switch (selectedText) {
-                    case "Alta (A, A+, A1-A4)" -> "Alta";
-                    case "Media (B, C, D e superiore)" -> "Media";
-                    case "Bassa (E, F, G e superiore)" -> "Bassa";
-                    default -> "Bassa";
-                };
-                filterSetter.accept(value);
+                List<String> classiEnergeticheSelezionate = new ArrayList<>();
+                switch (selectedText) {
+                    case "Alta (A, A+, A1-A4)": {
+                        classiEnergeticheSelezionate.addAll(List.of("A", "A+", "A1", "A2", "A3", "A4"));
+                        break;
+                    }
+                    case "Media (B, C, D e superiore)": {
+                        classiEnergeticheSelezionate.addAll(List.of("B", "C", "D"));
+                        break;
+                    }
+                    case "Bassa (E, F, G e superiore)": {
+                        classiEnergeticheSelezionate.addAll(List.of("E", "F", "G"));
+                        break;
+                    }
+                    default: {
+                        classiEnergeticheSelezionate.addAll(List.of("E", "F", "G"));
+                    }
+                }
+                filterSetter.accept(classiEnergeticheSelezionate);
             });
         }
     }

@@ -23,7 +23,7 @@ public interface AnnuncioRepository extends JpaRepository<Annuncio, Long> {
             "AND (:#{#filtro.locali} IS NULL OR i.numeroLocali >= :#{#filtro.locali}) " +
             "AND (:#{#filtro.bagni} IS NULL OR i.numeroBagni >= :#{#filtro.bagni}) " +
             "AND (:#{#filtro.piano} IS NULL OR i.piano = :#{#filtro.piano}) " +
-            "AND (:#{#filtro.classeEnergetica} IS NULL OR LOWER(i.classeEnergetica) = LOWER(:#{#filtro.classeEnergetica})) " +
+            "AND (:#{#filtro.classeEnergetica} IS NULL OR i.classeEnergetica IN :#{#filtro.classeEnergetica}) " +
             "AND (:#{#filtro.ascensore} IS NULL OR i.ascensore = :#{#filtro.ascensore}) " +
             "AND (:#{#filtro.portineria} IS NULL OR i.portineria = :#{#filtro.portineria}) " +
             "AND (:#{#filtro.climatizzazione} IS NULL OR i.climatizzazione = :#{#filtro.climatizzazione}) " +

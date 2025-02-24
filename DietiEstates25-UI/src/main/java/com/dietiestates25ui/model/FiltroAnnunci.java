@@ -1,5 +1,7 @@
 package com.dietiestates25ui.model;
 
+import java.util.List;
+
 public class FiltroAnnunci {
     private String tipo;
     private String tipologia;
@@ -10,7 +12,7 @@ public class FiltroAnnunci {
     private Integer locali;
     private Integer bagni;
     private Integer piano;
-    private String classeEnergetica;
+    private List<String> classeEnergetica;
     private Boolean ascensore;
     private Boolean portineria;
     private Boolean climatizzazione;
@@ -93,11 +95,11 @@ public class FiltroAnnunci {
         this.piano = piano;
     }
 
-    public String getClasseEnergetica() {
+    public List<String> getClasseEnergetica() {
         return classeEnergetica;
     }
 
-    public void setClasseEnergetica(String classeEnergetica) {
+    public void setClasseEnergetica(List<String> classeEnergetica) {
         this.classeEnergetica = classeEnergetica;
     }
 

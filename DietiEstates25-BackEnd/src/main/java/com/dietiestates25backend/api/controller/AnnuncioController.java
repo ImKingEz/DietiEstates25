@@ -50,7 +50,7 @@ public class AnnuncioController extends BaseController {
             @RequestParam String citta,
             @RequestBody FiltroAnnunciDTO filtro) {
         try {
-            List<Annuncio> annunci = annuncioService.findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(filtro, citta);
+            List<Annuncio> annunci = annuncioService.findAnnunciByCittaAndFiltri(filtro, citta);
             List<AnnuncioDTO> annuncioDTOs = annunci.stream()
                     .map(annuncioService::convertToDTO)
                     .collect(Collectors.toList());

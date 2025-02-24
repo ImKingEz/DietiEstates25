@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +19,7 @@ public class FiltroAnnunciDTO {
     private Integer locali;
     private Integer bagni;
     private Integer piano;
-    private String classeEnergetica;
+    private List<String> classeEnergetica;
     private Boolean ascensore;
     private Boolean portineria;
     private Boolean climatizzazione;
