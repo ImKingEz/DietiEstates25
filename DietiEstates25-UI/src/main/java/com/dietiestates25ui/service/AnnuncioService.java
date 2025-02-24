@@ -136,7 +136,7 @@ public class AnnuncioService extends ApiService {
         }
     }
 
-    public List<AnnuncioDTO> searchAnnunciByMap(MapSearchDTO mapSearchDTO, String token) throws GenericServiceException {
+    public List<AnnuncioDTO> searchAnnunciByMap(MapSearchDTO mapSearchDTO, FiltroAnnunci filtro, String token) throws GenericServiceException {
         try {
             fetchCsrfToken();
 
@@ -144,7 +144,8 @@ public class AnnuncioService extends ApiService {
             String mapSearchJson = objectMapper.writeValueAsString(mapSearchDTO);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(getBaseUrl() + "/search-map"))
+                    .uri(URI.create(getBaseUrl() + "/search-map?tipoAnnuncio=" + URLEncoder.encode(filtro.getTipo(), StandardCharsets.UTF_8) +
+                            "&tipologiaImmobile=" + URLEncoder.encode(filtro.getTipologia(), StandardCharsets.UTF_8)))
                     .header("Content-Type", "application/json")
                     .header(AUTHORIZATION, BEARER + token)
                     .header(csrfTokenHeaderName, csrfTokenValue)

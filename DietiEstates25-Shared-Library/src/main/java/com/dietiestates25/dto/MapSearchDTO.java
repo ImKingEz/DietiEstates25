@@ -11,6 +11,4 @@ public class MapSearchDTO {
     private double latitude;
     private double longitude;
     private double radius;
-    private String tipoAnnuncio;
-    private String tipologiaImmobile;
 }

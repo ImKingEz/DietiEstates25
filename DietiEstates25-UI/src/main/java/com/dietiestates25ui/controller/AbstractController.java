@@ -148,8 +148,7 @@ public abstract class AbstractController {
                 double logoBottomY = logoBounds.getMinY();
                 popupY = logoBottomY - 10;
             } else {
-                // Se logo è null, posiziona il popup in una posizione predefinita (es. al centro dello stage)
-                popupY = currentStage.getY() + (currentStage.getHeight() / 2) - (popupContent.getHeight() / 2);
+                popupY = currentStage.getY() + 10;
             }
 
             popup.hide();

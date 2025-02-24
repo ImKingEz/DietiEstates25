@@ -70,9 +70,14 @@ public class AnnuncioController extends BaseController {
     @PostMapping("/search-map")
     @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciInRadius(
-            @RequestBody MapSearchDTO mapSearchDTO) {
+            @RequestBody MapSearchDTO mapSearchDTO,
+            @RequestParam String tipoAnnuncio,
+            @RequestParam String tipologiaImmobile) {
         try {
-            List<Annuncio> annunci = annuncioService.findAnnunciInRadius(mapSearchDTO);
+            FiltroAnnunciDTO filtro = new FiltroAnnunciDTO();
+            filtro.setTipo(tipoAnnuncio);
+            filtro.setTipologia(tipologiaImmobile);
+            List<Annuncio> annunci = annuncioService.findAnnunciInRadius(mapSearchDTO, filtro);
             List<AnnuncioDTO> annuncioDTOs = annunci.stream()
                     .map(annuncioService::convertToDTO)
                     .collect(Collectors.toList());

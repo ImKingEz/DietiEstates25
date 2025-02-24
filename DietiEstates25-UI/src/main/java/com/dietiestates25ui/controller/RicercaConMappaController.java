@@ -4,6 +4,7 @@ import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.Annuncio;
+import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.service.AnnuncioService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -150,19 +151,19 @@ public class RicercaConMappaController extends AbstractController implements Ini
         System.out.println("Selections: Vendita: " + venditaSelezionato + ", Affitto: " + affittoSelezionato + ", Tipologia: " + tipologiaSelezionata);
         logger.info("Performing map search with radius: {} meters", radius);
 
-        // Costruisci il DTO per la ricerca con mappa
+        FiltroAnnunci filtro = new FiltroAnnunci();
+        filtro.setTipo(venditaSelezionato ? "Vendita" : "Affitto");
+        filtro.setTipologia(tipologiaSelezionata);
+
         MapSearchDTO mapSearchDTO = new MapSearchDTO(
                 selectedLatitude,
                 selectedLongitude,
-                radius,
-                venditaSelezionato ? "Vendita" : "Affitto",
-                tipologiaSelezionata
+                radius
         );
 
-        // Esegui la chiamata al servizio
         CompletableFuture.supplyAsync(() -> {
                     try {
-                        List<AnnuncioDTO> annunciDTO = annuncioService.searchAnnunciByMap(mapSearchDTO, token);
+                        List<AnnuncioDTO> annunciDTO = annuncioService.searchAnnunciByMap(mapSearchDTO, filtro, token);
                         return annunciDTO;
                     } catch (GenericServiceException e) {
                         logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);
@@ -179,12 +180,12 @@ public class RicercaConMappaController extends AbstractController implements Ini
                             showPopup("Info", "Nessun immobile trovato nella zona.", ERROR_ICON);
                             logger.info("Nessun immobile trovato nella zona.");
                         } else {
-                            logger.info("Trovati {} immobili nella zona.", annunciDTO.size());
                             for (AnnuncioDTO annuncioDTO : annunciDTO) {
                                 logger.info("Immobile trovato: {}", annuncioDTO);
                             }
-                            // TODO : apri una pagina con i risultati della ricerca
-                            //openRisultatiRicercaPage(annunciDTO);
+                            // TODO
+                            //List<Annuncio> annunci = convertDTO(annunciDTO);
+                            //openRisultatiRicercaPage(annunci);
                         }
                     });
                 })
@@ -194,6 +195,33 @@ public class RicercaConMappaController extends AbstractController implements Ini
                     return null;
                 });
     }
+
+//    private List<Annuncio> convertDTO(List<AnnuncioDTO> annunciDTO) { TODO
+//        List<Annuncio> annunci = new ArrayList<>();
+//        for (AnnuncioDTO annuncioDTO : annunciDTO) {
+//            Annuncio annuncio = new Annuncio();
+//            annuncio.setTitolo(annuncioDTO.getTitolo());
+//            annuncio.setTipo(annuncioDTO.getTipo());
+//            annuncio.setPrezzo(annuncioDTO.getPrezzo());
+//            annuncio.setDescrizione(annuncioDTO.getDescrizione());
+//            annuncio.setIdImmobile(annuncioDTO.getIdImmobile());
+//            annuncio.setIdAgente(annuncioDTO.getIdAgente());
+//            annuncio.setImmaginiUrls(annuncioDTO.getImmaginiUrls());
+//
+//            annunci.add(annuncio);
+//        }
+//        return annunci;
+//    }
+
+//    private void openRisultatiRicercaPage(List<Annuncio> annunci) { TODO
+//        loadScene("/com/dietiestates25ui/view/risultati-ricerca-view.fxml",
+//                (fxmlLoader, stage) -> {
+//                    RisultatiRicercaController controller = fxmlLoader.getController();
+//                    controller.setAnnunci(annunci);
+//                    controller.setToken(token);
+//                    controller.setStage(currentStage);
+//                }, cercaButton, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
+//    }
 
     public void setVenditaSelezionato(boolean venditaSelezionato) {
         this.venditaSelezionato = venditaSelezionato;
@@ -209,9 +237,5 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     public String getTipologiaSelezionata() {
         return tipologiaSelezionata;
-    }
-
-    private void openRisultatiRicercaPage(List<AnnuncioDTO> annunciDTO) {
-        // TODO
     }
 }

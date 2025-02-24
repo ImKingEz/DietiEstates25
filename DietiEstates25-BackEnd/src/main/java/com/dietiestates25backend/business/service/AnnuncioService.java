@@ -1,6 +1,7 @@
 package com.dietiestates25backend.business.service;
 
 import com.dietiestates25.dto.AnnuncioDTO;
+import com.dietiestates25.dto.FiltroAnnunciDTO;
 import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.FotoImmobile;
@@ -143,15 +144,15 @@ public class AnnuncioService {
         return annuncioRepository.findByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
     }
 
-    public List<Annuncio> findAnnunciInRadius(MapSearchDTO mapSearchDTO) {
+    public List<Annuncio> findAnnunciInRadius(MapSearchDTO mapSearchDTO, FiltroAnnunciDTO filtro) {
         logger.debug("Ricerca annunci nel raggio: {}, {}, {}, tipo: {}, tipologia: {}",
-                mapSearchDTO.getLatitude(), mapSearchDTO.getLongitude(), mapSearchDTO.getRadius(), mapSearchDTO.getTipoAnnuncio(), mapSearchDTO.getTipologiaImmobile());
+                mapSearchDTO.getLatitude(), mapSearchDTO.getLongitude(), mapSearchDTO.getRadius(), filtro.getTipo(), filtro.getTipologia());
         return annuncioRepository.findAnnunciInRadius(
                 mapSearchDTO.getLatitude(),
                 mapSearchDTO.getLongitude(),
                 mapSearchDTO.getRadius(),
-                mapSearchDTO.getTipoAnnuncio(),
-                mapSearchDTO.getTipologiaImmobile()
+                filtro.getTipo(),
+                filtro.getTipologia()
         );
     }
 }
