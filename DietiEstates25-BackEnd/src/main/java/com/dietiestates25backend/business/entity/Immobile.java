@@ -60,7 +60,7 @@ public class Immobile {
     @Column(name = "vicino_trasporto_pubblico")
     private boolean vicinoTrasportoPubblico;
 
-    @Column(name = "citta")
+    @Column(name = "citta", nullable = false)
     private String citta;
 
     public Immobile(String tipologia, String indirizzo, double dimensione, int numeroLocali, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico, String citta) {

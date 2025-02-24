@@ -227,6 +227,18 @@ public class InserimentoInserzioneController extends AbstractController implemen
         classeEnergeticaMenuButton.setStyle(FX_TEXT_FILL_MENU_BUTTON);
     }
 
+    public void setCitta(String citta) {
+        this.citta = citta;
+    }
+
+    public void setLatitudine(double latitudine) {
+        this.latitudine = latitudine;
+    }
+
+    public void setLongitudine(double longitudine) {
+        this.longitudine = longitudine;
+    }
+
     public void setTitoloTextField(String titolo) {
         this.titoloTextField.setText(titolo);
     }

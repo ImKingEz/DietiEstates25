@@ -167,7 +167,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
                             return;
                         }
                         if (annunciDTO.isEmpty()) {
-                            showPopup("Info", "Nessun immobile trovato nella zona.", ERROR_ICON);
+                            showPopup(POPUP_ERROR_TITLE, "Nessun immobile trovato nella zona.", ERROR_ICON);
                             logger.info("Nessun immobile trovato nella zona.");
                         } else {
                             for (AnnuncioDTO annuncioDTO : annunciDTO) {

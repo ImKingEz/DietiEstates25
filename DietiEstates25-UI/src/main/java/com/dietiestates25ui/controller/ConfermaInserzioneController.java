@@ -217,6 +217,10 @@ public class ConfermaInserzioneController extends AbstractController implements 
                     controller.setVicinoParchiCheckBox(immobile.isVicinoParchi());
                     controller.setVicinoTrasportoPubblicoCheckBox(immobile.isVicinoTrasportoPubblico());
 
+                    controller.setCitta(immobile.getCitta());
+                    controller.setLatitudine(immobile.getLatitudine());
+                    controller.setLongitudine(immobile.getLongitudine());
+
                     controller.setToken(token);
                     controller.setStage(stage);
 

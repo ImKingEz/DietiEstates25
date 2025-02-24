@@ -106,26 +106,30 @@ public class AnnuncioService extends ApiService {
                     .POST(HttpRequest.BodyPublishers.ofString(filtroJson))
                     .build();
 
-            HttpResponse<String> response = executeRequest(request);
-            int statusCode = response.statusCode();
-
-            if (statusCode == 200) {
-                TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
-                ApiResponse<List<AnnuncioDTO>> apiResponse = null;
-                apiResponse = getListApiResponse(objectMapper, response, typeReference);
-                if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
-                    return apiResponse.getData();
-                } else {
-                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la ricerca.";
-                    logger.warn("Ricerca annunci fallita: {}", errorMessage);
-                    throw new GenericServiceException(errorMessage);
-                }
-            } else {
-                handleErrorResponse(statusCode, response);
-                throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
-            }
+            return getAnnuncioDTOList(request, objectMapper);
         } catch (Exception e) {
             throw handleGenericException("Errore durante la ricerca degli annunci: " + e.getMessage(), e);
+        }
+    }
+
+    private List<AnnuncioDTO> getAnnuncioDTOList(HttpRequest request, ObjectMapper objectMapper) throws ServiceUnavailableException, ApiClientException, GenericServiceException {
+        HttpResponse<String> response = executeRequest(request);
+        int statusCode = response.statusCode();
+
+        if (statusCode == 200) {
+            TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
+            ApiResponse<List<AnnuncioDTO>> apiResponse = null;
+            apiResponse = getListApiResponse(objectMapper, response, typeReference);
+            if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
+                return apiResponse.getData();
+            } else {
+                String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la ricerca.";
+                logger.warn("Ricerca annunci fallita: {}", errorMessage);
+                throw new GenericServiceException(errorMessage);
+            }
+        } else {
+            handleErrorResponse(statusCode, response);
+            throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
         }
     }
 
@@ -145,24 +149,7 @@ public class AnnuncioService extends ApiService {
                     .POST(HttpRequest.BodyPublishers.ofString(mapSearchJson))
                     .build();
 
-            HttpResponse<String> response = executeRequest(request);
-            int statusCode = response.statusCode();
-
-            if (statusCode == 200) {
-                TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
-                ApiResponse<List<AnnuncioDTO>> apiResponse = null;
-                apiResponse = getListApiResponse(objectMapper, response, typeReference);
-                if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
-                    return apiResponse.getData();
-                } else {
-                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la ricerca.";
-                    logger.warn("Ricerca annunci fallita: {}", errorMessage);
-                    throw new GenericServiceException(errorMessage);
-                }
-            } else {
-                handleErrorResponse(statusCode, response);
-                throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
-            }
+            return getAnnuncioDTOList(request, objectMapper);
         } catch (Exception e) {
             throw handleGenericException("Errore durante la ricerca degli annunci con mappa: " + e.getMessage(), e);
         }
