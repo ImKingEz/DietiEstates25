@@ -32,6 +32,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.scene.control.TextFormatter;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,6 +44,7 @@ import java.util.function.UnaryOperator;
 
 public class DashboardController extends AbstractController implements Initializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
     public static final String TEXT_FIELD_ERROR_CSS_CLASS = "text-field-error";
     private String token;
 
@@ -318,6 +321,7 @@ public class DashboardController extends AbstractController implements Initializ
                 throw new NumberFormatException("Il valore massimo deve essere maggiore di zero.");
             }
             maxPriceTextField.getStyleClass().remove(TEXT_FIELD_ERROR_CSS_CLASS);
+            logger.error("{}", maxPriceTextField.getStyleClass());
         } catch (NumberFormatException e) {
             logger.error("Valore massimo non valido: {}", e.getMessage());
             maxPriceTextField.getStyleClass().add(TEXT_FIELD_ERROR_CSS_CLASS);
@@ -554,29 +558,33 @@ public class DashboardController extends AbstractController implements Initializ
 
         List<Map<String, Object>> annunciPerLaMappa = new ArrayList<>();
         for (AnnuncioDTO annuncio : annunci) {
-            Map<String, Object> annuncioMap = new HashMap<>();
             ImmobileDTO immobile = null;
             try {
                 immobile = immobileService.getImmobileDetails(annuncio.getIdImmobile(), token);
+
+                // Ottieni latitudine e longitudine dall'ImmobileDTO
+                double latitudine = immobile.getLatitudine();
+                double longitudine = immobile.getLongitudine();
+
+                minLon = Math.min(minLon, longitudine);
+                minLat = Math.min(minLat, latitudine);
+                maxLon = Math.max(maxLon, longitudine);
+                maxLat = Math.max(maxLat, latitudine);
+
+                Map<String, Object> annuncioMap = new HashMap<>();
+                annuncioMap.put("latitudine", latitudine);
+                annuncioMap.put("longitudine", longitudine);
+                annuncioMap.put("titolo", annuncio.getTitolo());
+                annuncioMap.put("prezzo", annuncio.getPrezzo());
+                annuncioMap.put("descrizione", annuncio.getDescrizione());
+                annuncioMap.put("idImmobile", annuncio.getIdImmobile());
+                annunciPerLaMappa.add(annuncioMap);
+
             } catch (GenericServiceException e) {
                 logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
                 continue;
             }
-            double latitudine = immobile.getLatitudine();
-            double longitudine = immobile.getLongitudine();
 
-            minLon = Math.min(minLon, longitudine);
-            minLat = Math.min(minLat, latitudine);
-            maxLon = Math.max(maxLon, longitudine);
-            maxLat = Math.max(maxLat, latitudine);
-
-            annuncioMap.put("latitudine", latitudine);
-            annuncioMap.put("longitudine", longitudine);
-            annuncioMap.put("titolo", annuncio.getTitolo());
-            annuncioMap.put("prezzo", annuncio.getPrezzo());
-            annuncioMap.put("descrizione", annuncio.getDescrizione());
-            annuncioMap.put("idImmobile", annuncio.getIdImmobile());
-            annunciPerLaMappa.add(annuncioMap);
         }
 
         if (!annunci.isEmpty()) {
@@ -604,14 +612,8 @@ public class DashboardController extends AbstractController implements Initializ
         listaAnnunciVBox.getChildren().add(numeroAnnunciText);
         for (AnnuncioDTO annuncio : annunci) {
             ImmobileDTO immobile = null;
-            FotoImmobileDTO fotoImmobile = null;
             try {
                 immobile = immobileService.getImmobileDetails(annuncio.getIdImmobile(), token);
-            } catch (GenericServiceException e) {
-                logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
-                continue;
-            }
-            try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dietiestates25ui/view/annuncio-item-view.fxml"));
                 HBox annuncioItem = loader.load();
 
@@ -621,6 +623,9 @@ public class DashboardController extends AbstractController implements Initializ
                 listaAnnunciVBox.getChildren().add(annuncioItem);
             } catch (IOException e) {
                 logger.error("Errore durante il caricamento del layout dell'annuncio:", e);
+            } catch (GenericServiceException e) {
+                logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
+                continue;
             }
         }
     }

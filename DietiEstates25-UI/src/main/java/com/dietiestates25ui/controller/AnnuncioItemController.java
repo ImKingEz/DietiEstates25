@@ -45,9 +45,8 @@ public class AnnuncioItemController {
         if (annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
             setAnnuncioImageView(annuncio.getImmaginiUrls().getFirst());
         } else {
-            // Imposta un'immagine di placeholder o nascondi l'ImageView
             logger.warn("Nessuna immagine disponibile per l'annuncio: {}", annuncio.getTitolo());
-            annuncioImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/placeholder.png")))); // Assicurati di avere un'immagine placeholder
+            annuncioImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/noAnnuncioImage.png"))));
         }
         annuncioTitle.setText(annuncio.getTitolo());
         prezzoAnnuncio.setText(String.valueOf(annuncio.getPrezzo()));
@@ -81,8 +80,7 @@ public class AnnuncioItemController {
     private void setAnnuncioImageView(String imageUrl) {
         logger.debug("Setting image: http://localhost:8080{}", imageUrl);
         if (annuncioImageView != null) {
-            // Modifica qui: carica l'immagine direttamente dall'URL restituito dal backend
-            Image image = new Image("http://localhost:8080" + imageUrl); // Assicurati che l'URL sia corretto
+            Image image = new Image("http://localhost:8080" + imageUrl);
             annuncioImageView.setImage(image);
 
             double imageWidth = image.getWidth();

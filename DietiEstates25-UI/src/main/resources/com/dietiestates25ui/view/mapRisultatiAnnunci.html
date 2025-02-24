@@ -2,8 +2,9 @@
 <html>
 
 <head>
-    <title>OpenLayers Map - Select Point Only</title>
+    <title>OpenLayers Map - Grouped Markers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.5.1/ol.css">
     <style>
         html,
@@ -19,6 +20,18 @@
             width: 100%;
             cursor: pointer;
         }
+
+        .marker-cluster {
+            background: rgba(0, 128, 255, 0.7);
+            border-radius: 50%;
+            color: white;
+            text-align: center;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border: 2px solid white;
+            font-weight: bold;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.1/dist/ol.js"></script>
 </head>
@@ -29,12 +42,45 @@
     console.log("OpenLayers loaded");
 
     var map;
-    var marker;
-    var selectedLongitude;
-    var selectedLatitude;
-    var targetZoom = 15; // Zoom desiderato al click
+    var source = new ol.source.Vector();
+    var clusterSource = new ol.source.Cluster({
+        distance: 40,
+        source: source
+    });
 
-    // Coordinate del centro dell'Italia (approssimative)
+    var styleCache = {};
+
+    var clusters = new ol.layer.Vector({
+        source: clusterSource,
+        style: function (feature) {
+            var size = feature.get('features').length;
+            var style = styleCache[size];
+            if (!style) {
+                style = new ol.style.Style({
+                    image: new ol.style.Icon({
+                        anchor: [0.5, 0.5],
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'fraction',
+                        src: getMarkerImage(size),
+                        scale: 1
+                    }),
+                    text: new ol.style.Text({
+                        text: size.toString(),
+                        fill: new ol.style.Fill({
+                            color: '#fff'
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(0, 0, 0, 0.6)',
+                            width: 3
+                        })
+                    })
+                });
+                styleCache[size] = style;
+            }
+            return style;
+        }
+    });
+
     var italyCenter = ol.proj.fromLonLat([12.5674, 41.8719]);
 
     function initMap() {
@@ -43,122 +89,60 @@
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
-                })
+                }),
+                clusters
             ],
             view: new ol.View({
-                center: italyCenter,  // Centra sulla'Italia
-                zoom: 6,             // Zoom per visualizzare l'intera Italia
-                minZoom: 5,          // Zoom minimo consentito (opzionale)
-                maxZoom: 18           // Zoom massimo consentito (opzionale)
+                center: italyCenter,
+                zoom: 6,
+                minZoom: 5,
+                maxZoom: 18
             })
         });
-    }
 
-    function setMarker(longitude, latitude) {
-        var coordinate = ol.proj.fromLonLat([longitude, latitude]);
+        // Gestione del click sui cluster/marker
+        map.on('click', function (evt) {
+            var feature = map.forEachFeatureAtPixel(evt.pixel,
+                function (feature) {
+                    return feature;
+                });
 
-        marker.getSource().clear();
-
-        var feature = new ol.Feature({
-            geometry: new ol.geom.Point(coordinate)
+            if (feature) {
+                var features = feature.get('features');
+                if (features && features.length > 1) {
+                    var extent = ol.extent.createEmpty();
+                    features.forEach(function (f) {
+                        ol.extent.extend(extent, f.getGeometry().getExtent());
+                    });
+                    map.getView().fit(extent, {duration: 500, padding: [50, 50, 50, 50]});
+                } else {
+                    if (features && features.length === 1) {
+                        var annuncio = features[0].get('annuncio');
+                        if (annuncio) {
+                            alert('Annuncio: ' + annuncio.titolo + '\nPrezzo: €' + annuncio.prezzo + '\nDescrizione: ' + annuncio.descrizione + '\nID: ' + annuncio.idImmobile);
+                        }
+                    }
+                }
+            }
         });
-
-        marker.getSource().addFeature(feature);
-    }
-
-    function zoomToLocation(longitude, latitude) {
-        var currentZoom = map.getView().getZoom(); // Ottieni lo zoom corrente
-        var newZoom = targetZoom; // Imposta il target zoom
-
-        map.getView().setCenter(ol.proj.fromLonLat([longitude, latitude]));
-        map.getView().setZoom(newZoom);
     }
 
     function addMarkersToMap(annunci) {
+        source.clear();
+
+        var features = [];
         annunci.forEach(annuncio => {
             var coordinate = ol.proj.fromLonLat([annuncio.longitudine, annuncio.latitudine]);
 
             var feature = new ol.Feature({
                 geometry: new ol.geom.Point(coordinate),
-                name: annuncio.titolo,
-                prezzo: annuncio.prezzo,
-                descrizione: annuncio.descrizione,
-                idImmobile: annuncio.idImmobile
+                annuncio: annuncio
             });
 
-            var markerSource = new ol.source.Vector({
-                features: [feature]
-            });
-
-            var markerStyle = new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 7,
-                    fill: new ol.style.Fill({
-                        color: 'blue'
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: 'white',
-                        width: 2
-                    })
-                }),
-                text: new ol.style.Text({
-                    text: '€' + annuncio.prezzo.toString(), // Mostra il prezzo con il simbolo dell'euro
-                    offsetY: -15, // Sposta il testo sopra il marker
-                    fill: new ol.style.Fill({
-                        color: '#000' // Colore del testo
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: '#fff', // Bordo del testo
-                        width: 3
-                    })
-                })
-            });
-
-            var markerLayer = new ol.layer.Vector({
-                source: markerSource,
-                style: markerStyle //usa lo stile con il prezzo
-            });
-
-            map.addLayer(markerLayer);
-
-            // Gestione del click sui marker
-            map.on('click', function(evt) {
-                map.forEachFeatureAtPixel(evt.pixel, function(feature) {
-                    // Recupera i dettagli dell'annuncio dalla feature
-                    var nome = feature.get('name');
-                    var prezzo = feature.get('prezzo');
-                    var descrizione = feature.get('descrizione');
-                    var idImmobile = feature.get('idImmobile');
-
-
-                    // Mostra i dettagli in un alert
-                    alert('Annuncio: ' + nome + '\nPrezzo: €' + prezzo + '\nDescrizione: ' + descrizione + '\nID: ' + idImmobile);
-                });
-            });
+            features.push(feature);
         });
-    }
 
-    function reverseGeocode(longitude, latitude) {
-        var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
-
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.address) {
-                    var address = data.display_name;
-                    sendDataToJava(address, longitude, latitude); //Passa tutti i dati necessari
-                } else {
-                    sendDataToJava("Indirizzo non identificato per questo punto", longitude, latitude);
-                }
-            })
-            .catch(error => {
-                console.error("Errore nel reverse geocoding:", error);
-                sendDataToJava("Errore di connessione", longitude, latitude);
-            });
-    }
-
-    function sendDataToJava(address, longitude, latitude) {
-        window.alert(address + "|" + latitude + "|" + longitude);
+        source.addFeatures(features);
     }
 
     function fitViewToExtent(extent) {
@@ -169,7 +153,23 @@
         });
     }
 
-    window.onload = function() {
+    function getMarkerImage(size) {
+        if (size > 1) {
+            return 'data:image/svg+xml;charset=utf-8,' +
+                '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">' +
+                '<circle cx="20" cy="20" r="18" fill="rgba(0, 128, 255, 0.7)" stroke="white" stroke-width="2"/>' +
+                '<text x="20" y="25" font-size="16" font-weight="bold" fill="white" text-anchor="middle">' + size + '</text>' +
+                '</svg>';
+        } else {
+            return 'data:image/svg+xml;charset=utf-8,' +
+                '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="40">' +
+                '<path d="M15 0 C7 0 0 7 0 15 C0 27 15 40 15 40 C15 40 30 27 30 15 C30 7 23 0 15 0 Z" fill="rgba(220,50,50,0.8)" stroke="white" stroke-width="1"/>' +
+                '<text x="15" y="22" font-size="12" font-weight="bold" fill="white" text-anchor="middle">€</text>' +
+                '</svg>';
+        }
+    }
+
+    window.onload = function () {
         initMap();
     };
 </script>
