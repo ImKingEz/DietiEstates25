@@ -1,7 +1,6 @@
 package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.AnnuncioDTO;
-import com.dietiestates25.dto.FotoImmobileDTO;
 import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
@@ -19,9 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -562,7 +559,6 @@ public class DashboardController extends AbstractController implements Initializ
             try {
                 immobile = immobileService.getImmobileDetails(annuncio.getIdImmobile(), token);
 
-                // Ottieni latitudine e longitudine dall'ImmobileDTO
                 double latitudine = immobile.getLatitudine();
                 double longitudine = immobile.getLongitudine();
 
@@ -582,7 +578,6 @@ public class DashboardController extends AbstractController implements Initializ
 
             } catch (GenericServiceException e) {
                 logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
-                continue;
             }
 
         }
@@ -625,7 +620,6 @@ public class DashboardController extends AbstractController implements Initializ
                 logger.error("Errore durante il caricamento del layout dell'annuncio:", e);
             } catch (GenericServiceException e) {
                 logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
-                continue;
             }
         }
     }
