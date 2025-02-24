@@ -1,0 +1,16 @@
+@import "global-style.css";
+@import "dashboard-style.css";
+
+.detailWithIconHBox {
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-pref-width: 220;
+    -fx-pref-height: 40;
+}
+
+#caratteristicheVBox {
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+}

@@ -56,7 +56,7 @@ public class DashboardController extends AbstractController implements Initializ
 
     @FXML
     private Button scrollRightButton;
-    
+
     @FXML
     private Button reimpostaFiltriButton;
 
@@ -711,6 +711,10 @@ public class DashboardController extends AbstractController implements Initializ
                 AnnuncioItemController controller = loader.getController();
                 controller.setAnnuncio(annuncio, immobile);
 
+                // Aggiungiamo il listener per il click
+                ImmobileDTO finalImmobile = immobile;
+                annuncioItem.setOnMouseClicked(event -> mostraDettagliAnnuncio(annuncio, finalImmobile));
+
                 listaAnnunciVBox.getChildren().add(annuncioItem);
             } catch (IOException e) {
                 logger.error("Errore durante il caricamento del layout dell'annuncio:", e);
@@ -718,5 +722,15 @@ public class DashboardController extends AbstractController implements Initializ
                 logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
             }
         }
+    }
+
+    private void mostraDettagliAnnuncio(AnnuncioDTO annuncio, ImmobileDTO immobile) {
+        loadScene("/com/dietiestates25ui/view/annuncio-detail-view.fxml",
+                (fxmlLoader, stage) -> {
+                    AnnuncioDetailController annuncioDetailController = fxmlLoader.getController();
+                    annuncioDetailController.setStage(stage);
+                    annuncioDetailController.setToken(token);
+                    annuncioDetailController.setAnnuncio(annuncio, immobile);
+                }, reimpostaFiltriButton, "/com/dietiestates25ui/styles/annuncio-detail-style.css");
     }
 }

@@ -10,7 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<HBox styleClass="annuncioHBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.AnnuncioItemController">
+<HBox styleClass="annuncioHBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.AnnuncioItemController"
+      style="-fx-cursor: hand;">
     <children>
         <StackPane styleClass="annuncioImageStackPane">
             <children>

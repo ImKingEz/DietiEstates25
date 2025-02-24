@@ -2,7 +2,6 @@ package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
-import com.dietiestates25ui.model.Annuncio;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
@@ -41,7 +40,13 @@ public class AnnuncioItemController {
     @FXML
     private ImageView imageVicinanzaDetailAnnuncio;
 
+    private AnnuncioDTO annuncio;
+    private ImmobileDTO immobile;
+
     public void setAnnuncio(AnnuncioDTO annuncio, ImmobileDTO immobile) {
+        this.annuncio = annuncio;
+        this.immobile = immobile;
+
         if (annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
             setAnnuncioImageView(annuncio.getImmaginiUrls().getFirst());
         } else {
@@ -93,5 +98,13 @@ public class AnnuncioItemController {
         } else {
             logger.error("ImageView annuncioImageView non iniettato! Controlla l'FXML.");
         }
+    }
+
+    public AnnuncioDTO getAnnuncio() {
+        return annuncio;
+    }
+
+    public ImmobileDTO getImmobile() {
+        return immobile;
     }
 }
