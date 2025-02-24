@@ -18,5 +18,6 @@ public interface AnnuncioRepository extends JpaRepository<Annuncio, Long> {
     List<Annuncio> findByCittaAndTipoAnnuncioAndTipologiaImmobile(
             @Param("citta") String citta,
             @Param("tipoAnnuncio") String tipoAnnuncio,
-            @Param("tipologiaImmobile") String tipologiaImmobile);
+            @Param("tipologiaImmobile") String tipologiaImmobile,
+            @Param());
 }

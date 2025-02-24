@@ -57,16 +57,16 @@ public abstract class AbstractController {
 
     @FXML
     protected Button providerBackButton;
-    
+
     @FXML
     protected TextField passwordTextField;
-    
+
     @FXML
     protected HBox passwordHBox;
-    
+
     @FXML
     protected PasswordField passwordPasswordField;
-    
+
     @FXML
     protected ImageView eyeImageView;
 
@@ -142,9 +142,14 @@ public abstract class AbstractController {
             double centerX = currentStage.getX() + (currentStage.getWidth() / 2);
             double popupX = centerX - (popupWidth / 2);
 
-            Bounds logoBounds = logo.localToScene(logo.getBoundsInLocal());
-            double logoBottomY = logoBounds.getMinY();
-            double popupY = logoBottomY - 10;
+            double popupY;
+            if (logo != null) {  // **Aggiunto controllo null**
+                Bounds logoBounds = logo.localToScene(logo.getBoundsInLocal());
+                double logoBottomY = logoBounds.getMinY();
+                popupY = logoBottomY - 10;
+            } else {
+                popupY = currentStage.getY() + 10;
+            }
 
             popup.hide();
             popup.show(currentStage, popupX, popupY);
@@ -161,7 +166,7 @@ public abstract class AbstractController {
         loadScene("/com/dietiestates25ui/view/dashboard-view.fxml",
                 (fxmlLoader, stage) -> {
                     DashboardController dashboardController = fxmlLoader.getController();
-                    dashboardController.setStage(stage); // Chiama setStage anziché modificare currentStage
+                    dashboardController.setStage(stage); // Chiama setStage anzichÃ© modificare currentStage
                     dashboardController.setToken(token);
                 }, button, "/com/dietiestates25ui/styles/dashboard-style.css");
     }
@@ -209,7 +214,7 @@ public abstract class AbstractController {
     public interface SceneConfigurator {
         void configure(FXMLLoader fxmlLoader, Stage stage);
     }
-    
+
     protected void passwordTextFieldInitializer(String classOfTextField) {
         passwordTextField = new TextField();
         passwordTextField.getStyleClass().add(classOfTextField);

@@ -118,9 +118,9 @@ public class AnnuncioService {
             Path targetLocation = uploadDir.resolve(fileName);
             Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             logger.info("Saved image to: {}", targetLocation.toAbsolutePath());
-            return "/" + uploadDirectory + "/" + fileName; // Restituisce il percorso completo
+            return "/" + uploadDirectory + "/" + fileName;
         } catch (IOException e) {
-            throw new IOException("Could not save image: " + e.getMessage(), e); // Lancia l'eccezione
+            throw new IOException("Could not save image: " + e.getMessage(), e);
         }
     }
 
