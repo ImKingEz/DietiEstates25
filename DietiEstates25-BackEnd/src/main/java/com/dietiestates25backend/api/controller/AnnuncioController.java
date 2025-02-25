@@ -1,5 +1,6 @@
 package com.dietiestates25backend.api.controller;
 
+import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.FiltroAnnunciDTO;
@@ -58,6 +59,24 @@ public class AnnuncioController extends BaseController {
         } catch (Exception e) {
             logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
             return handleGenericException(e, "Errore durante la ricerca degli annunci", "Annuncio");
+        }
+    }
+
+    @GetMapping("/immobile/{id}")
+    @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<AnnuncioDTO>> getAnnuncioByImmobile(@PathVariable Long id) {
+        try {
+            AnnuncioDTO annuncioDTO = annuncioService.getAnnuncioByIdImmobile(id);
+            ApiResponse<AnnuncioDTO> response = new ApiResponse<>(true, annuncioDTO, null);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            logger.warn("annuncio non trovata con ID immobile: {}", id);
+            ApiResponse<AnnuncioDTO> response = new ApiResponse<>(false, null, "annuncio non trovata");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception ex) {
+            logger.error("Errore durante il recupero dei dettagli dell'annuncio con ID immobile: {}", id, ex);
+            ApiResponse<AnnuncioDTO> response = new ApiResponse<>(false, null, "Errore durante il recupero dei dettagli dell'annuncio: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

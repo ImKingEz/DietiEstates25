@@ -185,6 +185,9 @@ public class DashboardController extends AbstractController implements Initializ
 
         webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
+                webEngine.executeScript("window.mostraDettagliAnnuncioDaMappa = function(idImmobile) { " +
+                        "  javafx.scene.web.WebEngine.executeScript('$(\"idImmobile\").DashboardController.mostraDettagliAnnuncioDaMappa(' + idImmobile + ')');" +
+                        "}");
                 Platform.runLater(this::updateAnnunci);
             }
         });
@@ -192,6 +195,7 @@ public class DashboardController extends AbstractController implements Initializ
         webEngine.setOnAlert(event -> {
             String data = event.getData();
             logger.info("Data from WebView: {}", data);
+            mostraDettagliAnnuncioDaMappa(Long.parseLong(data));
         });
     }
 
@@ -721,6 +725,23 @@ public class DashboardController extends AbstractController implements Initializ
             } catch (GenericServiceException e) {
                 logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
             }
+        }
+    }
+
+    private void mostraDettagliAnnuncioDaMappa(Long idImmobile) {
+        try {
+            AnnuncioDTO annuncio = annuncioService.getAnnuncioByIdImmobile(idImmobile, token);
+            ImmobileDTO immobile = immobileService.getImmobileDetails(idImmobile, token);
+
+            if (annuncio != null && immobile != null) {
+                Platform.runLater(() -> mostraDettagliAnnuncio(annuncio, immobile));
+            } else {
+                logger.error("Annuncio o Immobile non trovato per idImmobile: {}", idImmobile);
+                showPopup("Errore", "Annuncio o immobile non trovato.", ERROR_ICON);
+            }
+        } catch (GenericServiceException e) {
+            logger.error("Errore durante il recupero dell'annuncio o dell'immobile: {}", e.getMessage(), e);
+            showPopup("Errore", "Impossibile recuperare i dettagli dell'annuncio.", ERROR_ICON);
         }
     }
 

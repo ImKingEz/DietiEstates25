@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AnnuncioRepository extends JpaRepository<Annuncio, Long> {
@@ -31,4 +32,6 @@ public interface AnnuncioRepository extends JpaRepository<Annuncio, Long> {
             "AND (:#{#filtro.vicinoParco} IS NULL OR i.vicinoParchi = :#{#filtro.vicinoParco}) " +
             "AND (:#{#filtro.vicinoTrasportoPubblico} IS NULL OR i.vicinoTrasportoPubblico = :#{#filtro.vicinoTrasportoPubblico})")
     List<Annuncio> findByFiltro(@Param("filtro") FiltroAnnunciDTO filtro, @Param("citta") String citta);
+
+    Optional<Annuncio> findByIdImmobile(Long id);
 }

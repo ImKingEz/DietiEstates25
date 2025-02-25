@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AnnuncioService {
@@ -144,5 +145,18 @@ public class AnnuncioService {
     public List<Annuncio> findAnnunciByCittaAndFiltri(FiltroAnnunciDTO filtro, String citta) {
         logger.debug("Ricerca annunci per città : {}, filtro: {}", citta, filtro);
         return annuncioRepository.findByFiltro(filtro, citta);
+    }
+
+    public AnnuncioDTO getAnnuncioByIdImmobile(Long id) {
+        Optional<Annuncio> annuncioOptional = annuncioRepository.findByIdImmobile(id);
+
+        if (annuncioOptional.isEmpty()) {
+            logger.warn("Annuncio non trovato con ID immobile: {}", id);
+            throw new IllegalArgumentException("Annuncio non trovato con ID immobile: " + id);
+        }
+
+        Annuncio annuncio = annuncioOptional.get();
+
+        return convertToDTO(annuncio);
     }
 }

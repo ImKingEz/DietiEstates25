@@ -2,6 +2,7 @@ package com.dietiestates25ui.service;
 
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
+import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25ui.exception.*;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.FiltroAnnunci;
@@ -133,6 +134,10 @@ public class AnnuncioService extends ApiService {
         } catch (Exception e) {
             throw handleGenericException("Errore durante la ricerca degli annunci: " + e.getMessage(), e);
         }
+    }
+
+    public AnnuncioDTO getAnnuncioByIdImmobile(long idImmobile, String token) throws GenericServiceException {
+        return executeAndHandle("/immobile/" + idImmobile, "GET", null, token, AnnuncioDTO.class);
     }
 
     @Override
