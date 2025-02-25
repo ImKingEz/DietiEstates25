@@ -1,8 +1,12 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.AgenteDTO;
+import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.AgenteImmobiliare;
+import com.dietiestates25ui.service.AgenteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -54,6 +58,8 @@ public class AnnuncioDetailController extends AbstractController implements Init
     private Text pianoText;
     @FXML
     private Text classeEnergeticaText;
+    @FXML
+    private Label emailText;
 
     @FXML
     private AnchorPane detailsAnchorPane;
@@ -178,6 +184,16 @@ public class AnnuncioDetailController extends AbstractController implements Init
         if (immobile.isVicinoTrasportoPubblico()) {
             addNewDetail("Vicino ai trasporti", "/com/dietiestates25ui/images/busIcon.png");
         }
+
+        AgenteDTO agente;
+        try {
+            AgenteService agenteService = new AgenteService();
+            agente = agenteService.getAgenteDetails(annuncio.getIdAgente(), token);
+            emailText.setText("Per prenotare una visita, fare un offerta o altre informazioni contattaci all'indirizzo email: " + agente.getEmail());
+        } catch (GenericServiceException e) {
+            logger.error("Errore durante il recupero dei dettagli dell'agente", e);
+        }
+
     }
 
     private String getPiano() {

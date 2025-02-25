@@ -101,4 +101,18 @@ public class AgenteController extends BaseController {
             return handleGenericException(ex, "Errore nel recupero dei dettagli dell'agente", ENTITY_TYPE);
         }
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('READ_AGENTE')")
+    public ResponseEntity<ApiResponse<AgenteDTO>> getAgenteDetails(@PathVariable Long id) {
+        logger.debug("getAgenteDetails() called with id: {}", id);
+        try {
+            AgenteDTO agenteDTO = agenteService.getAgenteDetails(id);
+            logger.debug("getAgenteDetails() successful for agente with id: {}", id);
+            return successResponse(agenteDTO);
+        } catch (Exception ex) {
+            logger.error("getAgenteDetails() failed with error: {}", ex.getMessage());
+            return handleGenericException(ex, "Errore nel recupero dei dettagli dell'agente", ENTITY_TYPE);
+        }
+    }
 }

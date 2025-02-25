@@ -49,6 +49,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (utente.isPresent()) {
             logger.debug("CustomUserDetailsService.loadUserByUsername: Found utente: {}", username);
             authorities.add(new SimpleGrantedAuthority("ROLE_UTENTE"));
+            authorities.add(new SimpleGrantedAuthority("READ_AGENTE"));
+            authorities.add(new SimpleGrantedAuthority("READ_AGENZIA"));
             return new User(utente.get().getEmail(), utente.get().getPassword(), authorities);
         }
 

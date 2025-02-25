@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<HBox styleClass="annuncioHBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.AnnuncioItemController"
-      style="-fx-cursor: hand;">
+<HBox style="-fx-cursor: hand;" styleClass="annuncioHBox" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.AnnuncioItemController">
     <children>
         <StackPane styleClass="annuncioImageStackPane">
             <children>
@@ -20,8 +19,8 @@
         </StackPane>
         <VBox styleClass="annuncioDetailVBox">
             <children>
-                <Text fx:id="annuncioTitle" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Casa di Napoli enorme" />
-                <Text fx:id="prezzoAnnuncio" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="500.000€" />
+                <Text fx:id="annuncioTitle" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Titolo" />
+                <Text fx:id="prezzoAnnuncio" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="Prezzo" />
                 <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
                     <children>
                         <HBox styleClass="detailWithIconHBox">

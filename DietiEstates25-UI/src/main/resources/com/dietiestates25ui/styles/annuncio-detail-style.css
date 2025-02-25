@@ -14,3 +14,31 @@
     -fx-border-radius: 5;
     -fx-padding: 10;
 }
+
+.annuncioImageStackPane {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-border-radius: 5 0 0 5;
+    -fx-background-radius: 5 0 0 5;
+    -fx-pref-height: 300;
+    -fx-max-height: 300;
+    -fx-min-height: 300;
+    -fx-pref-width: 400;
+    -fx-max-width: 400;
+    -fx-min-width: 400;
+    -fx-alignment: center;
+}
+
+#carouselHBox {
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-border-radius: 20;
+    -fx-spacing: 10;
+}
+
+#descrizioneText {
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}

@@ -114,6 +114,13 @@
     -fx-background-color: transparent;
     -fx-border-radius: 5 0 0 5;
     -fx-background-radius: 5 0 0 5;
+    -fx-pref-height: 200;
+    -fx-max-height: 200;
+    -fx-min-height: 200;
+    -fx-pref-width: 200;
+    -fx-max-width: 200;
+    -fx-min-width: 200;
+    -fx-alignment: center;
 }
 
 .annuncioImageView {
@@ -164,6 +171,5 @@
 }
 
 .annuncioButtonsHBox {
-    -fx-alignment: center;
     -fx-spacing: 20;
 }
