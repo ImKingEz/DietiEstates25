@@ -2,6 +2,8 @@ package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
+import com.dietiestates25ui.exception.GenericServiceException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
@@ -22,10 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class AnnuncioDetailController extends AbstractController implements Initializable {
 
@@ -223,7 +222,7 @@ public class AnnuncioDetailController extends AbstractController implements Init
 
         webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
-                //Platform.runLater(this::updateAnnunci); TODO
+                Platform.runLater(this::visualizzaAnnunciSullaMappa);
             }
         });
 
@@ -231,5 +230,44 @@ public class AnnuncioDetailController extends AbstractController implements Init
             String data = event.getData();
             logger.info("Data from WebView: {}", data);
         });
+    }
+
+    private void visualizzaAnnunciSullaMappa() {
+        double minLon = Double.MAX_VALUE;
+        double minLat = Double.MAX_VALUE;
+        double maxLon = Double.MIN_VALUE;
+        double maxLat = Double.MIN_VALUE;
+
+        List<Map<String, Object>> annunciPerLaMappa = new ArrayList<>();
+        double latitudine = immobile.getLatitudine();
+        double longitudine = immobile.getLongitudine();
+
+        minLon = Math.min(minLon, longitudine);
+        minLat = Math.min(minLat, latitudine);
+        maxLon = Math.max(maxLon, longitudine);
+        maxLat = Math.max(maxLat, latitudine);
+
+        Map<String, Object> annuncioMap = new HashMap<>();
+        annuncioMap.put("latitudine", latitudine);
+        annuncioMap.put("longitudine", longitudine);
+        annuncioMap.put("titolo", annuncio.getTitolo());
+        annuncioMap.put("prezzo", annuncio.getPrezzo());
+        annuncioMap.put("descrizione", annuncio.getDescrizione());
+        annuncioMap.put("idImmobile", annuncio.getIdImmobile());
+        annunciPerLaMappa.add(annuncioMap);
+        double[] extent = {minLon, minLat, maxLon, maxLat};
+
+        String extentString = Arrays.toString(extent);
+
+        WebEngine webEngine = map.getEngine();
+        webEngine.executeScript("fitViewToExtent(" + extentString + ");");
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String annunciJson = objectMapper.writeValueAsString(annunciPerLaMappa);
+            webEngine.executeScript("addMarkersToMap(" + annunciJson + ");");
+        } catch (Exception e) {
+            logger.error("Errore serializzazione JSON annuncioDTO:", e);
+        }
     }
 }
