@@ -181,7 +181,7 @@ public class DashboardController extends AbstractController implements Initializ
 
     private void loadMap() {
         WebEngine webEngine = map.getEngine();
-        webEngine.load(getClass().getResource("/com/dietiestates25ui/view/mapRisultatiAnnunci.html").toExternalForm());
+        webEngine.load(Objects.requireNonNull(getClass().getResource("/com/dietiestates25ui/view/mapRisultatiAnnunci.html")).toExternalForm());
 
         webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {

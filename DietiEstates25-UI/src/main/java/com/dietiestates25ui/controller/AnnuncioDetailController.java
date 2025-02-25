@@ -2,20 +2,28 @@ package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
+import javafx.application.Platform;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -34,7 +42,7 @@ public class AnnuncioDetailController extends AbstractController implements Init
     @FXML
     private Text titoloText;
     @FXML
-    private Text descrizioneText;
+    private Label descrizioneText;
     @FXML
     private Text prezzoText;
     @FXML
@@ -49,19 +57,95 @@ public class AnnuncioDetailController extends AbstractController implements Init
     private Text classeEnergeticaText;
 
     @FXML
+    private AnchorPane detailsAnchorPane;
+
+    @FXML
     private FlowPane detailAnnuncioFlowPane;
 
     @FXML
     private WebView map;
 
     @FXML
-    private VBox mappaImmobiliVBox;
+    private ScrollPane detailsScrollPane;
+    @FXML
+    private VBox detailsVBox;
+    @FXML
+    private VBox fotoEMappaVBox;
+    @FXML
+    private ImageView carouselImageView;
+    @FXML
+    private Button prevButton;
+    @FXML
+    private Button nextButton;
 
+    private List<Image> images;
+    private int currentImageIndex = 0;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        tornaIndietroButton.setOnAction(event -> openDashboard(token, tornaIndietroButton));
+
+        prevButton.setOnAction(event -> prevImage());
+        nextButton.setOnAction(event -> nextImage());
+
+        updateMap();
+        updateScrollPanePrefWidth();
+    }
+
+    private void prevImage() {
+        if (images != null && !images.isEmpty()) {
+            currentImageIndex = (currentImageIndex - 1 + images.size()) % images.size();
+            carouselImageView.setImage(images.get(currentImageIndex));
+        }
+    }
+
+    private void nextImage() {
+        if (images != null && !images.isEmpty()) {
+            currentImageIndex = (currentImageIndex + 1) % images.size();
+            carouselImageView.setImage(images.get(currentImageIndex));
+        }
+    }
+
+    private void updateCarousel() {
+        if (annuncio != null && annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
+            images = new ArrayList<>();
+            for (String imageUrl : annuncio.getImmaginiUrls()) {
+                String fullImageUrl = "http://localhost:8080" + imageUrl;
+                logger.debug("Loading image: {}", fullImageUrl);
+                Image image = new Image(fullImageUrl);
+                images.add(image);
+            }
+
+            if (!images.isEmpty()) {
+                carouselImageView.setImage(images.getFirst());
+            } else {
+                logger.warn("No images loaded for annuncio: {}", annuncio.getTitolo());
+                carouselImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/noAnnuncioImage.png"))));
+            }
+        } else {
+            logger.warn("Annuncio or immaginiUrls is null or empty");
+            carouselImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/noAnnuncioImage.png"))));
+        }
+    }
+
+
+    private void updateScrollPanePrefWidth() {
+        detailsAnchorPane.widthProperty().addListener((observable, oldValue, newValue) ->
+                setAnnunciScrollPanePrefWidth(newValue.doubleValue()));
+
+        setAnnunciScrollPanePrefWidth(detailsAnchorPane.getWidth());
+    }
+
+    private void setAnnunciScrollPanePrefWidth(double newValue) {
+        double scrollPaneWidth = newValue * 0.55;
+        detailsScrollPane.setPrefWidth(scrollPaneWidth);
+    }
 
     public void setAnnuncio(AnnuncioDTO annuncio, ImmobileDTO immobile) {
         this.annuncio = annuncio;
         this.immobile = immobile;
         setAnnuncioDetails();
+        updateCarousel();
     }
 
     public void setToken(String token) {
@@ -98,7 +182,7 @@ public class AnnuncioDetailController extends AbstractController implements Init
     }
 
     private String getPiano() {
-        return switch(immobile.getPiano()) {
+        return switch (immobile.getPiano()) {
             case 0 -> "Piano terra";
             case 1 -> "Piano intermedio";
             case 2 -> "Ultimo piano";
@@ -119,8 +203,33 @@ public class AnnuncioDetailController extends AbstractController implements Init
         detailAnnuncioFlowPane.getChildren().add(ascensoreHBox);
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        tornaIndietroButton.setOnAction(event -> openDashboard(token, tornaIndietroButton));
+    private void updateMap() {
+        detailsAnchorPane.widthProperty().addListener((observable, oldValue, newValue) ->
+                setMappaImmobiliVBox(newValue.doubleValue()));
+
+        setMappaImmobiliVBox(fotoEMappaVBox.getWidth());
+
+        Platform.runLater(this::loadMap);
+    }
+
+    private void setMappaImmobiliVBox(double newValue) {
+        double vboxWidth = newValue * 0.4;
+        fotoEMappaVBox.setPrefWidth(vboxWidth);
+    }
+
+    private void loadMap() {
+        WebEngine webEngine = map.getEngine();
+        webEngine.load(Objects.requireNonNull(getClass().getResource("/com/dietiestates25ui/view/mapRisultatiAnnunci.html")).toExternalForm());
+
+        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == Worker.State.SUCCEEDED) {
+                //Platform.runLater(this::updateAnnunci); TODO
+            }
+        });
+
+        webEngine.setOnAlert(event -> {
+            String data = event.getData();
+            logger.info("Data from WebView: {}", data);
+        });
     }
 }

@@ -166,7 +166,7 @@ public abstract class AbstractController {
         loadScene("/com/dietiestates25ui/view/dashboard-view.fxml",
                 (fxmlLoader, stage) -> {
                     DashboardController dashboardController = fxmlLoader.getController();
-                    dashboardController.setStage(stage); // Chiama setStage anzichÃ© modificare currentStage
+                    dashboardController.setStage(stage); // Chiama setStage anziché modificare currentStage
                     dashboardController.setToken(token);
                 }, button, "/com/dietiestates25ui/styles/dashboard-style.css");
     }
