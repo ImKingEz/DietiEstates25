@@ -147,8 +147,6 @@ public class DashboardController extends AbstractController implements Initializ
 
     private ImmobileService immobileService = new ImmobileService();
 
-    private List<AnnuncioDTO> annunci;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
@@ -240,38 +238,26 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void handleCheckBoxFilter() {
-        ascensoreCheckBox.setOnAction(event -> {
-            if (ascensoreCheckBox.isSelected()) {
-                filtroAnnunci.setAscensore(true);
+        ascensoreCheckBoxOnAction();
+        portineriaCheckBoxOnAction();
+        climatizzazioneCheckBoxOnAction();
+        scuolaCheckBoxOnAction();
+        parcoCheckBoxOnAction();
+        trasportoPubblicoCheckBoxOnAction();
+    }
+
+    private void trasportoPubblicoCheckBoxOnAction() {
+        trasportoPubblicoCheckBox.setOnAction(event -> {
+            if (trasportoPubblicoCheckBox.isSelected()) {
+                filtroAnnunci.setVicinoTrasportoPubblico(true);
             } else {
-                filtroAnnunci.setAscensore(null);
+                filtroAnnunci.setVicinoTrasportoPubblico(null);
             }
             updateAnnunci();
         });
-        portineriaCheckBox.setOnAction(event -> {
-            if (portineriaCheckBox.isSelected()) {
-                filtroAnnunci.setPortineria(true);
-            } else {
-                filtroAnnunci.setPortineria(null);
-            }
-            updateAnnunci();
-        });
-        climatizzazioneCheckBox.setOnAction(event -> {
-            if (climatizzazioneCheckBox.isSelected()) {
-                filtroAnnunci.setClimatizzazione(true);
-            } else {
-                filtroAnnunci.setClimatizzazione(null);
-            }
-            updateAnnunci();
-        });
-        scuolaCheckBox.setOnAction(event -> {
-            if (scuolaCheckBox.isSelected()) {
-                filtroAnnunci.setVicinoScuola(true);
-            } else {
-                filtroAnnunci.setVicinoScuola(null);
-            }
-            updateAnnunci();
-        });
+    }
+
+    private void parcoCheckBoxOnAction() {
         parcoCheckBox.setOnAction(event -> {
             if (parcoCheckBox.isSelected()) {
                 filtroAnnunci.setVicinoParco(true);
@@ -280,11 +266,47 @@ public class DashboardController extends AbstractController implements Initializ
             }
             updateAnnunci();
         });
-        trasportoPubblicoCheckBox.setOnAction(event -> {
-            if (trasportoPubblicoCheckBox.isSelected()) {
-                filtroAnnunci.setVicinoTrasportoPubblico(true);
+    }
+
+    private void scuolaCheckBoxOnAction() {
+        scuolaCheckBox.setOnAction(event -> {
+            if (scuolaCheckBox.isSelected()) {
+                filtroAnnunci.setVicinoScuola(true);
             } else {
-                filtroAnnunci.setVicinoTrasportoPubblico(null);
+                filtroAnnunci.setVicinoScuola(null);
+            }
+            updateAnnunci();
+        });
+    }
+
+    private void climatizzazioneCheckBoxOnAction() {
+        climatizzazioneCheckBox.setOnAction(event -> {
+            if (climatizzazioneCheckBox.isSelected()) {
+                filtroAnnunci.setClimatizzazione(true);
+            } else {
+                filtroAnnunci.setClimatizzazione(null);
+            }
+            updateAnnunci();
+        });
+    }
+
+    private void portineriaCheckBoxOnAction() {
+        portineriaCheckBox.setOnAction(event -> {
+            if (portineriaCheckBox.isSelected()) {
+                filtroAnnunci.setPortineria(true);
+            } else {
+                filtroAnnunci.setPortineria(null);
+            }
+            updateAnnunci();
+        });
+    }
+
+    private void ascensoreCheckBoxOnAction() {
+        ascensoreCheckBox.setOnAction(event -> {
+            if (ascensoreCheckBox.isSelected()) {
+                filtroAnnunci.setAscensore(true);
+            } else {
+                filtroAnnunci.setAscensore(null);
             }
             updateAnnunci();
         });
@@ -482,10 +504,10 @@ public class DashboardController extends AbstractController implements Initializ
 
     private String getPianoText(int value) {
         return switch (value) {
-            case 0 -> "Piano terra";
-            case 1 -> "Piani intermedi";
-            case 2 -> "Ultimo piano";
-            default -> "Piano terra";
+            case 0 -> PIANO_TERRA;
+            case 1 -> PIANO_INTERMEDIO;
+            case 2 -> ULTIMO_PIANO;
+            default -> PIANO_TERRA;
         };
     }
 
@@ -534,9 +556,9 @@ public class DashboardController extends AbstractController implements Initializ
             item.setOnAction(event -> {
                 String selectedText = item.getText();
                 int value = switch (selectedText) {
-                    case "Piano terra" -> 0;
-                    case "Piani intermedi" -> 1;
-                    case "Ultimo piano" -> 2;
+                    case PIANO_TERRA -> 0;
+                    case PIANO_INTERMEDIO -> 1;
+                    case ULTIMO_PIANO -> 2;
                     default -> 0;
                 };
                 filterSetter.accept(value);
@@ -628,6 +650,7 @@ public class DashboardController extends AbstractController implements Initializ
 
     private void updateAnnunci() {
         try {
+            List<AnnuncioDTO> annunci;
             logger.info("Aggiornamento degli annunci per la città: {} con i seguenti filtri: {}", cittaDiRicerca, filtroAnnunci);
             annunci = annuncioService.searchAnnunciByCittaAndFiltro(cittaDiRicerca, filtroAnnunci, token);
 

@@ -41,6 +41,9 @@ public abstract class AbstractController {
     public static final int POPUP_DURATION = 3000;
     public static final int FADEINOUT_DURATION = 200;
     public static final int POPUP_PAUSE = POPUP_DURATION + FADEINOUT_DURATION * 2;
+    protected static final String PIANO_TERRA = "Piano terra";
+    protected static final String PIANO_INTERMEDIO = "Piano intermedio";
+    protected static final String ULTIMO_PIANO = "Ultimo piano";
 
     @FXML
     protected AnchorPane primaryAnchorPane;

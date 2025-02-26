@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,41 +33,32 @@ public class AgenziaService extends ApiService {
 
     public void registerAgenzia(AgenziaImmobiliare agenzia, File logoFile, String password) throws GenericServiceException {
         try {
+            logger.info("Registrazione dell'agenzia: {}", agenzia.getNome());
             MultipartBodyPublisher publisher = new MultipartBodyPublisher();
-            publisher.addFormDataPart("nome", agenzia.getNome());
-            publisher.addFormDataPart("partitaIva", agenzia.getPartitaIva());
-            publisher.addFormDataPart("indirizzo", agenzia.getIndirizzo());
-            publisher.addFormDataPart("email", agenzia.getEmail());
-            publisher.addFormDataPart("telefono", agenzia.getTelefono());
-            publisher.addFormDataPart("password", password);
-
-            if (logoFile != null) {
-                Path logoPath = Paths.get(logoFile.getAbsolutePath());
-                String mimeType = Files.probeContentType(logoPath);
-                publisher.addFilePart("logo", logoFile.getName(), mimeType, logoPath);
-            }
-
-            fetchCsrfToken();
+            addFormDataPartAndFilePartForPublisher(agenzia, logoFile, password, publisher);
 
             byte[] requestBody = publisher.build();
+            String contentType = publisher.getContentType();
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(getBaseUrl() + "/register"))
-                    .header("Content-Type", publisher.getContentType())
-                    .header(csrfTokenHeaderName, csrfTokenValue)
-                    .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))
-                    .build();
-
-            HttpResponse<String> response = executeRequest(request);
-            int statusCode = response.statusCode();
-
-            if (statusCode != 201) {
-                handleErrorResponse(statusCode, response);
-                throw new GenericServiceException("Registrazione fallita con status code: " + statusCode);
-            }
-
+            executeAndHandleMultipart("/register", "POST", requestBody, contentType, null, null);
+            logger.info("Agenzia registrata con successo.");
         } catch (Exception e) {
             throw handleGenericException(e.getMessage(), e);
+        }
+    }
+
+    private static void addFormDataPartAndFilePartForPublisher(AgenziaImmobiliare agenzia, File logoFile, String password, MultipartBodyPublisher publisher) throws IOException {
+        publisher.addFormDataPart("nome", agenzia.getNome());
+        publisher.addFormDataPart("partitaIva", agenzia.getPartitaIva());
+        publisher.addFormDataPart("indirizzo", agenzia.getIndirizzo());
+        publisher.addFormDataPart("email", agenzia.getEmail());
+        publisher.addFormDataPart("telefono", agenzia.getTelefono());
+        publisher.addFormDataPart("password", password);
+
+        if (logoFile != null) {
+            Path logoPath = Paths.get(logoFile.getAbsolutePath());
+            String mimeType = Files.probeContentType(logoPath);
+            publisher.addFilePart("logo", logoFile.getName(), mimeType, logoPath);
         }
     }
 
@@ -114,66 +103,6 @@ public class AgenziaService extends ApiService {
         } else {
             logGenericException(statusCode, response.body());
             throw new ApiClientException(response.body());
-        }
-    }
-
-    static class MultipartBodyPublisher {
-        private final String boundary;
-        private final java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
-        private static final String LINE_FEED = "\r\n";
-
-        public MultipartBodyPublisher() {
-            this.boundary = generateBoundary();
-        }
-
-        private String generateBoundary() {
-            SecureRandom random = new SecureRandom();
-            String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            StringBuilder buffer = new StringBuilder();
-            for (int i = 0; i < 20; i++) {
-                buffer.append(characters.charAt(random.nextInt(characters.length())));
-            }
-            return buffer.toString();
-        }
-
-        public void addFormDataPart(String name, String value) {
-            try {
-                outputStream.write(("--" + boundary + LINE_FEED).getBytes());
-                outputStream.write(("Content-Disposition: form-data; name=\"" + name + "\"" + LINE_FEED).getBytes());
-                outputStream.write(("Content-Type: text/plain; charset=UTF-8" + LINE_FEED).getBytes());
-                outputStream.write(LINE_FEED.getBytes());
-                outputStream.write(value.getBytes());
-                outputStream.write(LINE_FEED.getBytes());
-            } catch (IOException e) {
-                logger.error("Error while adding form data part: {}", e.getMessage());
-            }
-        }
-
-        public void addFilePart(String fieldName, String fileName, String mimeType, Path filePath) {
-            try {
-                outputStream.write(("--" + boundary + LINE_FEED).getBytes());
-                outputStream.write(("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + fileName + "\"" + LINE_FEED).getBytes());
-                outputStream.write(("Content-Type: " + mimeType + LINE_FEED).getBytes());
-                outputStream.write(("Content-Transfer-Encoding: binary" + LINE_FEED).getBytes());
-                outputStream.write(LINE_FEED.getBytes());
-                Files.copy(filePath, outputStream);
-                outputStream.write(LINE_FEED.getBytes());
-            } catch (IOException e) {
-                logger.error("Error while adding file part: {}", e.getMessage());
-            }
-        }
-
-        public byte[] build() {
-            try {
-                outputStream.write(("--" + boundary + "--" + LINE_FEED).getBytes());
-            } catch (IOException e) {
-                logger.error("Error while closing multipart body: {}", e.getMessage());
-            }
-            return outputStream.toByteArray();
-        }
-
-        public String getContentType() {
-            return "multipart/form-data; boundary=" + boundary;
         }
     }
 }

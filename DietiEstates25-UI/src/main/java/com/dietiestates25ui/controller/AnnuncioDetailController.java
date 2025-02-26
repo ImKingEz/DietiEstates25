@@ -1,11 +1,9 @@
 package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.AgenteDTO;
-import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
-import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.service.AgenteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
