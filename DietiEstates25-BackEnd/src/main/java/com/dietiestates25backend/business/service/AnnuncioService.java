@@ -2,7 +2,6 @@ package com.dietiestates25backend.business.service;
 
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.FiltroAnnunciDTO;
-import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.FotoImmobile;
 import com.dietiestates25backend.business.entity.Annuncio;
@@ -11,6 +10,7 @@ import com.dietiestates25backend.data.repository.AnnuncioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AnnuncioService {
@@ -29,6 +30,9 @@ public class AnnuncioService {
     private final AnnuncioRepository annuncioRepository;
 
     private final FotoImmobileRepository fotoImmobileRepository;
+
+    @Value("${file.upload.directory}")
+    private String uploadDirectory;
 
     @Autowired
     public AnnuncioService(AnnuncioRepository annuncioRepository, FotoImmobileRepository fotoImmobileRepository) {
@@ -105,7 +109,7 @@ public class AnnuncioService {
             fileExtension = originalFileName.substring(dotIndex);
         }
         String fileName = "image_" + numeroImmagine + "_" + annuncioId + fileExtension;
-        Path uploadDir = Paths.get("uploads/foto_immobili");
+        Path uploadDir = Paths.get(uploadDirectory);
 
         try {
             if (!Files.exists(uploadDir)) {
@@ -115,7 +119,7 @@ public class AnnuncioService {
             Path targetLocation = uploadDir.resolve(fileName);
             Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             logger.info("Saved image to: {}", targetLocation.toAbsolutePath());
-            return "/uploads/foto_immobili/" + fileName;
+            return "/" + uploadDirectory + "/" + fileName;
         } catch (IOException e) {
             throw new IOException("Could not save image: " + e.getMessage(), e);
         }
@@ -138,20 +142,21 @@ public class AnnuncioService {
         );
     }
 
-    public List<Annuncio> findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(String citta, String tipoAnnuncio, String tipologiaImmobile) {
-        logger.debug("Ricerca annunci per città : {}, tipo: {}, tipologia: {}", citta, tipoAnnuncio, tipologiaImmobile);
-        return annuncioRepository.findByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
+    public List<Annuncio> findAnnunciByCittaAndFiltri(FiltroAnnunciDTO filtro, String citta) {
+        logger.debug("Ricerca annunci per città : {}, filtro: {}", citta, filtro);
+        return annuncioRepository.findByFiltro(filtro, citta);
     }
 
-    public List<Annuncio> findAnnunciInRadius(MapSearchDTO mapSearchDTO, FiltroAnnunciDTO filtro) {
-        logger.debug("Ricerca annunci nel raggio: {}, {}, {}, tipo: {}, tipologia: {}",
-                mapSearchDTO.getLatitude(), mapSearchDTO.getLongitude(), mapSearchDTO.getRadius(), filtro.getTipo(), filtro.getTipologia());
-        return annuncioRepository.findAnnunciInRadius(
-                mapSearchDTO.getLatitude(),
-                mapSearchDTO.getLongitude(),
-                mapSearchDTO.getRadius(),
-                filtro.getTipo(),
-                filtro.getTipologia()
-        );
+    public AnnuncioDTO getAnnuncioByIdImmobile(Long id) {
+        Optional<Annuncio> annuncioOptional = annuncioRepository.findByIdImmobile(id);
+
+        if (annuncioOptional.isEmpty()) {
+            logger.warn("Annuncio non trovato con ID immobile: {}", id);
+            throw new IllegalArgumentException("Annuncio non trovato con ID immobile: " + id);
+        }
+
+        Annuncio annuncio = annuncioOptional.get();
+
+        return convertToDTO(annuncio);
     }
 }

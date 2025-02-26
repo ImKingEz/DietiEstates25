@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.web.WebView?>
+
+<AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.AnnuncioDetailController">
+    <GridPane prefHeight="80.0" prefWidth="1280.0" styleClass="navbarGridPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="520" minWidth="10.0" prefWidth="520" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="869.3333129882812" minWidth="10.0" prefWidth="594.6666366577149" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="520" minWidth="10.0" prefWidth="520" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="80.0" minHeight="80.0" prefHeight="80.0" vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints />
+            <RowConstraints />
+        </rowConstraints>
+        <HBox fx:id="backgroundNavbarRow" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2147483647" />
+        <ImageView fx:id="logo" fitHeight="80.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../images/logo2-removebg.png" />
+        </ImageView>
+        <HBox fx:id="profileHBox" alignment="CENTER_RIGHT" GridPane.columnIndex="2">
+            <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
+                <graphic>
+                    <HBox alignment="CENTER">
+                        <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/userIcon.png" />
+                            </image>
+                        </ImageView>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/arrowDown.png" />
+                            </image>
+                        </ImageView>
+                    </HBox>
+                </graphic>
+                <HBox.margin>
+                    <Insets right="20.0" />
+                </HBox.margin>
+            </Button>
+        </HBox>
+        <AnchorPane fx:id="detailsAnchorPane" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+            <children>
+                <ScrollPane fx:id="detailsScrollPane" hbarPolicy="NEVER" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
+                    <content>
+                        <HBox alignment="CENTER" spacing="40.0">
+                            <children>
+                                <VBox fx:id="detailsVBox" maxWidth="700.0" prefWidth="700.0" spacing="20.0">
+                                    <children>
+                                        <VBox spacing="8.0">
+                                            <children>
+                                                <Text fx:id="titoloText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="Titolo" />
+                                                <Text fx:id="prezzoText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Prezzo" />
+                                            </children>
+                                        </VBox>
+                                        <VBox fx:id="caratteristicheVBox" spacing="10.0">
+                                            <children>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Caratteristiche" />
+                                                <FlowPane fx:id="detailAnnuncioFlowPane" minWidth="600.0" styleClass="detailAnnuncioFlowPane">
+                                                    <children>
+                                                        <HBox styleClass="detailWithIconHBox">
+                                                            <children>
+                                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                                    <image>
+                                                                        <Image url="@../images/superficieIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                                <Text fx:id="superficieText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Superficie" />
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox styleClass="detailWithIconHBox">
+                                                            <children>
+                                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                                    <image>
+                                                                        <Image url="@../images/roomIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                                <Text fx:id="localiText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Locali" />
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox styleClass="detailWithIconHBox">
+                                                            <children>
+                                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                                    <image>
+                                                                        <Image url="@../images/bathroomIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                                <Text fx:id="bagniText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Bagni" />
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox styleClass="detailWithIconHBox">
+                                                            <children>
+                                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                                    <image>
+                                                                        <Image url="@../images/floorIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                                <Text fx:id="pianoText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Piano" />
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox styleClass="detailWithIconHBox">
+                                                            <children>
+                                                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
+                                                                    <image>
+                                                                        <Image url="@../images/energyIcon.png" />
+                                                                    </image>
+                                                                </ImageView>
+                                                                <Text fx:id="classeEnergeticaText" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textDetailAnnuncio" text="Classe" />
+                                                            </children>
+                                                        </HBox>
+                                                    </children>
+                                                </FlowPane>
+                                            </children>
+                                        </VBox>
+                              <Label fx:id="descrizioneText" maxHeight="650.0" styleClass="textDetailAnnuncio" text="Descrizione" wrapText="true" />
+                              <Label fx:id="emailText" styleClass="textDetailAnnuncio" text="Info contatti" wrapText="true" />
+                                    </children>
+                                </VBox>
+                                <VBox fx:id="fotoEMappaVBox" alignment="TOP_CENTER" prefWidth="500.0" spacing="20.0">
+                                    <children>
+                                        <HBox fx:id="carouselHBox" alignment="CENTER" prefHeight="300.0">
+                                            <Button fx:id="prevButton" mnemonicParsing="false">
+                                                <graphic>
+                                                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                                        <image>
+                                                            <Image url="@../images/arrowLeft.png" />
+                                                        </image>
+                                                    </ImageView>
+                                                </graphic>
+                                                <styleClass>
+                                                    <String fx:value="generalButton" />
+                                                    <String fx:value="arrowButton" />
+                                                </styleClass>
+                                            </Button>
+                                            <StackPane prefHeight="300.0" styleClass="annuncioImageStackPane">
+                                                <ImageView fx:id="carouselImageView" fitHeight="300.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true" />
+                                            </StackPane>
+                                            <Button fx:id="nextButton" mnemonicParsing="false">
+                                                <graphic>
+                                                    <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                                        <image>
+                                                            <Image url="@../images/arrowRight.png" />
+                                                        </image>
+                                                    </ImageView>
+                                                </graphic>
+                                                <styleClass>
+                                                    <String fx:value="generalButton" />
+                                                    <String fx:value="arrowButton" />
+                                                </styleClass>
+                                            </Button>
+                                        </HBox>
+                                        <WebView fx:id="map" prefHeight="240.0" prefWidth="-1.0" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </content>
+                </ScrollPane>
+                <Button fx:id="tornaIndietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />
+            </children>
+        </AnchorPane>
+    </GridPane>
+</AnchorPane>

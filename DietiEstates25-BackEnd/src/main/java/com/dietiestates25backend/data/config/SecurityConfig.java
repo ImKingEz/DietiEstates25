@@ -67,6 +67,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/register", "/api/admin/login").permitAll()
                 .requestMatchers("/api/agenzie/register").permitAll()
                 .requestMatchers("/api/agenti/login").permitAll()
+                .requestMatchers("/uploads/foto_immobili/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 .anyRequest().authenticated()
         );

@@ -20,6 +20,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.SecureRandom;
 
 public abstract class ApiService {
 
@@ -82,6 +85,53 @@ public abstract class ApiService {
     }
 
     protected <D> D executeAndHandle(String path, String method, Object body, String token, Class<D> dtoClass) throws GenericServiceException {
+        return executeAndHandleRequest(
+                path,
+                method,
+                body,
+                token,
+                APPLICATION_JSON,
+                dtoClass,
+                (requestBuilder, requestBody) -> {
+                    switch (method.toUpperCase()) {
+                        case "POST":
+                            return requestBuilder.POST(HttpRequest.BodyPublishers.ofString((String) requestBody));
+                        case "PUT":
+                            return requestBuilder.PUT(HttpRequest.BodyPublishers.ofString((String) requestBody));
+                        case "GET":
+                            return requestBuilder.GET();
+                        default:
+                            throw new IllegalArgumentException("Metodo HTTP non supportato: " + method);
+                    }
+                }
+        );
+    }
+
+    protected <D> D executeAndHandleMultipart(String path, String method, byte[] body, String contentType, String token, Class<D> dtoClass) throws GenericServiceException {
+        if (!method.equalsIgnoreCase("POST")) {
+            throw new IllegalArgumentException("Metodo HTTP non supportato: " + method);
+        }
+
+        return executeAndHandleRequest(
+                path,
+                method,
+                body,
+                token,
+                contentType,
+                dtoClass,
+                (requestBuilder, requestBody) -> requestBuilder.POST(HttpRequest.BodyPublishers.ofByteArray((byte[]) requestBody))
+        );
+    }
+
+    private <D> D executeAndHandleRequest(
+            String path,
+            String method,
+            Object body,
+            String token,
+            String contentType,
+            Class<D> dtoClass,
+            RequestConfigurer requestConfigurer
+    ) throws GenericServiceException {
         try {
             if (!method.equalsIgnoreCase("GET")) {
                 fetchCsrfToken();
@@ -89,59 +139,62 @@ public abstract class ApiService {
 
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + path))
-                    .header(CONTENT_TYPE, APPLICATION_JSON);
-
-            if (csrfTokenValue != null && !csrfTokenValue.isEmpty() && csrfTokenHeaderName != null && !csrfTokenHeaderName.isEmpty()) {
-                requestBuilder.header(csrfTokenHeaderName, csrfTokenValue);
-            }
+                    .header(CONTENT_TYPE, contentType)
+                    .header(csrfTokenHeaderName, csrfTokenValue);
 
             if (token != null && !token.isEmpty()) {
                 requestBuilder.header(AUTHORIZATION, BEARER + token);
             }
 
-            HttpRequest request;
-            String jsonBody;
-            switch (method.toUpperCase()) {
-                case "POST":
-                    jsonBody = objectMapper.writeValueAsString(body);
-                    requestBuilder.POST(HttpRequest.BodyPublishers.ofString(jsonBody));
-                    break;
-                case "PUT":
-                    jsonBody = objectMapper.writeValueAsString(body);
-                    requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(jsonBody));
-                    break;
-                case "GET":
-                    requestBuilder.GET();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Metodo HTTP non supportato: " + method);
+            Object requestBody = null;
+            if (body != null && contentType.equals(APPLICATION_JSON)) {
+                requestBody = objectMapper.writeValueAsString(body);
+            } else {
+                requestBody = body;
             }
 
-            request = requestBuilder.build();
+            requestConfigurer.configure(requestBuilder, requestBody);
 
+            HttpRequest request = requestBuilder.build();
             HttpResponse<String> response = executeRequest(request);
             int statusCode = response.statusCode();
 
-            return getDataFromStatusCode(dtoClass, statusCode, response);
+            return handleResponseStatus(response, statusCode, dtoClass);
 
         } catch (Exception e) {
             throw handleGenericException(e.getMessage(), e);
         }
     }
 
-    private <D> D getDataFromStatusCode(Class<D> dtoClass, int statusCode, HttpResponse<String> response) throws ApiClientException, GenericServiceException, AuthenticationException, ServiceUnavailableException, ResourceNotFoundException {
-        if (statusCode >= 200 && statusCode < 300) {
-            ApiResponse<D> apiResponse = handleResponse(response, dtoClass);
-            if (apiResponse != null && apiResponse.isSuccess()) {
-                return apiResponse.getData();
-            } else {
-                String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto.";
-                throw new GenericServiceException(errorMessage);
-            }
-        } else {
+    private <D> D handleResponseStatus(HttpResponse<String> response, int statusCode, Class<D> dtoClass) throws GenericServiceException, AuthenticationException, ApiClientException, ServiceUnavailableException, ResourceNotFoundException {
+        if (!isSuccessfulStatusCode(statusCode)) {
             handleErrorResponse(statusCode, response);
             throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
         }
+
+        return processSuccessfulResponse(response, dtoClass);
+    }
+
+    private boolean isSuccessfulStatusCode(int statusCode) {
+        return statusCode >= 200 && statusCode < 300;
+    }
+
+    private <D> D processSuccessfulResponse(HttpResponse<String> response, Class<D> dtoClass) throws GenericServiceException, ApiClientException {
+        if (dtoClass == null) {
+            return null;
+        }
+
+        ApiResponse<D> apiResponse = handleResponse(response, dtoClass);
+        return extractDataFromApiResponse(apiResponse);
+    }
+
+    private <D> D extractDataFromApiResponse(ApiResponse<D> apiResponse) throws GenericServiceException {
+        if (apiResponse == null || !apiResponse.isSuccess()) {
+            String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto.";
+            throw new GenericServiceException(errorMessage);
+        }
+
+        return apiResponse.getData();
     }
 
     protected abstract void handleErrorResponse(int statusCode, HttpResponse<String> response) throws AuthenticationException, ApiClientException, ServiceUnavailableException, ResourceNotFoundException;
@@ -266,5 +319,70 @@ public abstract class ApiService {
         if (logger.isWarnEnabled()) {
             logger.warn("Impossibile recuperare i dettagli dell'utente. Status code: {}", statusCode);
         }
+    }
+
+    static class MultipartBodyPublisher {
+        private final String boundary;
+        private final java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
+        private static final String LINE_FEED = "\r\n";
+
+        public MultipartBodyPublisher() {
+            this.boundary = generateBoundary();
+        }
+
+        private String generateBoundary() {
+            SecureRandom random = new SecureRandom();
+            String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            StringBuilder buffer = new StringBuilder();
+            for (int i = 0; i < 20; i++) {
+                buffer.append(characters.charAt(random.nextInt(characters.length())));
+            }
+            return buffer.toString();
+        }
+
+        public void addFormDataPart(String name, String value) {
+            try {
+                outputStream.write(("--" + boundary + LINE_FEED).getBytes());
+                outputStream.write(("Content-Disposition: form-data; name=\"" + name + "\"" + LINE_FEED).getBytes());
+                outputStream.write(("Content-Type: text/plain; charset=UTF-8" + LINE_FEED).getBytes());
+                outputStream.write(LINE_FEED.getBytes());
+                outputStream.write(value.getBytes());
+                outputStream.write(LINE_FEED.getBytes());
+            } catch (IOException e) {
+                logger.error("Error while adding form data part: {}", e.getMessage());
+            }
+        }
+
+        public void addFilePart(String fieldName, String fileName, String mimeType, Path filePath) {
+            try {
+                outputStream.write(("--" + boundary + LINE_FEED).getBytes());
+                outputStream.write(("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + fileName + "\"" + LINE_FEED).getBytes());
+                outputStream.write(("Content-Type: " + mimeType + LINE_FEED).getBytes());
+                outputStream.write(("Content-Transfer-Encoding: binary" + LINE_FEED).getBytes());
+                outputStream.write(LINE_FEED.getBytes());
+                Files.copy(filePath, outputStream);
+                outputStream.write(LINE_FEED.getBytes());
+            } catch (IOException e) {
+                logger.error("Error while adding file part: {}", e.getMessage());
+            }
+        }
+
+        public byte[] build() {
+            try {
+                outputStream.write(("--" + boundary + "--" + LINE_FEED).getBytes());
+            } catch (IOException e) {
+                logger.error("Error while closing multipart body: {}", e.getMessage());
+            }
+            return outputStream.toByteArray();
+        }
+
+        public String getContentType() {
+            return "multipart/form-data; boundary=" + boundary;
+        }
+    }
+
+    @FunctionalInterface
+    private interface RequestConfigurer {
+        HttpRequest.Builder configure(HttpRequest.Builder requestBuilder, Object requestBody) throws IOException;
     }
 }

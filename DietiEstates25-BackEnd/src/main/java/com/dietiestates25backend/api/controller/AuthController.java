@@ -4,7 +4,6 @@ import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.*;
-import com.dietiestates25backend.business.entity.Utente;
 import com.dietiestates25backend.business.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

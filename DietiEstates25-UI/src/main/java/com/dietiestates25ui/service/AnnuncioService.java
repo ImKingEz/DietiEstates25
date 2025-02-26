@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -20,52 +21,28 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.SecureRandom;
 import java.util.List;
 
 public class AnnuncioService extends ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(AnnuncioService.class);
 
-    public void salvaAnnuncio(Annuncio annuncio, String token, List<File> selectedImageList) throws GenericServiceException {
+    public AnnuncioDTO salvaAnnuncio(Annuncio annuncio, String token, List<File> selectedImageList) throws GenericServiceException {
         try {
-            AnnuncioService.MultipartBodyPublisher publisher = new AnnuncioService.MultipartBodyPublisher();
+            logger.info("Salvataggio dell'annuncio: {}", annuncio.getTitolo());
+            MultipartBodyPublisher publisher = new MultipartBodyPublisher();
             addFormDataPartAndFilePartForPublisher(annuncio, selectedImageList, publisher);
 
-            fetchCsrfToken();
-
             byte[] requestBody = publisher.build();
+            String contentType = publisher.getContentType();
 
-            HttpRequest request;
-            request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/annunci/create"))
-                    .header(CONTENT_TYPE, publisher.getContentType())
-                    .header("Authorization", "Bearer " + token)
-                    .header(csrfTokenHeaderName, csrfTokenValue)
-                    .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))
-                    .build();
-
-            HttpResponse<String> response = executeRequest(request);
-            int statusCode = response.statusCode();
-
-            if (statusCode == 201) {
-                ApiResponse<AnnuncioDTO> apiResponse = handleResponse(response, AnnuncioDTO.class);
-                if (apiResponse != null && apiResponse.isSuccess()) {
-                    logger.info("Annuncio salvato correttamente!");
-                } else {
-                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore durante il salvataggio dell'annuncio.";
-                    throw new GenericServiceException(errorMessage);
-                }
-            } else {
-                handleErrorResponse(statusCode, response);
-                throw new GenericServiceException("Salvataggio annuncio fallito con status code: " + statusCode + ". Errore non specificato dal server.");
-            }
+            return executeAndHandleMultipart("/create", "POST", requestBody, contentType, token, AnnuncioDTO.class);
         } catch (Exception e) {
             throw handleGenericException("Errore durante il salvataggio dell'annuncio: " + e.getMessage(), e);
         }
     }
 
-    private static void addFormDataPartAndFilePartForPublisher(Annuncio annuncio, List<File> selectedImageList, AnnuncioService.MultipartBodyPublisher publisher) throws IOException {
+    private void addFormDataPartAndFilePartForPublisher(Annuncio annuncio, List<File> selectedImageList, MultipartBodyPublisher publisher) throws IOException {
         publisher.addFormDataPart("titolo", annuncio.getTitolo());
         publisher.addFormDataPart("tipo", annuncio.getTipo());
         publisher.addFormDataPart("prezzo", String.valueOf(annuncio.getPrezzo()));
@@ -89,27 +66,83 @@ public class AnnuncioService extends ApiService {
 
     public List<AnnuncioDTO> searchAnnunciByCittaAndFiltro(String citta, FiltroAnnunci filtro, String token) throws GenericServiceException {
         try {
-            fetchCsrfToken();
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String filtroJson = objectMapper.writeValueAsString(filtro);
-
             String encodedCitta = URLEncoder.encode(citta, StandardCharsets.UTF_8);
-            String uri = getBaseUrl() + "/search?citta=" + encodedCitta;
-
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(uri))
-                    .header(CONTENT_TYPE, "application/json")
-                    .header(AUTHORIZATION, BEARER + token)
-                    .header(csrfTokenHeaderName, csrfTokenValue)
-                    .POST(HttpRequest.BodyPublishers.ofString(filtroJson))
-                    .build();
-
-            return getAnnuncioDTOList(request, objectMapper);
+            String path = "/search?citta=" + encodedCitta;
+            return executeAndHandleSearch(path, "POST", filtro, token, new TypeReference<List<AnnuncioDTO>>() {});
         } catch (Exception e) {
             throw handleGenericException("Errore durante la ricerca degli annunci: " + e.getMessage(), e);
         }
+    }
+
+    private <T> T executeAndHandleSearch(String path, String method, Object body, String token, TypeReference<T> typeReference) throws GenericServiceException {
+        try {
+            if (!method.equalsIgnoreCase("GET")) {
+                fetchCsrfToken();
+            }
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                    .uri(URI.create(getBaseUrl() + path))
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
+                    .header(csrfTokenHeaderName, csrfTokenValue);
+
+            if (token != null && !token.isEmpty()) {
+                requestBuilder.header(AUTHORIZATION, BEARER + token);
+            }
+
+            HttpRequest request;
+            String jsonBody;
+            switch (method.toUpperCase()) {
+                case "POST":
+                    jsonBody = objectMapper.writeValueAsString(body);
+                    requestBuilder.POST(HttpRequest.BodyPublishers.ofString(jsonBody));
+                    break;
+                case "PUT":
+                    jsonBody = objectMapper.writeValueAsString(body);
+                    requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(jsonBody));
+                    break;
+                case "GET":
+                    requestBuilder.GET();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Metodo HTTP non supportato: " + method);
+            }
+
+            request = requestBuilder.build();
+
+            HttpResponse<String> response = executeRequest(request);
+            int statusCode = response.statusCode();
+
+            if (statusCode >= 200 && statusCode < 300) {
+                return handleResponseSearch(response, typeReference);
+            } else {
+                handleErrorResponse(statusCode, response);
+                throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
+            }
+
+        } catch (Exception e) {
+            throw handleGenericException(e.getMessage(), e);
+        }
+    }
+
+    private <T> T handleResponseSearch(HttpResponse<String> response, TypeReference<T> typeReference) throws GenericServiceException, ApiClientException {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ApiResponse<?> apiResponse = objectMapper.readValue(response.body(), ApiResponse.class);
+            if (apiResponse != null && apiResponse.isSuccess()) {
+                Object data = apiResponse.getData();
+                String dataJson = objectMapper.writeValueAsString(data);
+                return objectMapper.readValue(dataJson, typeReference);
+            } else {
+                String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto.";
+                throw new GenericServiceException(errorMessage);
+            }
+        } catch (IOException e) {
+            logger.error("Errore durante la lettura della risposta JSON: ", e);
+            throw new ApiClientException("Risposta del server non valida. Riprova più tardi.");
+        }
+    }
+
+    public AnnuncioDTO getAnnuncioByIdImmobile(long idImmobile, String token) throws GenericServiceException {
+        return executeAndHandle("/immobile/" + idImmobile, "GET", null, token, AnnuncioDTO.class);
     }
 
     private List<AnnuncioDTO> getAnnuncioDTOList(HttpRequest request, ObjectMapper objectMapper) throws ServiceUnavailableException, ApiClientException, GenericServiceException {
@@ -182,63 +215,5 @@ public class AnnuncioService extends ApiService {
         }
     }
 
-    static class MultipartBodyPublisher {
-        private final String boundary;
-        private final java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
-        private static final String LINE_FEED = "\r\n";
 
-        public MultipartBodyPublisher() {
-            this.boundary = generateBoundary();
-        }
-
-        private String generateBoundary() {
-            SecureRandom random = new SecureRandom();
-            String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            StringBuilder buffer = new StringBuilder();
-            for (int i = 0; i < 20; i++) {
-                buffer.append(characters.charAt(random.nextInt(characters.length())));
-            }
-            return buffer.toString();
-        }
-
-        public void addFormDataPart(String name, String value) {
-            try {
-                outputStream.write(("--" + boundary + LINE_FEED).getBytes());
-                outputStream.write(("Content-Disposition: form-data; name=\"" + name + "\"" + LINE_FEED).getBytes());
-                outputStream.write(("Content-Type: text/plain; charset=UTF-8" + LINE_FEED).getBytes());
-                outputStream.write(LINE_FEED.getBytes());
-                outputStream.write(value.getBytes());
-                outputStream.write(LINE_FEED.getBytes());
-            } catch (IOException e) {
-                logger.error("Error while adding form data part: {}", e.getMessage());
-            }
-        }
-
-        public void addFilePart(String fieldName, String fileName, String mimeType, Path filePath) {
-            try {
-                outputStream.write(("--" + boundary + LINE_FEED).getBytes());
-                outputStream.write(("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + fileName + "\"" + LINE_FEED).getBytes());
-                outputStream.write(("Content-Type: " + mimeType + LINE_FEED).getBytes());
-                outputStream.write(("Content-Transfer-Encoding: binary" + LINE_FEED).getBytes());
-                outputStream.write(LINE_FEED.getBytes());
-                Files.copy(filePath, outputStream);
-                outputStream.write(LINE_FEED.getBytes());
-            } catch (IOException e) {
-                logger.error("Error while adding file part: {}", e.getMessage());
-            }
-        }
-
-        public byte[] build() {
-            try {
-                outputStream.write(("--" + boundary + "--" + LINE_FEED).getBytes());
-            } catch (IOException e) {
-                logger.error("Error while closing multipart body: {}", e.getMessage());
-            }
-            return outputStream.toByteArray();
-        }
-
-        public String getContentType() {
-            return "multipart/form-data; boundary=" + boundary;
-        }
-    }
 }

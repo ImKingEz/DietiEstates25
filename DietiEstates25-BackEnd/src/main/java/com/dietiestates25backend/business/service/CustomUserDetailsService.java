@@ -26,6 +26,12 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
+    protected static final String READ_AGENTE = "READ_AGENTE";
+    protected static final String READ_AGENZIA = "READ_AGENZIA";
+    protected static final String ROLE_UTENTE = "ROLE_UTENTE";
+    protected static final String ROLE_AGENTE = "ROLE_AGENTE";
+    protected static final String ROLE_ADMIN = "ROLE_ADMIN";
+    protected static final String WRITE_AGENTE = "WRITE_AGENTE";
 
     private final UtenteRepository utenteRepository;
     private final AgenteRepository agenteRepository;
@@ -48,26 +54,28 @@ public class CustomUserDetailsService implements UserDetailsService {
         Optional<Utente> utente = utenteRepository.findByEmail(username);
         if (utente.isPresent()) {
             logger.debug("CustomUserDetailsService.loadUserByUsername: Found utente: {}", username);
-            authorities.add(new SimpleGrantedAuthority("ROLE_UTENTE"));
+            authorities.add(new SimpleGrantedAuthority(ROLE_UTENTE));
+            authorities.add(new SimpleGrantedAuthority(READ_AGENTE));
+            authorities.add(new SimpleGrantedAuthority(READ_AGENZIA));
             return new User(utente.get().getEmail(), utente.get().getPassword(), authorities);
         }
 
         Optional<AgenteImmobiliare> agente = agenteRepository.findByEmail(username);
         if (agente.isPresent()) {
             logger.debug("CustomUserDetailsService.loadUserByUsername: Found agente: {}", username);
-            authorities.add(new SimpleGrantedAuthority("ROLE_AGENTE"));
-            authorities.add(new SimpleGrantedAuthority("READ_AGENZIA"));
-            authorities.add(new SimpleGrantedAuthority("READ_AGENTE"));
+            authorities.add(new SimpleGrantedAuthority(ROLE_AGENTE));
+            authorities.add(new SimpleGrantedAuthority(READ_AGENZIA));
+            authorities.add(new SimpleGrantedAuthority(READ_AGENTE));
             return new User(agente.get().getEmail(), agente.get().getPassword(), authorities);
         }
 
         Optional<Amministratore> amministratore = amministratoreRepository.findByEmail(username);
         if (amministratore.isPresent()) {
             logger.debug("CustomUserDetailsService.loadUserByUsername: Found amministratore: {}", username);
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            authorities.add(new SimpleGrantedAuthority("READ_AGENZIA"));
-            authorities.add(new SimpleGrantedAuthority("WRITE_AGENTE"));
-            authorities.add(new SimpleGrantedAuthority("READ_AGENTE"));
+            authorities.add(new SimpleGrantedAuthority(ROLE_ADMIN));
+            authorities.add(new SimpleGrantedAuthority(READ_AGENZIA));
+            authorities.add(new SimpleGrantedAuthority(WRITE_AGENTE));
+            authorities.add(new SimpleGrantedAuthority(READ_AGENTE));
             return new User(amministratore.get().getEmail(), amministratore.get().getPassword(), authorities);
         }
 

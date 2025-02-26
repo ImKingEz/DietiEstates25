@@ -3,8 +3,6 @@ package com.dietiestates25backend.api.controller;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25backend.business.service.ImmobileService;
-import com.dietiestates25backend.business.service.AuthService;
-import com.dietiestates25backend.business.service.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,7 @@ public class ImmobileController extends BaseController {
     private final ImmobileService immobileService;
 
     @Autowired
-    public ImmobileController(ImmobileService immobileService, AuthService authService, JwtService jwtService) {
+    public ImmobileController(ImmobileService immobileService) {
         this.immobileService = immobileService;
     }
 

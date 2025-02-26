@@ -47,6 +47,10 @@ public class AgenteService extends ApiService {
         return executeAndHandle("/me", "GET", null, token, AgenteDTO.class);
     }
 
+    public AgenteDTO getAgenteDetails(long idAgente, String token) throws GenericServiceException {
+        return executeAndHandle("/" + idAgente, "GET", null, token, AgenteDTO.class);
+    }
+
     @Override
     protected void handleErrorResponse(int statusCode, HttpResponse<String> response) throws AuthenticationException, ApiClientException, ServiceUnavailableException, ResourceNotFoundException {
         switch (statusCode) {

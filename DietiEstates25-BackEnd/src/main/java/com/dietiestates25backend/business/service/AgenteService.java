@@ -111,4 +111,10 @@ public class AgenteService {
         AgenteImmobiliare agente = agenteRepository.findByEmail(emailLowerCase).orElseThrow(()->new EntityNotFoundException("Agente not found with email: " + email));
         return new AgenteDTO(agente.getId(), agente.getIdAgenzia(), agente.getNome(), agente.getCognome(), agente.getDataDiNascita(), agente.getSesso(), agente.getEmail());
     }
+
+    @Transactional(readOnly = true)
+    public AgenteDTO getAgenteDetails(long idAgente){
+        AgenteImmobiliare agente = agenteRepository.findById(idAgente).orElseThrow(()->new EntityNotFoundException("Agente not found with id: " + idAgente));
+        return new AgenteDTO(agente.getId(), agente.getIdAgenzia(), agente.getNome(), agente.getCognome(), agente.getDataDiNascita(), agente.getSesso(), agente.getEmail());
+    }
 }

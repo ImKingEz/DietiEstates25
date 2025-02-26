@@ -41,6 +41,9 @@ public abstract class AbstractController {
     public static final int POPUP_DURATION = 3000;
     public static final int FADEINOUT_DURATION = 200;
     public static final int POPUP_PAUSE = POPUP_DURATION + FADEINOUT_DURATION * 2;
+    protected static final String PIANO_TERRA = "Piano terra";
+    protected static final String PIANO_INTERMEDIO = "Piano intermedio";
+    protected static final String ULTIMO_PIANO = "Ultimo piano";
 
     @FXML
     protected AnchorPane primaryAnchorPane;
@@ -57,16 +60,16 @@ public abstract class AbstractController {
 
     @FXML
     protected Button providerBackButton;
-    
+
     @FXML
     protected TextField passwordTextField;
-    
+
     @FXML
     protected HBox passwordHBox;
-    
+
     @FXML
     protected PasswordField passwordPasswordField;
-    
+
     @FXML
     protected ImageView eyeImageView;
 
@@ -214,7 +217,7 @@ public abstract class AbstractController {
     public interface SceneConfigurator {
         void configure(FXMLLoader fxmlLoader, Stage stage);
     }
-    
+
     protected void passwordTextFieldInitializer(String classOfTextField) {
         passwordTextField = new TextField();
         passwordTextField.getStyleClass().add(classOfTextField);

@@ -40,6 +40,11 @@
     -fx-spacing: 10;
 }
 
+.priceRangeVBox {
+    -fx-spacing: 5;
+    -fx-padding: 10;
+}
+
 .arrowButton {
     -fx-min-width: 30px;
     -fx-min-height: 30px;
@@ -69,6 +74,16 @@
     -fx-spacing: 8;
 }
 
+.filterCustomMenuItem {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+}
+
+.filterCustomMenuItem:hover {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+}
+
 .navbarGridPane {
     -fx-background-color: transparent;
     -fx-effect: dropshadow( gaussian , rgba(0, 0, 0, 0.1) , 5 , 0 , 0 , 2 );
@@ -78,12 +93,8 @@
     -fx-background-color: #c0dff3;
 }
 
-#primaryHBox {
-    -fx-padding: 10;
-}
-
-#primaryVBox {
-    -fx-padding: 20 10 20 10;
+#listaAnnunciAnchorPane {
+    -fx-padding: 20 20 5 20;
 }
 
 #listaAnnunciVBox {
@@ -95,13 +106,21 @@
     -fx-border-radius: 5;
     -fx-border-color: #2e2e2e;
     -fx-alignment: center;
+    -fx-background-color: white;
 }
 
 .annuncioImageStackPane {
     -fx-border-color: transparent;
-    -fx-background-color: #2e2e2e;
+    -fx-background-color: transparent;
     -fx-border-radius: 5 0 0 5;
     -fx-background-radius: 5 0 0 5;
+    -fx-pref-height: 200;
+    -fx-max-height: 200;
+    -fx-min-height: 200;
+    -fx-pref-width: 200;
+    -fx-max-width: 200;
+    -fx-min-width: 200;
+    -fx-alignment: center;
 }
 
 .annuncioImageView {
@@ -132,14 +151,14 @@
 
 .detailAnnuncioFlowPane {
     -fx-spacing: 50;
-    -fx-pref-width: 350;
+    -fx-pref-width: 400;
     -fx-vgap: 3;
 }
 
 .detailWithIconHBox {
     -fx-spacing: 10;
     -fx-alignment: center-left;
-    -fx-pref-width: 150;
+    -fx-pref-width: 200;
 }
 
 .textDetailAnnuncio {
@@ -152,6 +171,5 @@
 }
 
 .annuncioButtonsHBox {
-    -fx-alignment: center;
     -fx-spacing: 20;
 }
