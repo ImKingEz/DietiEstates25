@@ -65,15 +65,9 @@ public class AgenteDashboardController extends AbstractController implements Ini
 //            System.out.println("Statistiche inserzioni cliccato!");
 //        });
 //
-//        homepageButton.setOnAction(event -> {
-//            // Azione per "Vai alla Homepage"
-//            System.out.println("Vai alla Homepage cliccato!");
-//        });
-//
-//        tornaLoginButton.setOnAction(event -> {
-//            // Azione per "Torna all'area login"
-//            System.out.println("Torna all'area login cliccato!");
-//        });
+        homepageButton.setOnAction(event -> openHomepage(token, homepageButton));
+
+        tornaLoginButton.setOnAction(event -> openLoginPage());
     }
 
     public void setAgente(AgenteImmobiliare agente) {

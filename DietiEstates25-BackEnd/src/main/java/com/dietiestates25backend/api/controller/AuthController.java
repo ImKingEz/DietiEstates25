@@ -5,6 +5,7 @@ import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.*;
 import com.dietiestates25backend.business.service.AuthService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -92,7 +93,7 @@ public class AuthController extends BaseController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('ROLE_UTENTE')")
+    @PermitAll
     public ResponseEntity<ApiResponse<UtenteDTO>> getUserDetails() {
         logger.debug("getUserDetails() called");
 
