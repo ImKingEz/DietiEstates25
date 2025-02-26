@@ -50,23 +50,82 @@
 
     var styleCache = {};
 
+    // Funzione per formattare il prezzo
+    function formatPrice(price) {
+        if (price >= 1000000) {
+            // Prezzo in milioni, con una cifra decimale
+            return (price / 1000000).toFixed(1) + "M";
+        } else if (price >= 1000) {
+            // Prezzo in migliaia, arrotondato senza decimali
+            return Math.round(price / 1000) + "K";
+        } else {
+            return price.toString();
+        }
+    }
+
+    function getSingleMarkerImage() {
+        return 'data:image/svg+xml;charset=utf-8,' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50">' +
+            '<path d="M20 0 C10 0 0 10 0 20 C0 36 20 50 20 50 C20 50 40 36 40 20 C40 10 30 0 20 0 Z" fill="rgba(220,50,50,0.8)" stroke="white" stroke-width="1"/>' +
+            '</svg>';
+    }
+
+    function getMarkerImage(size) {
+        return 'data:image/svg+xml;charset=utf-8,' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">' +
+            '<circle cx="20" cy="20" r="18" fill="rgba(0, 128, 255, 0.7)" stroke="white" stroke-width="2"/>' +
+            '<image x="5" y="8" width="20" height="20" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAAAXNSR0IArs4c6QAAA1dJREFUeF7tnNFRwzAQRJVO6ASoBKgEqASoBEqhE8jO2ExwYq0kn3ynyWqGr8g6vE+3J8mJD0nNVYGDa3QFTwLgPAkEQACcFXAOrwwQAGcFnMMrAwTAWQHn8MoAAXBWwDm8MkAAnBVwDq8MEIBNCtyllL6nv00DeV08cgY8H0V7mYR7Sim9e4m4Je6oAD5TSpj9pw0AXkfLhtEAQPS342y/WZl1sKP7kSCMBODUcljWD2NJowC4ZDkMwhCWFB0AsxwGIbwlRQZQYzkMRFhLigqg1HJQcFGQAWutMM9wQlpSNACllvOVUsKshsWgQXxAYxDCWVIkAI/TEpPZCTZfWO9faliiYhzWwlhSFAA1loPZn2sAMIwleQOA5UCs5a52KfDSctgMH8aSPAFYWA4DEd6SvABYWg6DENqS9gZQYzkotMzvmfjz52EtaU8ApZaD9TpWKT1aOEvaC8CelsPAhbKk3gCQ+ph1JascS8thEMJYUk8AEB0zn7WelsNiu1tSLwCRLIdBKLUk7MA/rB/2WAOIajkMQqkl1W4IWVzTX8iUWg5uAqeYEdvulmSZAT8FikJ4q7V9QbimLjgagS2xk1UT7UwGmW4zBwDHwFjbRxd/JlZyLG6inckgBEBky2EpkrMkE+1MBiEALGMwwXp8vpbZJvdlMogAtHMXAK6dMoBr1LWHAHSVlw8uAFyjrj0EoKu8fHAB4Bp17SEAXeXlgwsA16hrDwHoKi8fXAC4Rl17XCUAHAc/GMuKQ8G175TmQl0lgNIHIzWMWp89C0CNypm+AlAhpDKgQqy5q2WqCoAA/ClgObHOZI36PGAtA+Dj+G5Ort0eP5xfYXDaTzWgIqvWAJT8tGjtS8ACIADnCoxmQcqAzCy2LFayoAq72HMZqgxQBvwpYGLfJoNM/5IsqME2BICLZjmxht+IqQaoBqgGsLcjaie8yJKWOqN9AK9NZz0si5UACICOoy+9eEmrIK2CtArSKmglC0p+ptpQWv5dssWCtsZeXt+yunPZCVveuAA01AAByChgkkbkNFQABMByDoy3CrK8e9UASzU1VjJ9XY30bFDAsgg3hNclAuA8BwRAAJwVcA6vDBAAZwWcwysDBMBZAefwygABcFbAObwyQACcFXAO/wsQzhZwjUR4MQAAAABJRU5ErkJggg=="/>' +
+            '</svg>';
+    }
+
     var clusters = new ol.layer.Vector({
         source: clusterSource,
         style: function (feature) {
-            var size = feature.get('features').length;
-            var style = styleCache[size];
-            if (!style) {
-                var text = size > 1 ? size.toString() : '';
-                style = new ol.style.Style({
+            var features = feature.get('features');
+            var size = features.length;
+
+            if (size > 1) {
+                var style = styleCache[size];
+                if (!style) {
+                    style = new ol.style.Style({
+                        image: new ol.style.Icon({
+                            anchor: [0.5, 0.5],
+                            anchorXUnits: 'fraction',
+                            anchorYUnits: 'fraction',
+                            src: getMarkerImage(size),
+                            scale: 1
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            offsetX: 8,
+                            fill: new ol.style.Fill({
+                                color: '#fff'
+                            }),
+                            stroke: new ol.style.Stroke({
+                                color: 'rgba(0, 0, 0, 0.6)',
+                                width: 3
+                            })
+                        })
+                    });
+                    styleCache[size] = style;
+                }
+                return style;
+            } else {
+                var annuncio = features[0].get('annuncio');
+                var prezzo = annuncio.prezzo;
+                var formattedPrice = formatPrice(prezzo);
+                var text = "€" + formattedPrice;
+
+                return new ol.style.Style({
                     image: new ol.style.Icon({
-                        anchor: [0.5, 0.5],
-                        anchorXUnits: 'fraction',
-                        anchorYUnits: 'fraction',
-                        src: getMarkerImage(size),
+                        anchor: [0.5, 1],
+                        src: getSingleMarkerImage(),
                         scale: 1
                     }),
                     text: new ol.style.Text({
                         text: text,
+                        offsetY: -25,
+                        textAlign: 'center',
                         fill: new ol.style.Fill({
                             color: '#fff'
                         }),
@@ -76,9 +135,7 @@
                         })
                     })
                 });
-                styleCache[size] = style;
             }
-            return style;
         }
     });
 
@@ -153,25 +210,11 @@
         });
     }
 
-    function getMarkerImage(size) {
-        if (size > 1) {
-            return 'data:image/svg+xml;charset=utf-8,' +
-                '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">' +
-                '<circle cx="20" cy="20" r="18" fill="rgba(0, 128, 255, 0.7)" stroke="white" stroke-width="2"/>' +
-                '</svg>';
-        } else {
-            return 'data:image/svg+xml;charset=utf-8,' +
-                '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="40">' +
-                '<path d="M15 0 C7 0 0 7 0 15 C0 27 15 40 15 40 C15 40 30 27 30 15 C30 7 23 0 15 0 Z" fill="rgba(220,50,50,0.8)" stroke="white" stroke-width="1"/>' +
-                '<text x="15" y="22" font-size="12" font-weight="bold" fill="white" text-anchor="middle">€</text>' +
-                '</svg>';
-        }
-    }
-
     window.onload = function () {
         initMap();
     };
 </script>
+
 </body>
 
 </html>
