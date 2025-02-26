@@ -31,11 +31,9 @@ public class AreaAmministrativaController extends AbstractController implements 
     @FXML
     private Button tornaLoginButton;
 
-    Amministratore amministratore;
+    private Amministratore amministratore;
 
-    AgenziaService agenziaService;
-
-    String token;
+    private AgenziaService agenziaService;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -46,7 +44,7 @@ public class AreaAmministrativaController extends AbstractController implements 
 
         tornaLoginButton.setOnAction(event -> openLoginAmministratorePage());
 
-        homepageButton.setOnAction(event -> openDashboard(token, homepageButton));
+        homepageButton.setOnAction(event -> openHomepage(token, homepageButton));
 
         creaAccountAgenteButton.setOnAction(event -> openRegisterAgentePage());
 

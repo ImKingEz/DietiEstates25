@@ -57,8 +57,6 @@ public class RegisterAgenteController extends AbstractController implements Init
 
     private boolean passwordVisible = false;
 
-    private String token;
-
     private Amministratore amministratore;
 
     private final AgenteService agenteService = new AgenteService();

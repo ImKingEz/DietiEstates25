@@ -33,8 +33,6 @@ public class AgenteDashboardController extends AbstractController implements Ini
     @FXML
     private Button tornaLoginButton;
 
-    private String token;
-
     private AgenteImmobiliare agente;
 
     public void setToken(String token) {

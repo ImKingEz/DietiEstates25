@@ -32,8 +32,6 @@ public class AccountCompletionController extends AbstractController implements I
     @FXML
     private Button salvaButton;
 
-    private String token;
-
     private UtenteService utenteService;
 
     @Override
@@ -113,7 +111,7 @@ public class AccountCompletionController extends AbstractController implements I
         showPopup("Modifica completata!", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
         salvaButton.setDisable(true);
         PauseTransition pause = new PauseTransition(Duration.millis(POPUP_PAUSE));
-        pause.setOnFinished(e -> openDashboard(token, salvaButton));
+        pause.setOnFinished(e -> openHomepage(token, salvaButton));
         pause.play();
     }
 

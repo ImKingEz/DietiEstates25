@@ -55,7 +55,6 @@ public class HomePageController extends AbstractController implements Initializa
     private MenuItem casaIndipendenteMenuItem;
     @FXML
     private Button tornaIndietroButton;
-    private String token;
 
     private String selectedTipologiaText = "Appartamento";
     private Utente utente;
@@ -174,7 +173,7 @@ public class HomePageController extends AbstractController implements Initializa
                 })
                 .thenAccept(annunciDTO ->
                     Platform.runLater(() ->
-                        handleAnnunci(annunciDTO)))
+                        handleAnnunci(citta, filtro, annunciDTO)))
                 .exceptionally(ex -> {
                     logger.error("Errore durante la chiamata al servizio: {}", ex.getMessage(), ex);
                     Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Errore imprevisto: " + ex.getMessage(), ERROR_ICON));
@@ -182,49 +181,17 @@ public class HomePageController extends AbstractController implements Initializa
                 });
     }
 
-    private void handleAnnunci(List<AnnuncioDTO> annunciDTO) {
-        if (annunciDTO == null) {
+    private void handleAnnunci(String citta, FiltroAnnunci filtro, List<AnnuncioDTO> annunciDTOs) {
+        if (annunciDTOs == null) {
             return;
         }
-        if (annunciDTO.isEmpty()) {
+        if (annunciDTOs.isEmpty()) {
             showPopup(POPUP_ERROR_TITLE, "Nessun immobile trovato con queste caratteristiche", ERROR_ICON);
             logger.info("Nessun immobile trovato con queste caratteristiche");
         } else {
-            for (AnnuncioDTO annuncioDTO : annunciDTO) {
-                logger.info("Annuncio trovato: {}", annuncioDTO);
-            }
-            // TODO
-            //List<Annuncio> annunci = convertDTO(annunciDTO);
-            //openRisultatiRicercaPage(annunci);
+            openRisultatiRicercaPage(citta, filtro, cercaButton);
         }
     }
-
-//    private List<Annuncio> convertDTO(List<AnnuncioDTO> annunciDTO) { TODO
-//        List<Annuncio> annunci = new ArrayList<>();
-//        for (AnnuncioDTO annuncioDTO : annunciDTO) {
-//            Annuncio annuncio = new Annuncio();
-//            annuncio.setTitolo(annuncioDTO.getTitolo());
-//            annuncio.setTipo(annuncioDTO.getTipo());
-//            annuncio.setPrezzo(annuncioDTO.getPrezzo());
-//            annuncio.setDescrizione(annuncioDTO.getDescrizione());
-//            annuncio.setIdImmobile(annuncioDTO.getIdImmobile());
-//            annuncio.setIdAgente(annuncioDTO.getIdAgente());
-//            annuncio.setImmaginiUrls(annuncioDTO.getImmaginiUrls());
-//
-//            annunci.add(annuncio);
-//        }
-//        return annunci;
-//    }
-
-//    private void openRisultatiRicercaPage(List<Annuncio> annunci) { TODO
-//        loadScene("/com/dietiestates25ui/view/risultati-ricerca-view.fxml",
-//                (fxmlLoader, stage) -> {
-//                    RisultatiRicercaController controller = fxmlLoader.getController();
-//                    controller.setAnnunci(annunci);
-//                    controller.setToken(token);
-//                    controller.setStage(currentStage);
-//                }, cercaButton, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
-//    }
 
     @FXML
     void handleTipologiaMenuItemAction(ActionEvent event) {

@@ -141,8 +141,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private double longitudine;
     private String citta;
 
-    private String token;
-
     private AgenteImmobiliare agente;
 
     @Override

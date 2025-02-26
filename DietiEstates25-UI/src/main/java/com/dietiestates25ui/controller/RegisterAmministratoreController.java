@@ -34,8 +34,6 @@ public class RegisterAmministratoreController extends AbstractController impleme
 
     private boolean passwordVisible = false;
 
-    private String token;
-
     private Amministratore amministratore;
 
     private final AmministratoreService amministratoreService = new AmministratoreService();

@@ -1,6 +1,7 @@
 package com.dietiestates25ui.controller;
 
 import com.dietiestates25ui.MainApplication;
+import com.dietiestates25ui.model.FiltroAnnunci;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -72,6 +73,8 @@ public abstract class AbstractController {
 
     @FXML
     protected ImageView eyeImageView;
+
+    protected String token;
 
     public Stage getCurrentStage() {
         return currentStage;
@@ -161,17 +164,27 @@ public abstract class AbstractController {
         });
     }
 
-    public void openDashboard(String token) {
-        openDashboard(token, null);
+    protected void openRisultatiRicercaPage(String citta, FiltroAnnunci filtro, Button button) {
+        loadScene("/com/dietiestates25ui/view/risultati-ricerca-view.fxml",
+                (fxmlLoader, stage) -> {
+                    RisultatiRicercaController controller = fxmlLoader.getController();
+                    controller.setFiltroAnnunci(filtro, citta);
+                    controller.setToken(token);
+                    controller.setStage(currentStage);
+                }, button, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
     }
 
-    public void openDashboard(String token, Button button) {
-        loadScene("/com/dietiestates25ui/view/dashboard-view.fxml",
+    public void openHomepage(String token) {
+        openHomepage(token, null);
+    }
+
+    public void openHomepage(String token, Button button) {
+        loadScene("/com/dietiestates25ui/view/homepage-view.fxml",
                 (fxmlLoader, stage) -> {
-                    DashboardController dashboardController = fxmlLoader.getController();
-                    dashboardController.setStage(stage); // Chiama setStage anziché modificare currentStage
-                    dashboardController.setToken(token);
-                }, button, "/com/dietiestates25ui/styles/dashboard-style.css");
+                    HomePageController homePageController = fxmlLoader.getController();
+                    homePageController.setStage(stage);
+                    homePageController.setToken(token);
+                }, button, "/com/dietiestates25ui/styles/homepage-style.css");
     }
 
     protected void loadScene(String fxmlPath, SceneConfigurator sceneConfigurator, Button sourceButton, String stylesheetPath) {

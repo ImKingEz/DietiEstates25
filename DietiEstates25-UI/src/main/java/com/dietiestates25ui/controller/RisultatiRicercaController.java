@@ -39,11 +39,10 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.UnaryOperator;
 
-public class DashboardController extends AbstractController implements Initializable {
+public class RisultatiRicercaController extends AbstractController implements Initializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
+    private static final Logger logger = LoggerFactory.getLogger(RisultatiRicercaController.class);
     public static final String TEXT_FIELD_ERROR_CSS_CLASS = "text-field-error";
-    private String token;
 
     @FXML
     private ScrollPane filterScrollPane;
@@ -69,6 +68,10 @@ public class DashboardController extends AbstractController implements Initializ
     @FXML
     private ImageView annuncioImageView2;
 
+    @FXML
+    private TextField ricercaTextField;
+    @FXML
+    private Button cercaButton;
     @FXML
     private HBox profileHBox;
 
@@ -132,14 +135,15 @@ public class DashboardController extends AbstractController implements Initializ
     @FXML
     private Text numeroAnnunciText;
 
-    private String cittaDiRicerca = "Roma";
-
     private static final double SCROLL_AMOUNT = 600.0;
     private final Duration scrollDuration = Duration.millis(500);
 
-    private FiltroAnnunci filtroAnnunci = new FiltroAnnunci();
+    private FiltroAnnunci filtroAnnunci;
+    private String cittaDiRicerca;
 
     private Utente utente;
+
+    List<AnnuncioDTO> annunci;
 
     private UtenteService utenteService = new UtenteService();
 
@@ -153,14 +157,28 @@ public class DashboardController extends AbstractController implements Initializ
         Platform.runLater(() -> currentStage = (Stage) primaryAnchorPane.getScene().getWindow());
 
         updateProfileHBox();
+        handleRicercaAnnunci();
 
         scrollLeftButton.setOnAction(this::scrollLeft);
         scrollRightButton.setOnAction(this::scrollRight);
 
-        handleFilter();
+        Platform.runLater(this::handleFilter);
 
         updateAnnunciScrollPanePrefWidth();
         updateMap();
+    }
+
+    private void handleRicercaAnnunci() {
+        Platform.runLater(() -> ricercaTextField.setText(cittaDiRicerca));
+        cercaButton.setOnAction(event -> {
+            cittaDiRicerca = ricercaTextField.getText();
+            updateAnnunci();
+        });
+    }
+
+    public void setFiltroAnnunci(FiltroAnnunci filtroAnnunci, String cittaDiRicerca) {
+        this.filtroAnnunci = filtroAnnunci;
+        this.cittaDiRicerca = cittaDiRicerca;
     }
 
     private void updateMap() {
@@ -184,7 +202,7 @@ public class DashboardController extends AbstractController implements Initializ
         webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
                 webEngine.executeScript("window.mostraDettagliAnnuncioDaMappa = function(idImmobile) { " +
-                        "  javafx.scene.web.WebEngine.executeScript('$(\"idImmobile\").DashboardController.mostraDettagliAnnuncioDaMappa(' + idImmobile + ')');" +
+                        "  javafx.scene.web.WebEngine.executeScript('$(\"idImmobile\").RisultatiRicercaController.mostraDettagliAnnuncioDaMappa(' + idImmobile + ')');" +
                         "}");
                 Platform.runLater(this::updateAnnunci);
             }
@@ -247,6 +265,9 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void trasportoPubblicoCheckBoxOnAction() {
+        if (filtroAnnunci.getVicinoTrasportoPubblico() != null) {
+            trasportoPubblicoCheckBox.setSelected(filtroAnnunci.getVicinoTrasportoPubblico());
+        }
         trasportoPubblicoCheckBox.setOnAction(event -> {
             if (trasportoPubblicoCheckBox.isSelected()) {
                 filtroAnnunci.setVicinoTrasportoPubblico(true);
@@ -258,6 +279,9 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void parcoCheckBoxOnAction() {
+        if (filtroAnnunci.getVicinoParco() != null) {
+            parcoCheckBox.setSelected(filtroAnnunci.getVicinoParco());
+        }
         parcoCheckBox.setOnAction(event -> {
             if (parcoCheckBox.isSelected()) {
                 filtroAnnunci.setVicinoParco(true);
@@ -269,6 +293,9 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void scuolaCheckBoxOnAction() {
+        if (filtroAnnunci.getVicinoScuola() != null) {
+            scuolaCheckBox.setSelected(filtroAnnunci.getVicinoScuola());
+        }
         scuolaCheckBox.setOnAction(event -> {
             if (scuolaCheckBox.isSelected()) {
                 filtroAnnunci.setVicinoScuola(true);
@@ -280,6 +307,9 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void climatizzazioneCheckBoxOnAction() {
+        if (filtroAnnunci.getClimatizzazione() != null) {
+            climatizzazioneCheckBox.setSelected(filtroAnnunci.getClimatizzazione());
+        }
         climatizzazioneCheckBox.setOnAction(event -> {
             if (climatizzazioneCheckBox.isSelected()) {
                 filtroAnnunci.setClimatizzazione(true);
@@ -291,6 +321,9 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void portineriaCheckBoxOnAction() {
+        if (filtroAnnunci.getPortineria() != null) {
+            portineriaCheckBox.setSelected(filtroAnnunci.getPortineria());
+        }
         portineriaCheckBox.setOnAction(event -> {
             if (portineriaCheckBox.isSelected()) {
                 filtroAnnunci.setPortineria(true);
@@ -302,6 +335,9 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void ascensoreCheckBoxOnAction() {
+        if (filtroAnnunci.getAscensore() != null) {
+            ascensoreCheckBox.setSelected(filtroAnnunci.getAscensore());
+        }
         ascensoreCheckBox.setOnAction(event -> {
             if (ascensoreCheckBox.isSelected()) {
                 filtroAnnunci.setAscensore(true);
@@ -313,6 +349,13 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void handleSuperficeFilter() {
+        if (filtroAnnunci.getSuperficieMin() != null) {
+            minSuperficieTextField.setText(filtroAnnunci.getSuperficieMin().toString());
+        }
+        if (filtroAnnunci.getSuperficieMax() != null) {
+            maxSuperficieTextField.setText(filtroAnnunci.getSuperficieMax().toString());
+        }
+
         setupTextFormatter(minSuperficieTextField);
         setupTextFormatter(maxSuperficieTextField);
 
@@ -331,6 +374,13 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void handlePriceFilter() {
+        if (filtroAnnunci.getPrezzoMin() != null) {
+            minPriceTextField.setText(filtroAnnunci.getPrezzoMin().toString());
+        }
+        if (filtroAnnunci.getPrezzoMax() != null) {
+            maxPriceTextField.setText(filtroAnnunci.getPrezzoMax().toString());
+        }
+
         setupTextFormatter(minPriceTextField);
         setupTextFormatter(maxPriceTextField);
 
@@ -470,34 +520,76 @@ public class DashboardController extends AbstractController implements Initializ
     }
 
     private void handleMenuItemFilter() {
-        initializeMenuItems(tipoMenuButton, selectedText -> {
-            filtroAnnunci.setTipo(selectedText);
-            tipoMenuButton.setText(selectedText);
+        initializeTipoMenuItem();
+        initializeTipologiaMenuItem();
+        initializeLocaliMenuItem();
+        initializeBagniMenuItem();
+        initializePianoMenuItem();
+        initializeClasseEnergeticaMenuItem();
+    }
+
+    private void initializeClasseEnergeticaMenuItem() {
+        if (filtroAnnunci.getClasseEnergetica() != null) {
+            classeEnergeticaMenuButton.setText("Classe energetica: " + filtroAnnunci.getClasseEnergetica());
+        }
+        initializeMenuItemsClasseEnergetica(classeEnergeticaMenuButton, selectedText -> {
+            filtroAnnunci.setClasseEnergetica(selectedText);
+            classeEnergeticaMenuButton.setText("Classe energetica: " + selectedText);
             updateAnnunci();
         });
-        initializeMenuItems(tipologiaMenuButton, selectedText -> {
-            filtroAnnunci.setTipologia(selectedText);
-            tipologiaMenuButton.setText(selectedText);
-            updateAnnunci();
-        });
-        initializeMenuItemsLocali(localiMenuButton, value -> {
-            filtroAnnunci.setLocali(value);
-            localiMenuButton.setText("Locali: " + value);
-            updateAnnunci();
-        });
-        initializeMenuItemsBagni(bagniMenuButton, value -> {
-            filtroAnnunci.setBagni(value);
-            bagniMenuButton.setText("Bagni: " + value);
-            updateAnnunci();
-        });
+    }
+
+    private void initializePianoMenuItem() {
+        if (filtroAnnunci.getPiano() != null) {
+            pianoMenuButton.setText(getPianoText(filtroAnnunci.getPiano()));
+        }
         initializeMenuItemsPiano(pianoMenuButton, value -> {
             filtroAnnunci.setPiano(value);
             pianoMenuButton.setText(getPianoText(value));
             updateAnnunci();
         });
-        initializeMenuItemsClasseEnergetica(classeEnergeticaMenuButton, selectedText -> {
-            filtroAnnunci.setClasseEnergetica(selectedText);
-            classeEnergeticaMenuButton.setText("Classe energetica: " + selectedText);
+    }
+
+    private void initializeBagniMenuItem() {
+        if (filtroAnnunci.getBagni() != null) {
+            bagniMenuButton.setText("Bagni: " + filtroAnnunci.getBagni());
+        }
+        initializeMenuItemsBagni(bagniMenuButton, value -> {
+            filtroAnnunci.setBagni(value);
+            bagniMenuButton.setText("Bagni: " + value);
+            updateAnnunci();
+        });
+    }
+
+    private void initializeLocaliMenuItem() {
+        if (filtroAnnunci.getLocali() != null) {
+            localiMenuButton.setText("Locali: " + filtroAnnunci.getLocali());
+        }
+        initializeMenuItemsLocali(localiMenuButton, value -> {
+            filtroAnnunci.setLocali(value);
+            localiMenuButton.setText("Locali: " + value);
+            updateAnnunci();
+        });
+    }
+
+    private void initializeTipologiaMenuItem() {
+        if (filtroAnnunci.getTipologia() != null) {
+            tipologiaMenuButton.setText(filtroAnnunci.getTipologia());
+        }
+        initializeMenuItems(tipologiaMenuButton, selectedText -> {
+            filtroAnnunci.setTipologia(selectedText);
+            tipologiaMenuButton.setText(selectedText);
+            updateAnnunci();
+        });
+    }
+
+    private void initializeTipoMenuItem() {
+        if (filtroAnnunci.getTipo() != null) {
+            tipoMenuButton.setText(filtroAnnunci.getTipo());
+        }
+        initializeMenuItems(tipoMenuButton, selectedText -> {
+            filtroAnnunci.setTipo(selectedText);
+            tipoMenuButton.setText(selectedText);
             updateAnnunci();
         });
     }
@@ -643,14 +735,14 @@ public class DashboardController extends AbstractController implements Initializ
     public void setToken(String token) {
         this.token = token;
         setUtente(token);
-        //TODO: Rimuovere sotto dopo la merge se viene passato dalla schermata precedente una lista di annunci
-        filtroAnnunci.setTipo("Vendita");
-        filtroAnnunci.setTipologia("Casa indipendente");
     }
 
     private void updateAnnunci() {
+        if (cittaDiRicerca == null || cittaDiRicerca.isEmpty()) {
+            showPopup(POPUP_ERROR_TITLE, "Inserisci una città per effettuare la ricerca.", ERROR_ICON);
+            return;
+        }
         try {
-            List<AnnuncioDTO> annunci;
             logger.info("Aggiornamento degli annunci per la città: {} con i seguenti filtri: {}", cittaDiRicerca, filtroAnnunci);
             annunci = annuncioService.searchAnnunciByCittaAndFiltro(cittaDiRicerca, filtroAnnunci, token);
 
@@ -738,7 +830,6 @@ public class DashboardController extends AbstractController implements Initializ
                 AnnuncioItemController controller = loader.getController();
                 controller.setAnnuncio(annuncio, immobile);
 
-                // Aggiungiamo il listener per il click
                 ImmobileDTO finalImmobile = immobile;
                 annuncioItem.setOnMouseClicked(event -> mostraDettagliAnnuncio(annuncio, finalImmobile));
 
@@ -775,6 +866,7 @@ public class DashboardController extends AbstractController implements Initializ
                     annuncioDetailController.setStage(stage);
                     annuncioDetailController.setToken(token);
                     annuncioDetailController.setAnnuncio(annuncio, immobile);
+                    annuncioDetailController.setFiltroAnnunci(filtroAnnunci, cittaDiRicerca);
                 }, reimpostaFiltriButton, "/com/dietiestates25ui/styles/annuncio-detail-style.css");
     }
 }

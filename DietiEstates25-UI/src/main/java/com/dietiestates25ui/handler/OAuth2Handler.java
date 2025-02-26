@@ -44,7 +44,7 @@ public class OAuth2Handler {
     private void handleOAuthSuccess(String url, Button button) {
         String token = parseTokenFromURL(url);
         if (isValidToken(token)) {
-            controller.openDashboard(token, button);
+            controller.openHomepage(token, button);
         }
     }
 

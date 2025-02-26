@@ -66,8 +66,6 @@ public class ConfermaInserzioneController extends AbstractController implements 
     @FXML
     private Label pianoLabel;
 
-    private String token;
-
     private List<File> selectedImageList;
 
     private Immobile immobile;

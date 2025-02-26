@@ -45,8 +45,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     private String tipologiaSelezionata;
 
-    private String token;
-
     private double selectedLatitude;
     private double selectedLongitude;
 
@@ -123,7 +121,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
     }
 
     private void openHomePage() {
-        loadScene("/com/dietiestates25ui/view/home-page-view.fxml", (fxmlLoader, stage) -> {
+        loadScene("/com/dietiestates25ui/view/homepage-view.fxml", (fxmlLoader, stage) -> {
             HomePageController homeController = fxmlLoader.getController();
             homeController.setToken(token);
             homeController.setStage(currentStage);
@@ -135,7 +133,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
                 homeController.affittoButton.setSelected(true);
             }
             homeController.tipologiaMenuButton.setText(getTipologiaSelezionata());
-        }, tornaIndietroButton, "/com/dietiestates25ui/styles/home-page-style.css");
+        }, tornaIndietroButton, "/com/dietiestates25ui/styles/homepage-style.css");
     }
 
     private void handleCercaButtonAction() {

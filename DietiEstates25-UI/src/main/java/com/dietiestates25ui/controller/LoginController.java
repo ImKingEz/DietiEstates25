@@ -141,22 +141,13 @@ public class LoginController extends AbstractController implements Initializable
                 agenziaImmobiliareButton.setDisable(true);
 
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
-                delay.setOnFinished(event -> openHomePage(token, loginButton));
+                delay.setOnFinished(event -> openHomepage(token, loginButton));
                 delay.play();
             }
         } catch (Exception e) {
             logger.error("Errore durante il login: {}", e.getMessage());
             showPopup("Errore durante il login", e.getMessage(), ERROR_ICON);
         }
-    }
-
-    private void openHomePage(String token, Button button) {
-        loadScene("/com/dietiestates25ui/view/home-page-view.fxml",
-                (fxmlLoader, stage) -> {
-                    HomePageController homePageController = fxmlLoader.getController();
-                    homePageController.setStage(stage);
-                    homePageController.setToken(token);
-                }, button, "/com/dietiestates25ui/styles/home-page-style.css");
     }
 
     private void loginWithProvider(String provider) {

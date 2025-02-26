@@ -4,6 +4,7 @@ import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.service.AgenteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
@@ -34,8 +35,6 @@ public class AnnuncioDetailController extends AbstractController implements Init
 
     private AnnuncioDTO annuncio;
     private ImmobileDTO immobile;
-
-    private String token;
 
     @FXML
     private Button tornaIndietroButton;
@@ -84,9 +83,12 @@ public class AnnuncioDetailController extends AbstractController implements Init
     private List<Image> images;
     private int currentImageIndex = 0;
 
+    private FiltroAnnunci filtroAnnunci;
+    private String cittaDiRicerca;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        tornaIndietroButton.setOnAction(event -> openDashboard(token, tornaIndietroButton));
+        tornaIndietroButton.setOnAction(event -> openRisultatiRicercaPage(cittaDiRicerca, filtroAnnunci, tornaIndietroButton));
 
         prevButton.setOnAction(event -> prevImage());
         nextButton.setOnAction(event -> nextImage());
@@ -283,5 +285,10 @@ public class AnnuncioDetailController extends AbstractController implements Init
         } catch (Exception e) {
             logger.error("Errore serializzazione JSON annuncioDTO:", e);
         }
+    }
+
+    public void setFiltroAnnunci(FiltroAnnunci filtroAnnunci, String cittaDiRicerca) {
+        this.filtroAnnunci = filtroAnnunci;
+        this.cittaDiRicerca = cittaDiRicerca;
     }
 }
