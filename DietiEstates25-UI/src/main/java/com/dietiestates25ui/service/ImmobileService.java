@@ -22,6 +22,10 @@ public class ImmobileService extends ApiService {
         return executeAndHandle("/create", "POST", immobile, token, ImmobileDTO.class);
     }
 
+    public ImmobileDTO getImmobileDetails(long idImmobile, String token) throws GenericServiceException {
+        return executeAndHandle("/" + idImmobile, "GET", null, token, ImmobileDTO.class);
+    }
+
     @Override
     protected void handleErrorResponse(int statusCode, HttpResponse<String> response) throws ApiClientException, ServiceUnavailableException {
         logger.error("Ricevuta risposta con status code: {}", statusCode);

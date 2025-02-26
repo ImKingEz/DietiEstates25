@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Immobile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,7 +60,10 @@ public class Immobile {
     @Column(name = "vicino_trasporto_pubblico")
     private boolean vicinoTrasportoPubblico;
 
-    public Immobile(String tipologia, String indirizzo, double dimensione, int numeroLocali, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico) {
+    @Column(name = "citta", nullable = false)
+    private String citta;
+
+    public Immobile(String tipologia, String indirizzo, double dimensione, int numeroLocali, int numeroBagni, String classeEnergetica, Integer piano, boolean ascensore, boolean portineria, boolean climatizzazione, double latitudine, double longitudine, boolean vicinoScuole, boolean vicinoParchi, boolean vicinoTrasportoPubblico, String citta) {
         this.tipologia = tipologia;
         this.indirizzo = indirizzo;
         this.dimensione = dimensione;
@@ -77,5 +79,6 @@ public class Immobile {
         this.vicinoScuole = vicinoScuole;
         this.vicinoParchi = vicinoParchi;
         this.vicinoTrasportoPubblico = vicinoTrasportoPubblico;
+        this.citta = citta;
     }
 }

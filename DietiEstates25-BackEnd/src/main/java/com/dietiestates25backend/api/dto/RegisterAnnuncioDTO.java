@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RegisterAnnuncioDTO {
     private long idImmobile;
+    private long idAgente;
     private String titolo;
     private String tipo;
     private double prezzo;

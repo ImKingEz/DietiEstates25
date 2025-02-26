@@ -83,11 +83,17 @@ public abstract class ApiService {
 
     protected <D> D executeAndHandle(String path, String method, Object body, String token, Class<D> dtoClass) throws GenericServiceException {
         try {
-            fetchCsrfToken();
+            if (!method.equalsIgnoreCase("GET")) {
+                fetchCsrfToken();
+            }
+
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + path))
-                    .header(CONTENT_TYPE, APPLICATION_JSON)
-                    .header(csrfTokenHeaderName, csrfTokenValue);
+                    .header(CONTENT_TYPE, APPLICATION_JSON);
+
+            if (csrfTokenValue != null && !csrfTokenValue.isEmpty() && csrfTokenHeaderName != null && !csrfTokenHeaderName.isEmpty()) {
+                requestBuilder.header(csrfTokenHeaderName, csrfTokenValue);
+            }
 
             if (token != null && !token.isEmpty()) {
                 requestBuilder.header(AUTHORIZATION, BEARER + token);
@@ -116,21 +122,25 @@ public abstract class ApiService {
             HttpResponse<String> response = executeRequest(request);
             int statusCode = response.statusCode();
 
-            if (statusCode >= 200 && statusCode < 300) {
-                ApiResponse<D> apiResponse = handleResponse(response, dtoClass);
-                if (apiResponse != null && apiResponse.isSuccess()) {
-                    return apiResponse.getData();
-                } else {
-                    String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto.";
-                    throw new GenericServiceException(errorMessage);
-                }
-            } else {
-                handleErrorResponse(statusCode, response);
-                throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
-            }
+            return getDataFromStatusCode(dtoClass, statusCode, response);
 
         } catch (Exception e) {
             throw handleGenericException(e.getMessage(), e);
+        }
+    }
+
+    private <D> D getDataFromStatusCode(Class<D> dtoClass, int statusCode, HttpResponse<String> response) throws ApiClientException, GenericServiceException, AuthenticationException, ServiceUnavailableException, ResourceNotFoundException {
+        if (statusCode >= 200 && statusCode < 300) {
+            ApiResponse<D> apiResponse = handleResponse(response, dtoClass);
+            if (apiResponse != null && apiResponse.isSuccess()) {
+                return apiResponse.getData();
+            } else {
+                String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto.";
+                throw new GenericServiceException(errorMessage);
+            }
+        } else {
+            handleErrorResponse(statusCode, response);
+            throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
         }
     }
 

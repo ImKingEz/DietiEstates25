@@ -47,6 +47,9 @@
     var selectedLongitude;
     var selectedLatitude;
     var targetZoom = 15;
+    var circle;
+    var circleLayer;
+    var currentRadius;
 
     var italyCenter = ol.proj.fromLonLat([12.5674, 41.8719]);
 
@@ -82,6 +85,11 @@
             })
         });
         map.addLayer(marker);
+
+        circleLayer = new ol.layer.Vector({
+            source: new ol.source.Vector()
+        });
+        map.addLayer(circleLayer);
 
         map.on('click', function(evt) {
             var coordinate = ol.proj.toLonLat(evt.coordinate);
@@ -138,6 +146,7 @@
 
         confirmButton.addEventListener('click', function() {
             reverseGeocode(selectedLongitude, selectedLatitude);
+            removeConfirmationOverlay();
         });
 
         element.appendChild(confirmButton);
@@ -152,20 +161,55 @@
             .then(data => {
                 if (data && data.address) {
                     var address = data.display_name;
-                    sendDataToJava(address, longitude, latitude);
+                    sendDataToJava(address, latitude, longitude);
+                    drawCircle(latitude, longitude, currentRadius);
                 } else {
-                    sendDataToJava("Indirizzo non identificato per questo punto", longitude, latitude);
+                    sendDataToJava("Indirizzo non identificato per questo punto", latitude, longitude);
                 }
             })
             .catch(error => {
                 console.error("Errore nel reverse geocoding:", error);
-                sendDataToJava("Errore di connessione", longitude, latitude);
+                sendDataToJava("Errore di connessione", latitude, longitude);
             });
     }
 
-    function sendDataToJava(address, longitude, latitude) {
+    function sendDataToJava(address, latitude, longitude) {
         window.alert(address + "|" + latitude + "|" + longitude);
     }
+
+    function drawCircle(latitude, longitude, radius) {
+        var center = ol.proj.fromLonLat([longitude, latitude]);
+
+        circleLayer.getSource().clear();
+
+        circle = new ol.Feature({
+            geometry: new ol.geom.Circle(center, radius)
+        });
+
+        circleLayer.getSource().addFeature(circle);
+
+        circle.setStyle(new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(0, 0, 255, 0.1)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'blue',
+                width: 1
+            })
+        }));
+    }
+
+    function setInitialRadius(radius) {
+        currentRadius = radius;
+    }
+
+    function updateRadius(radius) {
+        currentRadius = radius;
+        if (selectedLatitude && selectedLongitude) {
+            drawCircle(selectedLatitude, selectedLongitude, currentRadius);
+        }
+    }
+
 
     window.onload = function() {
         initMap();

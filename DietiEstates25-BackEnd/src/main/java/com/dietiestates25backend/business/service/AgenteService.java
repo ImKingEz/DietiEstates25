@@ -80,12 +80,12 @@ public class AgenteService {
             throw new DataIntegrityViolationException("Email già in uso nella tabella degli amministratori");
         }
 
-        AgenteImmobiliare agente = new AgenteImmobiliare(registerAgenteDTO.getIdAgenzia(), registerAgenteDTO.getNome(), registerAgenteDTO.getCognome(), registerAgenteDTO.getDataDiNascita(), registerAgenteDTO.getSesso(), registerAgenteDTO.getEmail(), registerAgenteDTO.getPassword());
+        AgenteImmobiliare agente = new AgenteImmobiliare(registerAgenteDTO.getIdAgenzia(), registerAgenteDTO.getNome(), registerAgenteDTO.getCognome(), registerAgenteDTO.getDataDiNascita(), registerAgenteDTO.getSesso(), registerAgenteDTO.getEmail(), passwordEncoder.encode(registerAgenteDTO.getPassword()));
 
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
 
         logger.debug("Ending registraAgente with agente: {}", savedAgente.getEmail());
-        return new AgenteDTO(savedAgente.getIdAgenzia(), savedAgente.getNome(), savedAgente.getCognome(), savedAgente.getDataDiNascita(), savedAgente.getSesso(), savedAgente.getEmail());
+        return new AgenteDTO(savedAgente.getId(), savedAgente.getIdAgenzia(), savedAgente.getNome(), savedAgente.getCognome(), savedAgente.getDataDiNascita(), savedAgente.getSesso(), savedAgente.getEmail());
     }
 
     public AgenteDTO updateAgente(RegisterAgenteDTO registerAgenteDTO) {
@@ -102,13 +102,13 @@ public class AgenteService {
         AgenteImmobiliare savedAgente = agenteRepository.save(agente);
 
         logger.debug("Ending updateAgente with agente: {}", savedAgente.getEmail());
-        return new AgenteDTO(savedAgente.getIdAgenzia(), savedAgente.getNome(), savedAgente.getCognome(), savedAgente.getDataDiNascita(), savedAgente.getSesso(), savedAgente.getEmail());
+        return new AgenteDTO(savedAgente.getId(), savedAgente.getIdAgenzia(), savedAgente.getNome(), savedAgente.getCognome(), savedAgente.getDataDiNascita(), savedAgente.getSesso(), savedAgente.getEmail());
     }
 
     @Transactional(readOnly = true)
     public AgenteDTO getAgenteDetails(String email){
         String emailLowerCase = email.toLowerCase();
         AgenteImmobiliare agente = agenteRepository.findByEmail(emailLowerCase).orElseThrow(()->new EntityNotFoundException("Agente not found with email: " + email));
-        return new AgenteDTO(agente.getIdAgenzia(), agente.getNome(), agente.getCognome(), agente.getDataDiNascita(), agente.getSesso(), agente.getEmail());
+        return new AgenteDTO(agente.getId(), agente.getIdAgenzia(), agente.getNome(), agente.getCognome(), agente.getDataDiNascita(), agente.getSesso(), agente.getEmail());
     }
 }

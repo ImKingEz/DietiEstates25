@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25ui.model.AgenteImmobiliare;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GestioneImmobiliController extends AbstractController implements Initializable {
+public class AgenteDashboardController extends AbstractController implements Initializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(GestioneImmobiliController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AgenteDashboardController.class);
 
     @FXML
     private Button caricaImmobileButton;
@@ -34,6 +35,8 @@ public class GestioneImmobiliController extends AbstractController implements In
 
     private String token;
 
+    private AgenteImmobiliare agente;
+
     public void setToken(String token) {
         this.token = token;
     }
@@ -42,10 +45,12 @@ public class GestioneImmobiliController extends AbstractController implements In
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> {
             logo.requestFocus();
-            currentStage = (Stage) primaryAnchorPane.getScene().getWindow(); // Imposta currentStage
+            currentStage = (Stage) primaryAnchorPane.getScene().getWindow();
         });
 
         caricaImmobileButton.setOnAction(event -> openInserimentoDatiInserzionePage());
+
+        tornaLoginButton.setOnAction(event -> openLoginPage());
 
 //        offerteButton.setOnAction(event -> {
 //            // Azione per "Offerte"
@@ -73,12 +78,22 @@ public class GestioneImmobiliController extends AbstractController implements In
 //        });
     }
 
+    public void setAgente(AgenteImmobiliare agente) {
+        this.agente = agente;
+    }
+
     private void openInserimentoDatiInserzionePage() {
         loadScene("/com/dietiestates25ui/view/inserimento-inserzione-view.fxml",
                 (fxmlLoader, stage) -> {
                     InserimentoInserzioneController controller = fxmlLoader.getController();
-                    controller.setStage(stage); // Imposta lo Stage!
-                    controller.setToken(token); // Passa il token al InserimentoInserzioneController
+                    controller.setStage(stage);
+                    controller.setToken(token);
+                    controller.setAgente(agente);
                 }, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
+    }
+
+    private void openLoginPage() {
+        loadScene("/com/dietiestates25ui/view/login-view.fxml",
+                (fxmlLoader, stage) -> {}, tornaLoginButton, "/com/dietiestates25ui/styles/login-style.css");
     }
 }

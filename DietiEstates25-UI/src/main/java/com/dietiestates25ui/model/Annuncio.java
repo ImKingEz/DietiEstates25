@@ -12,6 +12,7 @@ public class Annuncio {
     private String descrizione;
     private List<String> immaginiUrls;
     private Long idImmobile;
+    private Long idAgente;
 
     public String getTitolo() {
         return titolo;
@@ -61,15 +62,24 @@ public class Annuncio {
         this.idImmobile = idImmobile;
     }
 
+    public Long getIdAgente() {
+        return idAgente;
+    }
+
+    public void setIdAgente(Long idAgente) {
+        this.idAgente = idAgente;
+    }
+
     public Annuncio() {
     }
 
-    public Annuncio(String titolo, String tipo, double prezzo, String descrizione, Long idImmobile) {
+    public Annuncio(String titolo, String tipo, double prezzo, String descrizione, Long idImmobile, Long idAgente) {
         this.titolo = titolo;
         this.tipo = tipo;
         this.prezzo = prezzo;
         this.descrizione = descrizione;
         this.idImmobile = idImmobile;
+        this.idAgente = idAgente;
     }
 
 }

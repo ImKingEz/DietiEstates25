@@ -1,6 +1,8 @@
 package com.dietiestates25backend.business.service;
 
 import com.dietiestates25.dto.AnnuncioDTO;
+import com.dietiestates25.dto.FiltroAnnunciDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.FotoImmobile;
 import com.dietiestates25backend.business.entity.Annuncio;
@@ -18,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Service
 public class AnnuncioService {
@@ -79,7 +82,7 @@ public class AnnuncioService {
                 registerAnnuncioDTO.getTipo(),
                 registerAnnuncioDTO.getPrezzo(),
                 registerAnnuncioDTO.getDescrizione(),
-                1L, //TODO
+                registerAnnuncioDTO.getIdAgente(),
                 registerAnnuncioDTO.getIdImmobile()
         );
     }
@@ -114,17 +117,41 @@ public class AnnuncioService {
             logger.info("Saved image to: {}", targetLocation.toAbsolutePath());
             return "/uploads/foto_immobili/" + fileName;
         } catch (IOException e) {
-            throw new IOException("Could not save image: " + e.getMessage(), e); // Lancia l'eccezione
+            throw new IOException("Could not save image: " + e.getMessage(), e);
         }
     }
 
-    private AnnuncioDTO convertToDTO(Annuncio savedAnnuncio) {
+    public AnnuncioDTO convertToDTO(Annuncio savedAnnuncio) {
+        List<FotoImmobile> fotoImmobili = fotoImmobileRepository.findByIdAnnuncio(savedAnnuncio.getId());
+        List<String> immaginiUrls = fotoImmobili.stream()
+                .map(FotoImmobile::getUrl)
+                .toList();
+
         return new AnnuncioDTO(
                 savedAnnuncio.getIdImmobile(),
+                savedAnnuncio.getIdAgente(),
                 savedAnnuncio.getTitolo(),
                 savedAnnuncio.getTipo(),
                 savedAnnuncio.getPrezzo(),
-                savedAnnuncio.getDescrizione()
+                savedAnnuncio.getDescrizione(),
+                immaginiUrls
+        );
+    }
+
+    public List<Annuncio> findAnnunciByCittaAndTipoAnnuncioAndTipologiaImmobile(String citta, String tipoAnnuncio, String tipologiaImmobile) {
+        logger.debug("Ricerca annunci per città : {}, tipo: {}, tipologia: {}", citta, tipoAnnuncio, tipologiaImmobile);
+        return annuncioRepository.findByCittaAndTipoAnnuncioAndTipologiaImmobile(citta, tipoAnnuncio, tipologiaImmobile);
+    }
+
+    public List<Annuncio> findAnnunciInRadius(MapSearchDTO mapSearchDTO, FiltroAnnunciDTO filtro) {
+        logger.debug("Ricerca annunci nel raggio: {}, {}, {}, tipo: {}, tipologia: {}",
+                mapSearchDTO.getLatitude(), mapSearchDTO.getLongitude(), mapSearchDTO.getRadius(), filtro.getTipo(), filtro.getTipologia());
+        return annuncioRepository.findAnnunciInRadius(
+                mapSearchDTO.getLatitude(),
+                mapSearchDTO.getLongitude(),
+                mapSearchDTO.getRadius(),
+                filtro.getTipo(),
+                filtro.getTipologia()
         );
     }
 }

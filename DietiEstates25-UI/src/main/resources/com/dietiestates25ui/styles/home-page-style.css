@@ -1,0 +1,62 @@
+@import "global-style.css";
+
+.searchTextField {
+    -fx-max-width: 300px;
+    -fx-pref-width: 300px;
+    -fx-max-height: 40px;
+    -fx-min-height: 40px;
+    -fx-font-size: 16px;
+}
+
+.menuButton {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-font-size: 16px;
+}
+
+.generalButton {
+    -fx-font-size: 16px;
+}
+
+#ricercaTextField {
+    -fx-border-radius: 0px;
+    -fx-background-radius: 0px;
+}
+
+#selezionaMappaButton {
+    -fx-border-radius: 0 0 8px 8px;
+    -fx-background-radius: 0 0 8px 8px;
+}
+
+#venditaButton {
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+}
+
+#affittoButton {
+    -fx-border-color: #ccc;
+    -fx-border-width: 1px;
+}
+
+.toggle-group {
+    -fx-padding: 5px;
+    -fx-border-radius: 5;
+}
+
+.toggle-button {
+    -fx-background-color: white;
+    -fx-border-radius: 3px;
+    -fx-font-size: 16px;
+    -fx-text-fill: #444;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #5075a0;
+    -fx-text-fill: white;
+}
+
+.toggle-button:hover {
+    -fx-cursor: hand;
+}
