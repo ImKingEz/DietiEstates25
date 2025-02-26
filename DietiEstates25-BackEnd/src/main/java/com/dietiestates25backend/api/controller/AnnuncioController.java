@@ -1,6 +1,5 @@
 package com.dietiestates25backend.api.controller;
 
-import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.FiltroAnnunciDTO;
@@ -16,8 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("/api/annunci")
@@ -54,7 +51,7 @@ public class AnnuncioController extends BaseController {
             List<Annuncio> annunci = annuncioService.findAnnunciByCittaAndFiltri(filtro, citta);
             List<AnnuncioDTO> annuncioDTOs = annunci.stream()
                     .map(annuncioService::convertToDTO)
-                    .collect(Collectors.toList());
+                    .toList();
             return successResponse(annuncioDTOs);
         } catch (Exception e) {
             logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);

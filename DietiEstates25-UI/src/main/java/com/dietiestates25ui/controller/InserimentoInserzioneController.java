@@ -29,6 +29,8 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -299,10 +301,14 @@ public class InserimentoInserzioneController extends AbstractController implemen
         this.selectedImageList.clear();
         for (String imageUrl : imageUrls) {
             try {
-                File file = new File(new URL(imageUrl).toURI());
+                URI uri = URI.create(imageUrl);
+                Path path = Paths.get(uri);
+                File file = path.toFile();
                 this.selectedImageList.add(file);
+            } catch (IllegalArgumentException e) {
+                logger.error("URL non valido: {}", imageUrl, e);
             } catch (Exception e) {
-                logger.error("Errore durante la conversione dell'URL in File: {}", e.getMessage());
+                logger.error("Errore durante la conversione dell'URL in File: {}", e.getMessage(), e);
             }
         }
         updateImageThumbnails();
