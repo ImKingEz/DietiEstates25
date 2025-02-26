@@ -45,7 +45,7 @@ public class AgenteDashboardController extends AbstractController implements Ini
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> {
             logo.requestFocus();
-            currentStage = (Stage) primaryAnchorPane.getScene().getWindow(); // Imposta currentStage
+            currentStage = (Stage) primaryAnchorPane.getScene().getWindow();
         });
 
         caricaImmobileButton.setOnAction(event -> openInserimentoDatiInserzionePage());

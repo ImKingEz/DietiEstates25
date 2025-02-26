@@ -52,7 +52,7 @@
                      <HBox alignment="CENTER" styleClass="HBoxField">
             
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
-                        <DatePicker fx:id="dataDatePicker" promptText="Data di nascita" styleClass="registerField" />
+                        <DatePicker fx:id="dataDatePicker" editable="false" promptText="Data di nascita" styleClass="registerField" />
             
                      </HBox>
                      <HBox alignment="CENTER" styleClass="HBoxField">

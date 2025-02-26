@@ -23,29 +23,29 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
         <HBox fx:id="profileHBox" alignment="CENTER_RIGHT" GridPane.columnIndex="2">
-            <children>
+            
                 <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
                     <graphic>
                         <HBox alignment="CENTER">
-                            <children>
+                            
                                 <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
+                                    
                                         <Image url="@../images/userIcon.png" />
-                                    </image>
+                                    
                                 </ImageView>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
+                                    
                                         <Image url="@../images/arrowDown.png" />
-                                    </image>
+                                    
                                 </ImageView>
-                            </children>
+                            
                         </HBox>
                     </graphic>
                     <HBox.margin>
                         <Insets right="20.0" />
                     </HBox.margin>
                 </Button>
-            </children>
+            
         </HBox>
         <ImageView fx:id="logo" fitHeight="80.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../images/logo2-removebg.png" />
