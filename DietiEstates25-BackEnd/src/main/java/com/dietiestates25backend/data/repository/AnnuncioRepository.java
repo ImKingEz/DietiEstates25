@@ -34,4 +34,17 @@ public interface AnnuncioRepository extends JpaRepository<Annuncio, Long> {
     List<Annuncio> findByFiltro(@Param("filtro") FiltroAnnunciDTO filtro, @Param("citta") String citta);
 
     Optional<Annuncio> findByIdImmobile(Long id);
+
+    @Query("SELECT a FROM Annuncio a " +
+            "JOIN Immobile i ON a.idImmobile = i.id " +
+            "WHERE a.tipo = :tipoAnnuncio " +
+            "AND i.tipologia = :tipologiaImmobile " +
+            "AND haversine(:latitude, :longitude, i.latitudine, i.longitudine) <= :radius")
+    List<Annuncio> findAnnunciInRadius(
+            @Param("latitude") double latitude,
+            @Param("longitude") double longitude,
+            @Param("radius") double radius,
+            @Param("tipoAnnuncio") String tipoAnnuncio,
+            @Param("tipologiaImmobile") String tipologiaImmobile
+    );
 }

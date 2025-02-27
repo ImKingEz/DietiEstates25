@@ -3,6 +3,7 @@ package com.dietiestates25backend.api.controller;
 import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.FiltroAnnunciDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.Annuncio;
 import com.dietiestates25backend.business.service.AnnuncioService;
@@ -74,6 +75,27 @@ public class AnnuncioController extends BaseController {
             logger.error("Errore durante il recupero dei dettagli dell'annuncio con ID immobile: {}", id, ex);
             ApiResponse<AnnuncioDTO> response = new ApiResponse<>(false, null, "Errore durante il recupero dei dettagli dell'annuncio: " + ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/search-map")
+    @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciInRadius(
+            @RequestBody MapSearchDTO mapSearchDTO,
+            @RequestParam String tipoAnnuncio,
+            @RequestParam String tipologiaImmobile) {
+        try {
+            FiltroAnnunciDTO filtro = new FiltroAnnunciDTO();
+            filtro.setTipo(tipoAnnuncio);
+            filtro.setTipologia(tipologiaImmobile);
+            List<Annuncio> annunci = annuncioService.findAnnunciInRadius(mapSearchDTO, filtro);
+            List<AnnuncioDTO> annuncioDTOs = annunci.stream()
+                    .map(annuncioService::convertToDTO)
+                    .toList();
+            return successResponse(annuncioDTOs);
+        } catch (Exception e) {
+            logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante la ricerca degli annunci con mappa", "Annuncio");
         }
     }
 }

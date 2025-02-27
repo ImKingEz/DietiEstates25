@@ -2,6 +2,7 @@ package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.FiltroAnnunci;
@@ -146,7 +147,9 @@ public class RisultatiRicercaController extends AbstractController implements In
 
     private Utente utente;
 
-    List<AnnuncioDTO> annunci;
+    private List<AnnuncioDTO> annunci;
+
+    private MapSearchDTO mapSearchDTO;
 
     private UtenteService utenteService = new UtenteService();
 
@@ -171,6 +174,18 @@ public class RisultatiRicercaController extends AbstractController implements In
         updateMap();
 
         tornaIndietroButton.setOnAction(event -> openHomepage(token, tornaIndietroButton));
+
+        Platform.runLater(this::disableSearchButtonIfMapSearchIsNotNull);
+    }
+
+    private void disableSearchButtonIfMapSearchIsNotNull() {
+        if (mapSearchDTO != null) {
+            cercaButton.setDisable(true);
+            cercaButton.setVisible(false);
+            ricercaTextField.setDisable(true);
+            ricercaTextField.setVisible(false);
+            cittaDiRicerca = mapSearchDTO.getLatitude() + "," + mapSearchDTO.getLongitude();
+        }
     }
 
     private void handleRicercaAnnunci() {
@@ -749,7 +764,11 @@ public class RisultatiRicercaController extends AbstractController implements In
         }
         try {
             logger.info("Aggiornamento degli annunci per la città: {} con i seguenti filtri: {}", cittaDiRicerca, filtroAnnunci);
-            annunci = annuncioService.searchAnnunciByCittaAndFiltro(cittaDiRicerca, filtroAnnunci, token);
+            if (mapSearchDTO == null) {
+                annunci = annuncioService.searchAnnunciByCittaAndFiltro(cittaDiRicerca, filtroAnnunci, token);
+            } else {
+                annunci = annuncioService.searchAnnunciByMap(mapSearchDTO, filtroAnnunci, token);
+            }
 
             Platform.runLater(() -> {
                 if (annunci != null && !annunci.isEmpty()) {
@@ -873,5 +892,9 @@ public class RisultatiRicercaController extends AbstractController implements In
                     annuncioDetailController.setAnnuncio(annuncio, immobile);
                     annuncioDetailController.setFiltroAnnunci(filtroAnnunci, cittaDiRicerca);
                 }, reimpostaFiltriButton, "/com/dietiestates25ui/styles/annuncio-detail-style.css");
+    }
+
+    public void setMapSearchDTO(MapSearchDTO mapSearchDTO) {
+        this.mapSearchDTO = mapSearchDTO;
     }
 }

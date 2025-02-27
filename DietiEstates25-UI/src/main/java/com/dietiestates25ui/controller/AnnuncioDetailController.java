@@ -88,7 +88,7 @@ public class AnnuncioDetailController extends AbstractController implements Init
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        tornaIndietroButton.setOnAction(event -> openRisultatiRicercaPage(cittaDiRicerca, filtroAnnunci, tornaIndietroButton));
+        tornaIndietroButton.setOnAction(event -> openRisultatiRicercaPage(cittaDiRicerca, filtroAnnunci, tornaIndietroButton, null));
 
         prevButton.setOnAction(event -> prevImage());
         nextButton.setOnAction(event -> nextImage());

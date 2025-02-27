@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.model.FiltroAnnunci;
 import javafx.animation.FadeTransition;
@@ -164,13 +165,14 @@ public abstract class AbstractController {
         });
     }
 
-    protected void openRisultatiRicercaPage(String citta, FiltroAnnunci filtro, Button button) {
+    protected void openRisultatiRicercaPage(String citta, FiltroAnnunci filtro, Button button, MapSearchDTO mapSearchDTO) {
         loadScene("/com/dietiestates25ui/view/risultati-ricerca-view.fxml",
                 (fxmlLoader, stage) -> {
                     RisultatiRicercaController controller = fxmlLoader.getController();
                     controller.setFiltroAnnunci(filtro, citta);
                     controller.setToken(token);
                     controller.setStage(currentStage);
+                    controller.setMapSearchDTO(mapSearchDTO);
                 }, button, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
     }
 

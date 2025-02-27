@@ -173,7 +173,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
                             }
                             // TODO
                             //List<Annuncio> annunci = convertDTO(annunciDTO);
-                            //openRisultatiRicercaPage(annunci);
+                            openRisultatiRicercaPage(token, filtro, cercaButton, mapSearchDTO);
                         }
                     }))
                 .exceptionally(ex -> {
@@ -182,33 +182,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
                     return null;
                 });
     }
-
-//    private List<Annuncio> convertDTO(List<AnnuncioDTO> annunciDTO) { TODO
-//        List<Annuncio> annunci = new ArrayList<>();
-//        for (AnnuncioDTO annuncioDTO : annunciDTO) {
-//            Annuncio annuncio = new Annuncio();
-//            annuncio.setTitolo(annuncioDTO.getTitolo());
-//            annuncio.setTipo(annuncioDTO.getTipo());
-//            annuncio.setPrezzo(annuncioDTO.getPrezzo());
-//            annuncio.setDescrizione(annuncioDTO.getDescrizione());
-//            annuncio.setIdImmobile(annuncioDTO.getIdImmobile());
-//            annuncio.setIdAgente(annuncioDTO.getIdAgente());
-//            annuncio.setImmaginiUrls(annuncioDTO.getImmaginiUrls());
-//
-//            annunci.add(annuncio);
-//        }
-//        return annunci;
-//    }
-
-//    private void openRisultatiRicercaPage(List<Annuncio> annunci) { TODO
-//        loadScene("/com/dietiestates25ui/view/risultati-ricerca-view.fxml",
-//                (fxmlLoader, stage) -> {
-//                    RisultatiRicercaController controller = fxmlLoader.getController();
-//                    controller.setAnnunci(annunci);
-//                    controller.setToken(token);
-//                    controller.setStage(currentStage);
-//                }, cercaButton, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
-//    }
 
     public void setVenditaSelezionato(boolean venditaSelezionato) {
         this.venditaSelezionato = venditaSelezionato;

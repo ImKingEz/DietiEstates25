@@ -84,7 +84,23 @@ public class HomePageController extends AbstractController implements Initializa
         venditaButton.setSelected(true);
         tipologiaMenuButton.setText(selectedTipologiaText);
         ricercaTextField.setPromptText("Effettua una ricerca inserendo una città");
-        updateButtonStates();
+        updateselezionaMappaButtonStates();
+        updateTipologiaButtonStates();
+    }
+
+    private void updateTipologiaButtonStates() {
+        venditaButton.setOnAction(event -> updateVenditaButtonState());
+        affittoButton.setOnAction(event -> updateAffittaButtonState());
+    }
+
+    private void updateAffittaButtonState() {
+        venditaButton.setSelected(false);
+        affittoButton.setSelected(true);
+    }
+
+    private void updateVenditaButtonState() {
+        venditaButton.setSelected(true);
+        affittoButton.setSelected(false);
     }
 
     private void setUtente(String token) {
@@ -115,17 +131,16 @@ public class HomePageController extends AbstractController implements Initializa
 
     private void setupTextFieldListeners() {
         ricercaTextField.focusedProperty().addListener((obs, oldVal, newVal) -> handleTextFieldFocusChange(newVal));
-        ricercaTextField.textProperty().addListener((observable, oldValue, newValue) -> updateButtonStates());
+        ricercaTextField.textProperty().addListener((observable, oldValue, newValue) -> updateselezionaMappaButtonStates());
     }
 
     private void handleTextFieldFocusChange(boolean newVal) {
         if (newVal) {
             ricercaTextField.setPromptText("");
         }
-        //updateButtonStates();
     }
 
-    private void updateButtonStates() {
+    private void updateselezionaMappaButtonStates() {
         boolean isRicercaTextFieldVuoto = ricercaTextField.getText().isEmpty();
         selezionaMappaButton.setDisable(!isRicercaTextFieldVuoto);
     }
@@ -189,7 +204,7 @@ public class HomePageController extends AbstractController implements Initializa
             showPopup(POPUP_ERROR_TITLE, "Nessun immobile trovato con queste caratteristiche", ERROR_ICON);
             logger.info("Nessun immobile trovato con queste caratteristiche");
         } else {
-            openRisultatiRicercaPage(citta, filtro, cercaButton);
+            openRisultatiRicercaPage(citta, filtro, cercaButton, null);
         }
     }
 
