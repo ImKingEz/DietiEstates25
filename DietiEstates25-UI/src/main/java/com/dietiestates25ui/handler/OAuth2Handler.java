@@ -3,6 +3,7 @@ package com.dietiestates25ui.handler;
 import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.controller.AbstractController;
 import com.dietiestates25ui.controller.AccountCompletionController;
+import com.dietiestates25ui.controller.TokenManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -44,7 +45,7 @@ public class OAuth2Handler {
     private void handleOAuthSuccess(String url, Button button) {
         String token = parseTokenFromURL(url);
         if (isValidToken(token)) {
-            controller.openHomepage(token, button);
+            controller.openHomepage(button);
         }
     }
 
@@ -77,6 +78,8 @@ public class OAuth2Handler {
 
     private void openAccountCompletion(String token) {
         try {
+            TokenManager.getInstance().setToken(token);
+
             FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("/com/dietiestates25ui/view/account-completion-view.fxml"));
             Scene sceneAccountCompletion = new Scene(fxmlLoader.load());
             Stage stageAccountCompletion = controller.getCurrentStage();
@@ -89,8 +92,8 @@ public class OAuth2Handler {
 
             sceneAccountCompletion.getStylesheets().add(getClass().getResource("/com/dietiestates25ui/styles/account-completion-style.css").toExternalForm());
             AccountCompletionController accountCompletionController = fxmlLoader.getController();
-            accountCompletionController.setTokenAndLoadDetails(token);
             accountCompletionController.setStage(stageAccountCompletion);
+            accountCompletionController.loadUserDetails();
             stageAccountCompletion.setTitle(AbstractController.APP_TITLE);
             stageAccountCompletion.setScene(sceneAccountCompletion);
             stageAccountCompletion.show();

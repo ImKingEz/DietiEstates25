@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.handler.OAuth2Handler;
 import com.dietiestates25ui.model.Utente;
@@ -131,8 +132,11 @@ public class LoginController extends AbstractController implements Initializable
         try {
             String token = utenteService.loginUtente(user);
             if (token != null) {
+                TokenManager.getInstance().setToken(token);
+
                 showPopup("Login effettuato con successo", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
+
                 googleButton.setDisable(true);
                 facebookButton.setDisable(true);
                 githubButton.setDisable(true);
@@ -140,8 +144,16 @@ public class LoginController extends AbstractController implements Initializable
                 loginButton.setDisable(true);
                 agenziaImmobiliareButton.setDisable(true);
 
+                UtenteDTO utenteDTO = utenteService.getUtenteDetails(token);
+                Utente utente = new Utente();
+                utente.setNome(utenteDTO.getNome());
+                utente.setCognome(utenteDTO.getCognome());
+                utente.setEmail(utenteDTO.getEmail());
+                utente.setCitta(utenteDTO.getCitta());
+                TokenManager.getInstance().setLoggedInUser(utente);
+
                 PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));
-                delay.setOnFinished(event -> openHomepage(token, loginButton));
+                delay.setOnFinished(event -> openHomepage(loginButton));
                 delay.play();
             }
         } catch (Exception e) {
@@ -160,7 +172,6 @@ public class LoginController extends AbstractController implements Initializable
             showPopup("Errore durante il login con provider", e.getMessage(), ERROR_ICON);
         }
     }
-
 
     private void openRegisterPage() {
         loadScene("/com/dietiestates25ui/view/register-view.fxml",

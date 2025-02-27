@@ -74,12 +74,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
     private Annuncio annuncio;
     private AnnuncioService annuncioService = new AnnuncioService();
 
-    private AgenteImmobiliare agente;
     private AgenteService agenteService = new AgenteService();
-
-    public void setAgente(AgenteImmobiliare agente) {
-        this.agente = agente;
-    }
 
     public void setImmobile(Immobile immobile) {
         this.immobile = immobile;
@@ -87,10 +82,6 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     public void setAnnuncio(Annuncio annuncio) {
         this.annuncio = annuncio;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public void setSelectedImageList(List<File> selectedImageList) {
@@ -219,8 +210,8 @@ public class ConfermaInserzioneController extends AbstractController implements 
                     controller.setLatitudine(immobile.getLatitudine());
                     controller.setLongitudine(immobile.getLongitudine());
 
-                    controller.setToken(token);
                     controller.setStage(stage);
+                    controller.setAgente(agente);
 
                     controller.checkFormValidity();
 
@@ -251,8 +242,6 @@ public class ConfermaInserzioneController extends AbstractController implements 
         loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
                 (fxmlLoader, stage) -> {
                     AgenteDashboardController controller = fxmlLoader.getController();
-                    controller.setToken(token);
-                    controller.setAgente(agente);
                 }, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

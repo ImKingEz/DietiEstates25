@@ -82,6 +82,8 @@ public class LoginAgenteController extends AbstractController implements Initial
         try {
             String token = agenteService.loginAgente(agente);
             if (token != null) {
+                TokenManager.getInstance().setToken(token);
+
                 showPopup("Login effettuato con successo", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
 
@@ -98,7 +100,8 @@ public class LoginAgenteController extends AbstractController implements Initial
                         agente.setCognome(agenteDTO.getCognome());
                         agente.setDataDiNascita(agenteDTO.getDataDiNascita());
                         agente.setSesso(agenteDTO.getSesso());
-                        openAgenteDashboard(token, agente);
+                        TokenManager.getInstance().setLoggedInUser(agente);
+                        openAgenteDashboard(agente);
                         logger.info("Dati dell'agente recuperati con successo: {} {} {} {} {}",
                                 agente.getIdAgenzia(), agente.getNome(), agente.getCognome(), agente.getDataDiNascita(), agente.getSesso());
                     } catch (GenericServiceException e) {
@@ -114,12 +117,11 @@ public class LoginAgenteController extends AbstractController implements Initial
         }
     }
 
-    private void openAgenteDashboard(String token, AgenteImmobiliare agente) {
+    private void openAgenteDashboard(AgenteImmobiliare agente) {
         loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
                 (fxmlLoader, stage) -> {
                     AgenteDashboardController controller = fxmlLoader.getController();
                     controller.setAgente(agente);
-                    controller.setToken(token);
                 }, loginButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

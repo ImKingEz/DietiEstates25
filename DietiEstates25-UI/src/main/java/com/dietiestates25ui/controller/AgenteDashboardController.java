@@ -33,18 +33,14 @@ public class AgenteDashboardController extends AbstractController implements Ini
     @FXML
     private Button tornaLoginButton;
 
-    private AgenteImmobiliare agente;
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> {
             logo.requestFocus();
             currentStage = (Stage) primaryAnchorPane.getScene().getWindow();
         });
+
+        Platform.runLater(this::searchUserNameAndUpdateProfileHBox);
 
         caricaImmobileButton.setOnAction(event -> openInserimentoDatiInserzionePage());
 
@@ -65,13 +61,9 @@ public class AgenteDashboardController extends AbstractController implements Ini
 //            System.out.println("Statistiche inserzioni cliccato!");
 //        });
 //
-        homepageButton.setOnAction(event -> openHomepage(token, homepageButton));
+        homepageButton.setOnAction(event -> openHomepage(homepageButton));
 
         tornaLoginButton.setOnAction(event -> openLoginPage());
-    }
-
-    public void setAgente(AgenteImmobiliare agente) {
-        this.agente = agente;
     }
 
     private void openInserimentoDatiInserzionePage() {
@@ -79,7 +71,6 @@ public class AgenteDashboardController extends AbstractController implements Ini
                 (fxmlLoader, stage) -> {
                     InserimentoInserzioneController controller = fxmlLoader.getController();
                     controller.setStage(stage);
-                    controller.setToken(token);
                     controller.setAgente(agente);
                 }, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
     }

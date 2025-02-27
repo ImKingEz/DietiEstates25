@@ -57,12 +57,6 @@ public class AccountCompletionController extends AbstractController implements I
         salvaButton.setDisable(nome.isBlank() || cognome.isBlank());
     }
 
-    public void setTokenAndLoadDetails(String token) {
-        this.token = token;
-        logger.info("(accountcompletion) token: {}", token);
-        loadUserDetails();
-    }
-
     private void saveAccountDetails() {
         Platform.runLater(() -> logo.requestFocus());
 
@@ -76,6 +70,7 @@ public class AccountCompletionController extends AbstractController implements I
         }
 
         Utente utente = createUtente(nome, cognome, citta);
+        TokenManager.getInstance().setLoggedInUser(utente);
 
         try {
             utenteService.updateUtente(utente, token);
@@ -111,7 +106,7 @@ public class AccountCompletionController extends AbstractController implements I
         showPopup("Modifica completata!", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
         salvaButton.setDisable(true);
         PauseTransition pause = new PauseTransition(Duration.millis(POPUP_PAUSE));
-        pause.setOnFinished(e -> openHomepage(token, salvaButton));
+        pause.setOnFinished(e -> openHomepage(salvaButton));
         pause.play();
     }
 
@@ -130,7 +125,7 @@ public class AccountCompletionController extends AbstractController implements I
         showPopup(POPUP_ERROR_TITLE, "Errore durante l'update dell'utente (" + e.getMessage() + ").", ERROR_ICON);
     }
 
-    private void loadUserDetails(){
+    public void loadUserDetails(){
         try {
             UtenteDTO utente = utenteService.getUtenteDetails(token);
             if(utente != null){
@@ -139,10 +134,9 @@ public class AccountCompletionController extends AbstractController implements I
                     cognomeTextField.setText(utente.getCognome());
                     if(utente.getCitta() != null)
                         cittaTextField.setText(utente.getCitta());
-
                 });
             }
-        }catch (Exception e){
+        } catch (Exception e){
             logger.error("Errore durante il caricamento delle informazioni dell'utente: {}", e.getMessage(), e);
             showPopup(POPUP_ERROR_TITLE, "Errore durante il caricamento delle informazioni dell'utente", ERROR_ICON);
         }

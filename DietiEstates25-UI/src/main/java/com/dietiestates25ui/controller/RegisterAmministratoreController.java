@@ -34,8 +34,6 @@ public class RegisterAmministratoreController extends AbstractController impleme
 
     private boolean passwordVisible = false;
 
-    private Amministratore amministratore;
-
     private final AmministratoreService amministratoreService = new AmministratoreService();
 
     @Override
@@ -58,7 +56,6 @@ public class RegisterAmministratoreController extends AbstractController impleme
                 (fxmlLoader, stage) -> {
                     AreaAmministrativaController controller = fxmlLoader.getController();
                     controller.setStage(stage);
-                    controller.setToken(token);
                     controller.setAmministratore(amministratore);
                 }, registraButton, "/com/dietiestates25ui/styles/area-amministrativa-style.css");
     }
@@ -99,13 +96,5 @@ public class RegisterAmministratoreController extends AbstractController impleme
         String password = passwordPasswordField.getText().trim();
 
         registraButton.setDisable(!FormValidator.isValidEmail(email) || !FormValidator.isValidPassword(password));
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public void setAmministratore(Amministratore admin) {
-        this.amministratore = admin;
     }
 }

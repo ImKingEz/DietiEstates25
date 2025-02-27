@@ -1,8 +1,14 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25ui.MainApplication;
+import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.AgenteImmobiliare;
+import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.model.FiltroAnnunci;
+import com.dietiestates25ui.model.Utente;
+import com.dietiestates25ui.service.AgenziaService;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -75,7 +81,16 @@ public abstract class AbstractController {
     @FXML
     protected ImageView eyeImageView;
 
-    protected String token;
+    @FXML
+    protected HBox profileHBox;
+    
+    protected Utente utente;
+    
+    protected Amministratore amministratore;
+    
+    protected AgenteImmobiliare agente;
+
+    protected String token = TokenManager.getInstance().getToken();
 
     public Stage getCurrentStage() {
         return currentStage;
@@ -170,22 +185,16 @@ public abstract class AbstractController {
                 (fxmlLoader, stage) -> {
                     RisultatiRicercaController controller = fxmlLoader.getController();
                     controller.setFiltroAnnunci(filtro, citta);
-                    controller.setToken(token);
                     controller.setStage(currentStage);
                     controller.setMapSearchDTO(mapSearchDTO);
                 }, button, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
     }
 
-    public void openHomepage(String token) {
-        openHomepage(token, null);
-    }
-
-    public void openHomepage(String token, Button button) {
+    public void openHomepage(Button button) {
         loadScene("/com/dietiestates25ui/view/homepage-view.fxml",
                 (fxmlLoader, stage) -> {
                     HomePageController homePageController = fxmlLoader.getController();
                     homePageController.setStage(stage);
-                    homePageController.setToken(token);
                 }, button, "/com/dietiestates25ui/styles/homepage-style.css");
     }
 
@@ -261,5 +270,49 @@ public abstract class AbstractController {
             passwordTextField.setVisible(false);
         }
         return passwordVisible;
+    }
+
+    protected void searchUserNameAndUpdateProfileHBox() {
+        if (TokenManager.getInstance().getLoggedInUser() instanceof Utente) {
+            updateProfileHBox(((Utente) TokenManager.getInstance().getLoggedInUser()).getNome());
+        } else if (TokenManager.getInstance().getLoggedInUser() instanceof Amministratore) {
+            AgenziaService agenziaService = new AgenziaService();
+            try {
+                AgenziaDTO agenzia = agenziaService.getAgenziaDetails(((Amministratore) TokenManager.getInstance().getLoggedInUser()).getIdAgenzia(), token);
+                updateProfileHBox(agenzia.getNome());
+            } catch (GenericServiceException e) {
+                logger.error("Errore durante il recupero dei dati dell'agenzia: {}", e.getMessage());
+            }
+        } else if (TokenManager.getInstance().getLoggedInUser() instanceof AgenteImmobiliare) {
+            updateProfileHBox(((AgenteImmobiliare) TokenManager.getInstance().getLoggedInUser()).getNome());
+        } else {
+            showPopup(POPUP_ERROR_TITLE, "Utente non valido.", ERROR_ICON);
+            throw new IllegalStateException("Utente non valido.");
+        }
+    }
+
+    protected void updateProfileHBox(String nome) {
+        Text ciaoNome = new Text();
+        ciaoNome.getStyleClass().add("profileName");
+        ciaoNome.setText("Ciao " + nome);
+        profileHBox.getChildren().addFirst(ciaoNome);
+    }
+
+    protected void setAmministratore(Amministratore user) {
+        this.amministratore = user;
+        this.agente = null;
+        this.utente = null;
+    }
+
+    protected void setAgente(AgenteImmobiliare user) {
+        this.agente = user;
+        this.amministratore = null;
+        this.utente = null;
+    }
+
+    protected void setUtente(Utente user) {
+        this.utente = user;
+        this.amministratore = null;
+        this.agente = null;
     }
 }

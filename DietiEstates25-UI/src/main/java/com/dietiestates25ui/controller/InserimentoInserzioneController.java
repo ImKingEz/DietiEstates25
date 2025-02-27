@@ -141,8 +141,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private double longitudine;
     private String citta;
 
-    private AgenteImmobiliare agente;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         logo.requestFocus();
@@ -170,10 +168,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> {});
 
         createAndPlaceBackButton();
-    }
-
-    public void setAgente(AgenteImmobiliare agente) {
-        this.agente = agente;
     }
 
     private void setupPianoMenuButton() {
@@ -322,10 +316,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     public void setVicinoTrasportoPubblicoCheckBox(boolean vicinoTrasportoPubblico) {
         this.vicinoTrasportoPubblicoCheckBox.setSelected(vicinoTrasportoPubblico);
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     @FXML
@@ -792,9 +782,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     ConfermaInserzioneController controller = fxmlLoader.getController();
                     controller.setImmobile(immobile);
                     controller.setAnnuncio(annuncio);
-                    controller.setSelectedImageList(selectedImageList);
-                    controller.setToken(token);
                     controller.setAgente(agente);
+                    controller.setSelectedImageList(selectedImageList);
                     controller.setStage(stage);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");
     }
@@ -814,7 +803,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
                 (fxmlLoader, stage) -> {
                     AgenteDashboardController controller = fxmlLoader.getController();
                     controller.setAgente(agente);
-                    controller.setToken(token);
                 }, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

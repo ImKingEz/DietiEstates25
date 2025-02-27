@@ -26,12 +26,7 @@ public class AreaAmministrativaController extends AbstractController implements 
     private Button homepageButton;
 
     @FXML
-    private HBox profileHBox;
-
-    @FXML
     private Button tornaLoginButton;
-
-    private Amministratore amministratore;
 
     private AgenziaService agenziaService;
 
@@ -40,11 +35,11 @@ public class AreaAmministrativaController extends AbstractController implements 
         Platform.runLater(() -> logo.requestFocus());
 
         agenziaService = new AgenziaService();
-        Platform.runLater(this::updateProfileHBox);
+        Platform.runLater(this::searchUserNameAndUpdateProfileHBox);
 
         tornaLoginButton.setOnAction(event -> openLoginAmministratorePage());
 
-        homepageButton.setOnAction(event -> openHomepage(token, homepageButton));
+        homepageButton.setOnAction(event -> openHomepage(homepageButton));
 
         creaAccountAgenteButton.setOnAction(event -> openRegisterAgentePage());
 
@@ -55,9 +50,8 @@ public class AreaAmministrativaController extends AbstractController implements 
         loadScene("/com/dietiestates25ui/view/register-amministratore-view.fxml",
                 (fxmlLoader, stage) -> {
                     RegisterAmministratoreController controller = fxmlLoader.getController();
-                    controller.setStage(stage);
-                    controller.setToken(token);
                     controller.setAmministratore(amministratore);
+                    controller.setStage(stage);
                 }, creaAccountAmministratoreButton, "/com/dietiestates25ui/styles/register-amministratore-style.css");
     }
 
@@ -65,9 +59,8 @@ public class AreaAmministrativaController extends AbstractController implements 
         loadScene("/com/dietiestates25ui/view/register-agente-view.fxml",
                 (fxmlLoader, stage) -> {
                     RegisterAgenteController controller = fxmlLoader.getController();
-                    controller.setStage(stage);
-                    controller.setToken(token);
                     controller.setAmministratore(amministratore);
+                    controller.setStage(stage);
                 }, creaAccountAgenteButton, "/com/dietiestates25ui/styles/register-agente-style.css");
     }
 
@@ -75,29 +68,5 @@ public class AreaAmministrativaController extends AbstractController implements 
         loadScene("/com/dietiestates25ui/view/login-amministratore-view.fxml",
                 (fxmlLoader, stage) -> {
                 }, tornaLoginButton, "/com/dietiestates25ui/styles/login-amministratore-style.css");
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    private void updateProfileHBox() {
-        try {
-            AgenziaDTO agenziaDTO = agenziaService.getAgenziaDetails(amministratore.getIdAgenzia(), token);
-            Text name = new Text(agenziaDTO.getNome());
-            name.getStyleClass().add("profileName");
-            profileHBox.getChildren().addFirst(name);
-        } catch (GenericServiceException e) {
-            logAndShowDetailsError(e);
-        }
-    }
-
-    private void logAndShowDetailsError(Exception e) {
-        logger.error("Errore durante il recupero dei dettagli dell'agenzia: {}", e.getMessage(), e);
-        showPopup(POPUP_ERROR_TITLE, "Errore durante il recupero dei dettagli dell'agenzia.", ERROR_ICON);
-    }
-
-    public void setAmministratore(Amministratore admin) {
-        this.amministratore = admin;
     }
 }

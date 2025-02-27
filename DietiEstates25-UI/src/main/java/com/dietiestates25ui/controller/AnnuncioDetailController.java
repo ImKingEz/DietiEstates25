@@ -92,6 +92,8 @@ public class AnnuncioDetailController extends AbstractController implements Init
     public void initialize(URL url, ResourceBundle resourceBundle) {
         tornaIndietroButton.setOnAction(event -> openRisultatiRicercaPage(cittaDiRicerca, filtroAnnunci, tornaIndietroButton, mapSearchDTO));
 
+        Platform.runLater(this::searchUserNameAndUpdateProfileHBox);
+
         prevButton.setOnAction(event -> prevImage());
         nextButton.setOnAction(event -> nextImage());
 
@@ -153,10 +155,6 @@ public class AnnuncioDetailController extends AbstractController implements Init
         this.immobile = immobile;
         setAnnuncioDetails();
         updateCarousel();
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     private void setAnnuncioDetails() {

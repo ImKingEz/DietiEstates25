@@ -61,20 +61,9 @@ public class RisultatiRicercaController extends AbstractController implements In
     private Button reimpostaFiltriButton;
 
     @FXML
-    private ImageView annuncioImageView;
-
-    @FXML
-    private ImageView annuncioImageView1;
-
-    @FXML
-    private ImageView annuncioImageView2;
-
-    @FXML
     private TextField ricercaTextField;
     @FXML
     private Button cercaButton;
-    @FXML
-    private HBox profileHBox;
 
     @FXML
     private TextField minPriceTextField;
@@ -145,8 +134,6 @@ public class RisultatiRicercaController extends AbstractController implements In
     private FiltroAnnunci filtroAnnunci;
     private String cittaDiRicerca;
 
-    private Utente utente;
-
     private List<AnnuncioDTO> annunci;
 
     private MapSearchDTO mapSearchDTO;
@@ -162,7 +149,7 @@ public class RisultatiRicercaController extends AbstractController implements In
         Platform.runLater(() -> logo.requestFocus());
         Platform.runLater(() -> currentStage = (Stage) primaryAnchorPane.getScene().getWindow());
 
-        updateProfileHBox();
+        Platform.runLater(this::searchUserNameAndUpdateProfileHBox);
         handleRicercaAnnunci();
 
         scrollLeftButton.setOnAction(this::scrollLeft);
@@ -173,7 +160,7 @@ public class RisultatiRicercaController extends AbstractController implements In
         updateAnnunciScrollPanePrefWidth();
         updateMap();
 
-        tornaIndietroButton.setOnAction(event -> openHomepage(token, tornaIndietroButton));
+        tornaIndietroButton.setOnAction(event -> openHomepage(tornaIndietroButton));
 
         Platform.runLater(this::disableSearchButtonIfMapSearchIsNotNull);
     }
@@ -705,29 +692,6 @@ public class RisultatiRicercaController extends AbstractController implements In
         }
     }
 
-    private void setUtente(String token) {
-        try {
-            logger.info("Recupero dati utente con token: {}", token);
-            UtenteDTO utenteDTO = utenteService.getUtenteDetails(token);
-            utente = new Utente();
-            utente.setNome(utenteDTO.getNome());
-            utente.setCognome(utenteDTO.getCognome());
-            utente.setEmail(utenteDTO.getEmail());
-            utente.setCitta(utenteDTO.getCitta());
-        } catch (GenericServiceException e) {
-            logger.error("Errore durante il recupero dei dati dell'utente: {}", e.getMessage());
-        }
-    }
-
-    private void updateProfileHBox() {
-        Platform.runLater(() -> {
-            Text ciaoNome = new Text();
-            ciaoNome.getStyleClass().add("profileName");
-            ciaoNome.setText("Ciao " + utente.getNome());
-            profileHBox.getChildren().addFirst(ciaoNome);
-        });
-    }
-
     private void scroll(ActionEvent event) {
         double deltaX = (event.getSource() == scrollLeftButton) ? SCROLL_AMOUNT : -SCROLL_AMOUNT;
         double currentX = filterHBox.getTranslateX();
@@ -750,11 +714,6 @@ public class RisultatiRicercaController extends AbstractController implements In
     @FXML
     private void scrollRight(ActionEvent event) {
         scroll(event);
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-        setUtente(token);
     }
 
     private void updateAnnunci() {
@@ -888,7 +847,6 @@ public class RisultatiRicercaController extends AbstractController implements In
                 (fxmlLoader, stage) -> {
                     AnnuncioDetailController annuncioDetailController = fxmlLoader.getController();
                     annuncioDetailController.setStage(stage);
-                    annuncioDetailController.setToken(token);
                     annuncioDetailController.setAnnuncio(annuncio, immobile);
                     annuncioDetailController.setFiltroAnnunci(filtroAnnunci, cittaDiRicerca);
                     annuncioDetailController.setMapSearchDTO(mapSearchDTO);

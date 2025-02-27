@@ -57,8 +57,6 @@ public class RegisterAgenteController extends AbstractController implements Init
 
     private boolean passwordVisible = false;
 
-    private Amministratore amministratore;
-
     private final AgenteService agenteService = new AgenteService();
 
     @Override
@@ -92,7 +90,6 @@ public class RegisterAgenteController extends AbstractController implements Init
                 (fxmlLoader, stage) -> {
                     AreaAmministrativaController controller = fxmlLoader.getController();
                     controller.setStage(stage);
-                    controller.setToken(token);
                     controller.setAmministratore(amministratore);
                 }, registraButton, "/com/dietiestates25ui/styles/area-amministrativa-style.css");
     }
@@ -159,13 +156,5 @@ public class RegisterAgenteController extends AbstractController implements Init
         String password = passwordPasswordField.getText().trim();
 
         registraButton.setDisable(nome.isBlank() || cognome.isBlank() || dataNascita == null || sesso.equals("Sesso") || !FormValidator.isValidEmail(email) || !FormValidator.isValidPassword(password));
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public void setAmministratore(Amministratore admin) {
-        this.amministratore = admin;
     }
 }

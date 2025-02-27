@@ -65,10 +65,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
         loadMap();
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     private void setupSlider() {
         DecimalFormat df = new DecimalFormat("#");
         radiusSlider.setMin(100);
@@ -121,7 +117,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
     private void openHomePage() {
         loadScene("/com/dietiestates25ui/view/homepage-view.fxml", (fxmlLoader, stage) -> {
             HomePageController homeController = fxmlLoader.getController();
-            homeController.setToken(token);
             homeController.setStage(currentStage);
             if (venditaSelezionato) {
                 homeController.venditaButton.setSelected(true);
