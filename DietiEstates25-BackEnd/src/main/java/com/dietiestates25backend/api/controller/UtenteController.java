@@ -4,7 +4,7 @@ import com.dietiestates25.dto.ApiResponse;
 import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25backend.api.dto.*;
-import com.dietiestates25backend.business.service.AuthService;
+import com.dietiestates25backend.business.service.UtenteService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
-public class AuthController extends BaseController {
+public class UtenteController extends BaseController {
 
     public static final String ENTITY_TYPE = "Utente";
-    private final AuthService authService;
+    private final UtenteService utenteService;
 
     @Autowired
-    public AuthController(AuthService authService) {
-        this.authService = authService;
+    public UtenteController(UtenteService utenteService) {
+        this.utenteService = utenteService;
     }
 
     @PostMapping("/register")
@@ -33,7 +33,7 @@ public class AuthController extends BaseController {
         String email = registerDTO.getEmail();
         logger.debug("registerUser() called with registerDTO: {}", email);
         try {
-            UtenteDTO utenteDTO = authService.registraUtente(registerDTO);
+            UtenteDTO utenteDTO = utenteService.registraUtente(registerDTO);
             logger.debug("registerUser() successful with user: {}", utenteDTO.getEmail());
             return successResponse(utenteDTO, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException ex) {
@@ -55,7 +55,7 @@ public class AuthController extends BaseController {
         logger.debug("X-CSRF-TOKEN header: {}", csrfTokenHeader);
 
         try {
-            String token = authService.loginUtente(email, loginDTO.getPassword(), csrfTokenHeader);
+            String token = utenteService.loginUtente(email, loginDTO.getPassword(), csrfTokenHeader);
             LoginResponse loginResponse = new LoginResponse(token);
             logger.debug("loginUser() successful for user: {}", email);
             return successResponse(loginResponse);
@@ -82,7 +82,7 @@ public class AuthController extends BaseController {
 
         try {
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-            UtenteDTO utenteDTO = authService.updateUtente(updateUtenteDTO, userEmail);
+            UtenteDTO utenteDTO = utenteService.updateUtente(updateUtenteDTO, userEmail);
             logger.debug("updateUtente() successful for user: {}", userEmail);
             return successResponse(utenteDTO);
 
@@ -99,7 +99,7 @@ public class AuthController extends BaseController {
 
         try {
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-            UtenteDTO utenteDTO = authService.getUtenteDetails(userEmail);
+            UtenteDTO utenteDTO = utenteService.getUtenteDetails(userEmail);
             logger.debug("getUserDetails() successful for user: {}", userEmail);
             return successResponse(utenteDTO);
 

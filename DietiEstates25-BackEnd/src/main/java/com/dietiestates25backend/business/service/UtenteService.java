@@ -20,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dietiestates25backend.api.dto.UpdateUtenteDTO;
 
 @Service
-public class AuthService {
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+public class UtenteService {
+    private static final Logger logger = LoggerFactory.getLogger(UtenteService.class);
 
     private final UtenteRepository userRepository;
     private final AgenteRepository agenteRepository;
@@ -34,7 +34,7 @@ public class AuthService {
     private final HttpServletRequest httpServletRequest;
 
     @Autowired
-    public AuthService(UtenteRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, HttpServletRequest httpServletRequest, AgenteRepository agenteRepository, AmministratoreRepository amministratoreRepository) {
+    public UtenteService(UtenteRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, HttpServletRequest httpServletRequest, AgenteRepository agenteRepository, AmministratoreRepository amministratoreRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;

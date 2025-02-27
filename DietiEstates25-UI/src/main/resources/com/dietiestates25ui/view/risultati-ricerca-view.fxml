@@ -387,7 +387,7 @@
         </HBox>
         <AnchorPane fx:id="listaAnnunciAnchorPane" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
             <children>
-                <ScrollPane fx:id="annunciScrollPane" prefWidth="700.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <ScrollPane fx:id="annunciScrollPane" prefWidth="700.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <content>
                         <VBox fx:id="listaAnnunciVBox">
                             <children>
@@ -400,6 +400,7 @@
                     <children>
                         <WebView fx:id="map" prefHeight="450.0" prefWidth="-1.0" />
                     </children></VBox>
+            <Button fx:id="tornaIndietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" />
             </children>
         </AnchorPane>
     </GridPane>

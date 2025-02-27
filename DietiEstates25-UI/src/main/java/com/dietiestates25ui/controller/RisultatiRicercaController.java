@@ -135,6 +135,9 @@ public class RisultatiRicercaController extends AbstractController implements In
     @FXML
     private Text numeroAnnunciText;
 
+    @FXML
+    private Button tornaIndietroButton;
+
     private static final double SCROLL_AMOUNT = 600.0;
     private final Duration scrollDuration = Duration.millis(500);
 
@@ -166,6 +169,8 @@ public class RisultatiRicercaController extends AbstractController implements In
 
         updateAnnunciScrollPanePrefWidth();
         updateMap();
+
+        tornaIndietroButton.setOnAction(event -> openHomepage(token, tornaIndietroButton));
     }
 
     private void handleRicercaAnnunci() {
