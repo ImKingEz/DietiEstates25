@@ -72,13 +72,12 @@ public class RicercaConMappaController extends AbstractController implements Ini
     private void setupSlider() {
         DecimalFormat df = new DecimalFormat("#");
         radiusSlider.setMin(100);
-        radiusSlider.setMax(1000);
-        radiusSlider.setValue(100);
+        radiusSlider.setMax(5000);
+        radiusSlider.setValue(500);
 
         radiusSlider.valueProperty().addListener((ov, oldVal, newVal) -> {
             raggioRicercaLabel.setText("Raggio di ricerca: " + df.format(newVal) + "mt");
 
-            // Invia il nuovo valore del raggio alla mappa
             Platform.runLater(() -> {
                 WebEngine webEngine = mapWebView.getEngine();
                 String script = "updateRadius(" + newVal.doubleValue() + ");";
@@ -92,7 +91,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == javafx.concurrent.Worker.State.SUCCEEDED) {
-                // La pagina è stata caricata completamente, ora possiamo chiamare setInitialRadius()
                 Platform.runLater(() -> {
                     double initialRadius = radiusSlider.getValue();
                     String script = "setInitialRadius(" + initialRadius + ");";
@@ -171,8 +169,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
                             for (AnnuncioDTO annuncioDTO : annunciDTO) {
                                 logger.info("Immobile trovato: {}", annuncioDTO);
                             }
-                            // TODO
-                            //List<Annuncio> annunci = convertDTO(annunciDTO);
                             openRisultatiRicercaPage(token, filtro, cercaButton, mapSearchDTO);
                         }
                     }))
