@@ -18,21 +18,6 @@
             height: 100%;
             width: 100%;
         }
-
-        #confirmOverlay {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border: 1px solid #ccc;
-            z-index: 1000;
-        }
-
-        #confirmButton {
-            padding: 5px 10px;
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.1/dist/ol.js"></script>
 </head>
@@ -97,7 +82,7 @@
             selectedLatitude = coordinate[1];
             setMarker(selectedLongitude, selectedLatitude);
             zoomToLocation(selectedLongitude, selectedLatitude);
-            addConfirmationOverlay();
+            reverseGeocode(selectedLongitude, selectedLatitude);
         });
     }
 
@@ -120,37 +105,6 @@
         map.getView().setCenter(ol.proj.fromLonLat([longitude, latitude]));
         map.getView().setZoom(newZoom);
 
-    }
-
-    function addConfirmationOverlay() {
-        const existingOverlay = document.getElementById('confirmOverlay');
-        if (existingOverlay) {
-            existingOverlay.remove();
-        }
-
-        var element = document.createElement('div');
-        element.id = 'confirmOverlay';
-        element.style.position = 'absolute';
-        element.style.top = '10px';
-        element.style.left = '50%';
-        element.style.transform = 'translateX(-50%)';
-        element.style.backgroundColor = 'white';
-        element.style.padding = '10px';
-        element.style.border = '1px solid black';
-        element.style.zIndex = '1000';
-
-
-        var confirmButton = document.createElement('button');
-        confirmButton.id = 'confirmButton';
-        confirmButton.textContent = 'Conferma Posizione';
-
-        confirmButton.addEventListener('click', function() {
-            reverseGeocode(selectedLongitude, selectedLatitude);
-            removeConfirmationOverlay();
-        });
-
-        element.appendChild(confirmButton);
-        map.getTargetElement().appendChild(element);
     }
 
     function reverseGeocode(longitude, latitude) {
