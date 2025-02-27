@@ -891,6 +891,7 @@ public class RisultatiRicercaController extends AbstractController implements In
                     annuncioDetailController.setToken(token);
                     annuncioDetailController.setAnnuncio(annuncio, immobile);
                     annuncioDetailController.setFiltroAnnunci(filtroAnnunci, cittaDiRicerca);
+                    annuncioDetailController.setMapSearchDTO(mapSearchDTO);
                 }, reimpostaFiltriButton, "/com/dietiestates25ui/styles/annuncio-detail-style.css");
     }
 

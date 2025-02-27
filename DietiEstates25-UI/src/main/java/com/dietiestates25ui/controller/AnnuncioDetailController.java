@@ -3,6 +3,7 @@ package com.dietiestates25ui.controller;
 import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.service.AgenteService;
@@ -85,10 +86,11 @@ public class AnnuncioDetailController extends AbstractController implements Init
 
     private FiltroAnnunci filtroAnnunci;
     private String cittaDiRicerca;
+    private MapSearchDTO mapSearchDTO;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        tornaIndietroButton.setOnAction(event -> openRisultatiRicercaPage(cittaDiRicerca, filtroAnnunci, tornaIndietroButton, null));
+        tornaIndietroButton.setOnAction(event -> openRisultatiRicercaPage(cittaDiRicerca, filtroAnnunci, tornaIndietroButton, mapSearchDTO));
 
         prevButton.setOnAction(event -> prevImage());
         nextButton.setOnAction(event -> nextImage());
@@ -290,5 +292,9 @@ public class AnnuncioDetailController extends AbstractController implements Init
     public void setFiltroAnnunci(FiltroAnnunci filtroAnnunci, String cittaDiRicerca) {
         this.filtroAnnunci = filtroAnnunci;
         this.cittaDiRicerca = cittaDiRicerca;
+    }
+
+    public void setMapSearchDTO(MapSearchDTO mapSearchDTO) {
+        this.mapSearchDTO = mapSearchDTO;
     }
 }
