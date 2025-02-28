@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
@@ -706,14 +707,22 @@ public class RisultatiRicercaController extends AbstractController implements In
             showPopup(POPUP_ERROR_TITLE, "Inserisci una città per effettuare la ricerca.", ERROR_ICON);
             return;
         }
-        try {
-            logger.info("Aggiornamento degli annunci per la città: {} con i seguenti filtri: {}", cittaDiRicerca, filtroAnnunci);
-            if (mapSearchDTO == null) {
-                annunci = annuncioService.searchAnnunciByCittaAndFiltro(cittaDiRicerca, filtroAnnunci, token);
-            } else {
-                annunci = annuncioService.searchAnnunciInRadius(mapSearchDTO, filtroAnnunci, token);
-            }
 
+        showLoadingIndicator();
+
+        CompletableFuture.supplyAsync(() -> {
+            try {
+                if (mapSearchDTO == null) {
+                    return annuncioService.searchAnnunciByCittaAndFiltro(cittaDiRicerca, filtroAnnunci, token);
+                } else {
+                    return annuncioService.searchAnnunciInRadius(mapSearchDTO, filtroAnnunci, token);
+                }
+            } catch (GenericServiceException e) {
+                logger.error("Errore durante il recupero degli annunci: {}", e.getMessage(), e);
+                return Collections.<AnnuncioDTO>emptyList();
+            }
+        }).thenAccept(annunciResult -> {
+            annunci = annunciResult;
             Platform.runLater(() -> {
                 if (annunci != null && !annunci.isEmpty()) {
                     visualizzaAnnunciSullaMappa(annunci);
@@ -724,11 +733,11 @@ public class RisultatiRicercaController extends AbstractController implements In
                     visualizzaAnnunciSullaMappa(Collections.emptyList());
                     visualizzaAnnunciNellaLista(Collections.emptyList());
                 }
+                hideLoadingIndicator();
             });
-        } catch (GenericServiceException e) {
-            logger.error("Errore durante il recupero degli annunci: {}", e.getMessage(), e);
-        }
+        });
     }
+
 
     private void visualizzaAnnunciSullaMappa(List<AnnuncioDTO> annunci) {
         double minLon = Double.MAX_VALUE;

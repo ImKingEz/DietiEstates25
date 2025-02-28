@@ -18,11 +18,13 @@ import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -58,6 +60,8 @@ public abstract class AbstractController {
     protected AnchorPane primaryAnchorPane;
 
     protected Stage currentStage;
+
+    private AnchorPane loadingOverlay;
 
     @FXML
     protected ImageView logo;
@@ -309,5 +313,43 @@ public abstract class AbstractController {
         this.utente = user;
         this.amministratore = null;
         this.agente = null;
+    }
+    protected void showLoadingIndicator() {
+        if (loadingOverlay == null) {
+            loadingOverlay = new AnchorPane();
+            // Sfondo semitrasparente
+            loadingOverlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+            loadingOverlay.prefWidthProperty().bind(primaryAnchorPane.widthProperty());
+            loadingOverlay.prefHeightProperty().bind(primaryAnchorPane.heightProperty());
+
+            // Creiamo un ProgressIndicator
+            ProgressIndicator progressIndicator = new ProgressIndicator();
+            progressIndicator.setMaxSize(100, 100);
+
+            // Usare uno StackPane per centrare l'indicatore
+            StackPane stack = new StackPane();
+            stack.prefWidthProperty().bind(loadingOverlay.widthProperty());
+            stack.prefHeightProperty().bind(loadingOverlay.heightProperty());
+            stack.getChildren().add(progressIndicator);
+
+            // Posizioniamo lo StackPane all'interno dell'AnchorPane
+            AnchorPane.setTopAnchor(stack, 0.0);
+            AnchorPane.setBottomAnchor(stack, 0.0);
+            AnchorPane.setLeftAnchor(stack, 0.0);
+            AnchorPane.setRightAnchor(stack, 0.0);
+
+            loadingOverlay.getChildren().add(stack);
+        }
+        if (!primaryAnchorPane.getChildren().contains(loadingOverlay)) {
+            primaryAnchorPane.getChildren().add(loadingOverlay);
+        }
+        loadingOverlay.setVisible(true);
+    }
+
+    protected void hideLoadingIndicator() {
+        if (loadingOverlay != null) {
+            loadingOverlay.setVisible(false);
+            primaryAnchorPane.getChildren().remove(loadingOverlay);
+        }
     }
 }

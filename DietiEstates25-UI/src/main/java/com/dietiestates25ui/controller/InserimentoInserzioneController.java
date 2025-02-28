@@ -33,6 +33,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static com.dietiestates25ui.handler.FormValidator.setupTextFormatter;
 
@@ -410,18 +411,21 @@ public class InserimentoInserzioneController extends AbstractController implemen
             showPopup(POPUP_ERROR_TITLE, address, ERROR_ICON);
             hideMapView();
         } else {
+            showLoadingIndicator();
+
             indirizzoTextField.setText(address);
             hideMapView();
             this.latitudine = lat;
             this.longitudine = lng;
 
-            getCityFromAddress(address, lat, lng);
-
-            findNearbyFeatures(lat, lng);
+            CompletableFuture<Void> cityFuture = CompletableFuture.runAsync(() -> getCityFromAddress(address, lat, lng));
+            CompletableFuture<Void> featuresFuture = CompletableFuture.runAsync(() -> findNearbyFeatures(lat, lng));
+            CompletableFuture.allOf(cityFuture, featuresFuture).thenRun(() -> Platform.runLater(this::hideLoadingIndicator));
 
             logo.requestFocus();
         }
     }
+
 
     private void setupSpinners() {
         camereSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
