@@ -18,21 +18,6 @@
             height: 100%;
             width: 100%;
         }
-
-        #confirmOverlay {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border: 1px solid #ccc;
-            z-index: 1000;
-        }
-
-        #confirmButton {
-            padding: 5px 10px;
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.1/dist/ol.js"></script>
 </head>
@@ -126,15 +111,20 @@
         element.style.top = '10px';
         element.style.left = '50%';
         element.style.transform = 'translateX(-50%)';
-        element.style.backgroundColor = 'white';
-        element.style.padding = '10px';
-        element.style.border = '1px solid black';
         element.style.zIndex = '1000';
 
 
         var confirmButton = document.createElement('button');
         confirmButton.id = 'confirmButton';
-        confirmButton.textContent = 'Conferma Posizione';
+        confirmButton.style.backgroundColor = '#6c93c4';
+        confirmButton.style.fontSize = '14px';
+        confirmButton.style.padding = '8px 12px';
+        confirmButton.style.borderRadius = '8px';
+        confirmButton.style.color = 'white';
+        confirmButton.style.border = 'transparent';
+        confirmButton.style.fontFamily = 'Verdana sans-serif';
+        confirmButton.style.fontWeight = 'bolder';
+        confirmButton.textContent = 'Conferma posizione';
 
         confirmButton.addEventListener('click', function() {
             reverseGeocode(selectedLongitude, selectedLatitude);

@@ -55,6 +55,8 @@ public class LoginAgenteController extends AbstractController implements Initial
 
         passwordTextFieldInitializer("loginField");
         togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
+        emailTextField.setText("b@b.com");
+        passwordPasswordField.setText("Aaaaaaa1");
     }
 
     private void openSelectRolePage() {

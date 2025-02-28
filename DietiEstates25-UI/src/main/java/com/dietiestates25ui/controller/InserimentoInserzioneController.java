@@ -8,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -319,7 +320,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
     }
 
     @FXML
-    private void handleApriMappaButtonAction(javafx.event.ActionEvent event) {
+    private void handleApriMappaButtonAction(ActionEvent event) {
         try {
             mapView.setPrefWidth(primaryAnchorPane.getWidth());
             mapView.setPrefHeight(primaryAnchorPane.getHeight());
