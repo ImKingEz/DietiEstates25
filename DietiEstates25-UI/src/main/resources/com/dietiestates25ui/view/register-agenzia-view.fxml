@@ -41,11 +41,7 @@
                      <TextField fx:id="partitaIVATextField" promptText="Partita IVA" styleClass="registerField" />
                   </children>
                </HBox>
-               <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox">
-                  <children>
-                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Non inserire spazi, ma soltanto numeri" wrappingWidth="290.5339984893799" />
-                  </children>
-               </VBox>
+               <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox" />
             </children>
          </VBox>
             <HBox alignment="CENTER" styleClass="HBoxField">
@@ -79,7 +75,7 @@
                </HBox>
                <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox">
                   <children>
-                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Non inserire il prefisso e spazi" wrappingWidth="290.5339984893799" />
+                     <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="- Non inserire il prefisso" wrappingWidth="290.5339984893799" />
                   </children>
                </VBox>
             </children>

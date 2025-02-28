@@ -1,5 +1,4 @@
 package com.dietiestates25ui.controller;
-import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,7 +33,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
+
+import static com.dietiestates25ui.handler.FormValidator.setupTextFormatter;
 
 public class InserimentoInserzioneController extends AbstractController implements Initializable {
 
@@ -504,18 +504,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         selezionaImmaginiButton.disableProperty().bind(Bindings.size(selectedImageList).greaterThanOrEqualTo(5));
 
         avantiButton.setDisable(true);
-    }
-
-    private void setupTextFormatter(TextField textField) {
-        UnaryOperator<TextFormatter.Change> numberFilter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("\\d*(\\.\\d*)?")) {
-                return change;
-            }
-            return null;
-        };
-        TextFormatter<Object> textFormatter = new TextFormatter<>(numberFilter);
-        textField.setTextFormatter(textFormatter);
     }
 
     public void checkFormValidity() {

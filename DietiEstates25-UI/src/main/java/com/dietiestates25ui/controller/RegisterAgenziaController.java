@@ -23,6 +23,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static com.dietiestates25ui.handler.FormValidator.setupTextFormatter;
+
 public class RegisterAgenziaController extends AbstractController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(RegisterAgenziaController.class);
@@ -74,6 +76,9 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         indietroButton.setOnAction(event -> openLoginAmmnistratorePage());
 
         selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
+
+        setupTextFormatter(partitaIVATextField);
+        setupTextFormatter(telefonoTextField);
     }
 
     private void handleImageSelection() {

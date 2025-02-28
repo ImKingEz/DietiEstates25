@@ -1,7 +1,11 @@
 package com.dietiestates25ui.handler;
 
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import org.apache.commons.validator.routines.EmailValidator;
 
 public class FormValidator {
@@ -46,5 +50,17 @@ public class FormValidator {
     public static boolean isValidPartitaIVA(String partitaIVA) {
         Matcher matcher = partitaIVAPattern.matcher(partitaIVA);
         return matcher.matches();
+    }
+
+    public static void setupTextFormatter(TextField textField) {
+        UnaryOperator<TextFormatter.Change> numberFilter = change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("\\d*(\\.\\d*)?")) {
+                return change;
+            }
+            return null;
+        };
+        TextFormatter<Object> textFormatter = new TextFormatter<>(numberFilter);
+        textField.setTextFormatter(textFormatter);
     }
 }

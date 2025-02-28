@@ -3,10 +3,8 @@ package com.dietiestates25ui.controller;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
 import com.dietiestates25.dto.MapSearchDTO;
-import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.FiltroAnnunci;
-import com.dietiestates25ui.model.Utente;
 import com.dietiestates25ui.service.AnnuncioService;
 import com.dietiestates25ui.service.ImmobileService;
 import com.dietiestates25ui.service.UtenteService;
@@ -20,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -28,7 +25,6 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import javafx.scene.control.TextFormatter;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +34,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
-import java.util.function.UnaryOperator;
+
+import static com.dietiestates25ui.handler.FormValidator.setupTextFormatter;
 
 public class RisultatiRicercaController extends AbstractController implements Initializable {
 
@@ -415,18 +412,6 @@ public class RisultatiRicercaController extends AbstractController implements In
     private void setAnnunciScrollPanePrefWidth(double newValue) {
         double scrollPaneWidth = newValue * 0.55;
         annunciScrollPane.setPrefWidth(scrollPaneWidth);
-    }
-
-    private void setupTextFormatter(TextField textField) {
-        UnaryOperator<TextFormatter.Change> numberFilter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("\\d*(\\.\\d*)?")) {
-                return change;
-            }
-            return null;
-        };
-        TextFormatter<Object> textFormatter = new TextFormatter<>(numberFilter);
-        textField.setTextFormatter(textFormatter);
     }
 
     private void validatePriceFields() {
