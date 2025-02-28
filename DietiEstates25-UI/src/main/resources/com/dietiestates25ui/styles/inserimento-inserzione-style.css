@@ -35,10 +35,18 @@
 }
 
 #descrizioneTextArea {
-    -fx-max-width: 300;
-    -fx-min-width: 300;
-    -fx-pref-width: 300;
+    -fx-max-width: 285;
+    -fx-min-width: 285;
+    -fx-pref-width: 285;
     -fx-max-height: 60;
     -fx-min-height: 60;
     -fx-pref-height: 60;
+}
+
+HBoxDescrizioneField {
+    -fx-spacing: 5;
+    -fx-max-width: 300;
+    -fx-min-width: 300;
+    -fx-max-height: 60;
+    -fx-min-height: 60;
 }
