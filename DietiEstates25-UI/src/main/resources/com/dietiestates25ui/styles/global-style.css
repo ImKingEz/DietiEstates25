@@ -103,11 +103,11 @@
 
 /* -- DatePicker -- */
 
-DatePicker > .arrow-button > .arrow {
+CustomDatePicker > .arrow-button > .arrow {
     -fx-opacity: 0;
 }
 
-DatePicker > .arrow-button {
+CustomDatePicker > .arrow-button {
     -fx-background-color: #6c93c4;
     -fx-background-image: url("../images/calendarIcon.png");
     -fx-background-repeat: no-repeat;
