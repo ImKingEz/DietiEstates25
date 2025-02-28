@@ -52,6 +52,7 @@ public abstract class AbstractController {
     protected static final String PIANO_TERRA = "Piano terra";
     protected static final String PIANO_INTERMEDIO = "Piano intermedio";
     protected static final String ULTIMO_PIANO = "Ultimo piano";
+    protected static final int MAX_FILE_SIZE = 2 * 1024 * 1024;
 
     @FXML
     protected AnchorPane primaryAnchorPane;
