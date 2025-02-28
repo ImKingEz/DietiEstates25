@@ -1,9 +1,6 @@
 package com.dietiestates25backend.api.controller;
 
-import com.dietiestates25.dto.ApiResponse;
-import com.dietiestates25.dto.AnnuncioDTO;
-import com.dietiestates25.dto.FiltroAnnunciDTO;
-import com.dietiestates25.dto.MapSearchDTO;
+import com.dietiestates25.dto.*;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.Annuncio;
 import com.dietiestates25backend.business.service.AnnuncioService;
@@ -78,24 +75,18 @@ public class AnnuncioController extends BaseController {
         }
     }
 
-    @PostMapping("/search-map")
+    @PostMapping("/search/radius")
     @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciInRadius(
-            @RequestBody MapSearchDTO mapSearchDTO,
-            @RequestParam String tipoAnnuncio,
-            @RequestParam String tipologiaImmobile) {
+            @RequestBody AnnunciRadiusSearchDTO searchDTO) {
         try {
-            FiltroAnnunciDTO filtro = new FiltroAnnunciDTO();
-            filtro.setTipo(tipoAnnuncio);
-            filtro.setTipologia(tipologiaImmobile);
-            List<Annuncio> annunci = annuncioService.findAnnunciInRadius(mapSearchDTO, filtro);
-            List<AnnuncioDTO> annuncioDTOs = annunci.stream()
-                    .map(annuncioService::convertToDTO)
-                    .toList();
+            List<AnnuncioDTO> annuncioDTOs = annuncioService.findAnnunciInRadius(
+                    searchDTO.getMap(), searchDTO.getFiltro());
             return successResponse(annuncioDTOs);
         } catch (Exception e) {
-            logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);
-            return handleGenericException(e, "Errore durante la ricerca degli annunci con mappa", "Annuncio");
+            logger.error("Errore durante la ricerca degli annunci in radius: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante la ricerca degli annunci in radius", "Annuncio");
         }
     }
+
 }

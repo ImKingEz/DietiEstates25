@@ -161,15 +161,12 @@ public class AnnuncioService {
         return convertToDTO(annuncio);
     }
 
-    public List<Annuncio> findAnnunciInRadius(MapSearchDTO mapSearchDTO, FiltroAnnunciDTO filtro) {
-        logger.debug("Ricerca annunci nel raggio: {}, {}, {}, tipo: {}, tipologia: {}",
-                mapSearchDTO.getLatitude(), mapSearchDTO.getLongitude(), mapSearchDTO.getRadius(), filtro.getTipo(), filtro.getTipologia());
-        return annuncioRepository.findAnnunciInRadius(
-                mapSearchDTO.getLatitude(),
-                mapSearchDTO.getLongitude(),
-                mapSearchDTO.getRadius(),
-                filtro.getTipo(),
-                filtro.getTipologia()
-        );
+    public List<AnnuncioDTO> findAnnunciInRadius(MapSearchDTO map, FiltroAnnunciDTO filtro) {
+        logger.debug("Ricerca annunci in raggio: {}, filtro: {}", map, filtro);
+        List<Annuncio> annunci = annuncioRepository.findAnnunciInRadius(map, filtro);
+        return annunci.stream()
+                .map(this::convertToDTO)
+                .toList();
     }
+
 }

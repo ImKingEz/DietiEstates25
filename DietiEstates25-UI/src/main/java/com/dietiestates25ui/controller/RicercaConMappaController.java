@@ -59,7 +59,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         setupSlider();
 
-        tornaIndietroButton.setOnAction(event -> openHomePage());
+        tornaIndietroButton.setOnAction(event -> openHomePageWithUsedFilters());
         cercaButton.setOnAction(event -> handleCercaButtonAction());
 
         loadMap();
@@ -114,7 +114,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     }
 
-    private void openHomePage() {
+    private void openHomePageWithUsedFilters() {
         loadScene("/com/dietiestates25ui/view/homepage-view.fxml", (fxmlLoader, stage) -> {
             HomePageController homeController = fxmlLoader.getController();
             homeController.setStage(currentStage);
@@ -145,7 +145,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         CompletableFuture.supplyAsync(() -> {
                     try {
-                        return annuncioService.searchAnnunciByMap(mapSearchDTO, filtro, token);
+                        return annuncioService.searchAnnunciInRadius(mapSearchDTO, filtro, token);
                     } catch (GenericServiceException e) {
                         logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);
                         Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));

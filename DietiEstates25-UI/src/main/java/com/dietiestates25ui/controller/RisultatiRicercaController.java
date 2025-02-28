@@ -726,7 +726,7 @@ public class RisultatiRicercaController extends AbstractController implements In
             if (mapSearchDTO == null) {
                 annunci = annuncioService.searchAnnunciByCittaAndFiltro(cittaDiRicerca, filtroAnnunci, token);
             } else {
-                annunci = annuncioService.searchAnnunciByMap(mapSearchDTO, filtroAnnunci, token);
+                annunci = annuncioService.searchAnnunciInRadius(mapSearchDTO, filtroAnnunci, token);
             }
 
             Platform.runLater(() -> {
