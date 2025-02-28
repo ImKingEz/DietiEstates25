@@ -165,13 +165,7 @@ public abstract class AbstractController {
             double popupX = centerX - (popupWidth / 2);
 
             double popupY;
-            if (logo != null) {  // **Aggiunto controllo null**
-                Bounds logoBounds = logo.localToScene(logo.getBoundsInLocal());
-                double logoBottomY = logoBounds.getMinY();
-                popupY = logoBottomY - 10;
-            } else {
-                popupY = currentStage.getY() + 10;
-            }
+            popupY = currentStage.getY() + 40;
 
             popup.hide();
             popup.show(currentStage, popupX, popupY);
