@@ -32,7 +32,6 @@
     var circle;
     var circleLayer;
     var currentRadius;
-    // Variabile per gestire la concorrenza delle richieste di reverse geocoding
     var lastRequestTimestamp = 0;
 
     var italyCenter = ol.proj.fromLonLat([12.5674, 41.8719]);
@@ -81,12 +80,9 @@
             selectedLatitude = coordinate[1];
             setMarker(selectedLongitude, selectedLatitude);
             zoomToLocation(selectedLongitude, selectedLatitude);
-            // Disegna immediatamente il cerchio nella nuova posizione
             drawCircle(selectedLongitude, selectedLatitude, currentRadius);
-            // Imposta un timestamp per il click corrente
             var currentRequestTimestamp = Date.now();
             lastRequestTimestamp = currentRequestTimestamp;
-            // Passa il timestamp alla funzione reverseGeocode
             reverseGeocode(selectedLongitude, selectedLatitude, currentRequestTimestamp);
         });
     }
@@ -106,13 +102,11 @@
         map.getView().setZoom(newZoom);
     }
 
-    // Ora reverseGeocode accetta un ulteriore parametro: requestTimestamp
     function reverseGeocode(longitude, latitude, requestTimestamp) {
         var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                // Se il timestamp della richiesta non corrisponde a quello dell'ultimo click, ignora la risposta
                 if(requestTimestamp !== lastRequestTimestamp) {
                     return;
                 }
@@ -135,7 +129,6 @@
         window.alert(address + "|" + latitude + "|" + longitude);
     }
 
-    // L'ordine dei parametri è (longitude, latitude, radius)
     function drawCircle(longitude, latitude, radius) {
         var center = ol.proj.fromLonLat([longitude, latitude]);
         circleLayer.getSource().clear();

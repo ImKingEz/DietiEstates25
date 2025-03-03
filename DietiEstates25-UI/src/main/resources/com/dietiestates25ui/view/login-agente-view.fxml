@@ -48,9 +48,9 @@
             </VBox>
             <Button fx:id="loginButton" mnemonicParsing="false" styleClass="generalButton" text="Login" />
          <VBox alignment="BOTTOM_LEFT">
-            <children>
+            
                <Button fx:id="tornaIndietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" />
-            </children>
+            
             <VBox.margin>
                <Insets left="10.0" />
             </VBox.margin>

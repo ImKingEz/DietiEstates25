@@ -40,7 +40,7 @@ public class SecurityConfig {
 
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtService jwtService;
-    private final CustomUserDetailsService customUserDetailsService; // Injected here
+    private final CustomUserDetailsService customUserDetailsService;
 
 
     @Autowired

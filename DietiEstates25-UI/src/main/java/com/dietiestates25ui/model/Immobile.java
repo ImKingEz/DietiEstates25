@@ -21,8 +21,7 @@ public class Immobile {
     private boolean vicinoTrasportoPubblico;
     private String citta;
 
-    public Immobile() {
-    }
+    public Immobile() {}
 
     public String getTipologia() {
         return tipologia;

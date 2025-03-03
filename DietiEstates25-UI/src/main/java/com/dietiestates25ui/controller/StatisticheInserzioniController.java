@@ -229,9 +229,9 @@ public class StatisticheInserzioniController extends AbstractController implemen
                 FlowPane detailFlowPane = controller.getDetailFlowPane();
                 detailFlowPane.getChildren().clear();
 
-                addStatsToFlowPane(annuncio, new HBox(), detailFlowPane, "Visualizzazioni: ", "/com/dietiestates25ui/images/eye_open_black.png");
-                addStatsToFlowPane(annuncio, new HBox(), detailFlowPane, "Offerte ricevute: ", "/com/dietiestates25ui/images/euroIconBlack.png");
-                addStatsToFlowPane(annuncio, new HBox(), detailFlowPane, "Visite prenotate: ", "/com/dietiestates25ui/images/calendarIconBlack.png");
+                addStatsToFlowPane(new HBox(), detailFlowPane, "Visualizzazioni: ", "/com/dietiestates25ui/images/eye_open_black.png", annuncio.getNumeroVisualizzazioni());
+                addStatsToFlowPane(new HBox(), detailFlowPane, "Offerte ricevute: ", "/com/dietiestates25ui/images/euroIconBlack.png", annuncio.getNumeroOfferte());
+                addStatsToFlowPane(new HBox(), detailFlowPane, "Visite prenotate: ", "/com/dietiestates25ui/images/calendarIconBlack.png", annuncio.getNumeroVisitePrenotate());
 
                 listaAnnunciFlowPane.getChildren().add(annuncioItem);
             } catch (IOException e) {
@@ -242,7 +242,7 @@ public class StatisticheInserzioniController extends AbstractController implemen
         }
     }
 
-    private void addStatsToFlowPane(AnnuncioDTO annuncio, HBox visualizzazioniHBox, FlowPane detailFlowPane, String detailTipe, String imagePath) {
+    private void addStatsToFlowPane(HBox visualizzazioniHBox, FlowPane detailFlowPane, String detailTipe, String imagePath, int numberDetailType) {
         visualizzazioniHBox.getStyleClass().add("detailWithIconHBox");
 
         ImageView visualizzazioniImageView = new ImageView();
@@ -250,7 +250,7 @@ public class StatisticheInserzioniController extends AbstractController implemen
         visualizzazioniImageView.getStyleClass().add("iconDetailAnnuncio");
 
         Text visualizzazioniText = new Text();
-        visualizzazioniText.setText(detailTipe + annuncio.getNumeroVisualizzazioni());
+        visualizzazioniText.setText(detailTipe + numberDetailType);
         visualizzazioniText.getStyleClass().add("textDetailAnnuncio");
 
         visualizzazioniHBox.getChildren().addAll(visualizzazioniImageView, visualizzazioniText);

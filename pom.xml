@@ -27,7 +27,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot Dependencies -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -36,7 +35,6 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- Jackson Versions -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>

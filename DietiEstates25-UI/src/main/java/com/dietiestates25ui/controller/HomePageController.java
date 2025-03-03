@@ -1,22 +1,15 @@
 package com.dietiestates25ui.controller;
 
-import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25.dto.AnnuncioDTO;
-import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.*;
-import com.dietiestates25ui.service.AgenziaService;
-import com.dietiestates25ui.service.AmministratoreService;
 import com.dietiestates25ui.service.AnnuncioService;
-import com.dietiestates25ui.service.UtenteService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +50,6 @@ public class HomePageController extends AbstractController implements Initializa
     private Button tornaIndietroButton;
 
     private String selectedTipologiaText = "Appartamento";
-    private UtenteService utenteService = new UtenteService();
 
     private AnnuncioService annuncioService = new AnnuncioService();
 

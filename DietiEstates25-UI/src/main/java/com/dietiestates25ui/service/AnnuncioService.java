@@ -76,7 +76,6 @@ public class AnnuncioService extends ApiService {
     private <T> T executeAndHandleSearch(String path, String method, Object body, String token, TypeReference<T> typeReference) throws GenericServiceException {
         try {
             fetchCsrfToken();
-
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + path))
                     .header(CONTENT_TYPE, APPLICATION_JSON)
@@ -175,6 +174,10 @@ public class AnnuncioService extends ApiService {
         return searchDTO;
     }
 
+    public AnnuncioDTO updateAnnuncioStats(Long idImmobile, String tipoAggiornamento, String token) throws GenericServiceException {
+        UpdateAnnuncioDTO updateAnnuncioDTO = new UpdateAnnuncioDTO(idImmobile, tipoAggiornamento);
+        return executeAndHandle("/updateStats", "PUT", updateAnnuncioDTO, token, AnnuncioDTO.class);
+    }
 
     @Override
     protected void handleErrorResponse(int statusCode, HttpResponse<String> response) throws ApiClientException, ServiceUnavailableException {
@@ -204,4 +207,5 @@ public class AnnuncioService extends ApiService {
             throw new GenericServiceException("Errore durante il recupero degli annunci dell'agente: " + e.getMessage(), e);
         }
     }
+
 }

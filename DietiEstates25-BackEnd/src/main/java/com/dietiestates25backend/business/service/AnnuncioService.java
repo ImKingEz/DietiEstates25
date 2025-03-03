@@ -3,6 +3,7 @@ package com.dietiestates25backend.business.service;
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.FiltroAnnunciDTO;
 import com.dietiestates25.dto.MapSearchDTO;
+import com.dietiestates25.dto.UpdateAnnuncioDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.FotoImmobile;
 import com.dietiestates25backend.business.entity.Annuncio;
@@ -172,6 +173,36 @@ public class AnnuncioService {
                 .toList();
     }
 
+    @Transactional
+    public Annuncio updateAnnuncioStats(UpdateAnnuncioDTO updateAnnuncioDTO) {
+        Optional<Annuncio> annuncioOptional = annuncioRepository.findByIdImmobile(updateAnnuncioDTO.getIdImmobile());
+
+        if (annuncioOptional.isPresent()) {
+            Annuncio annuncio = annuncioOptional.get();
+
+            switch (updateAnnuncioDTO.getTipoAggiornamento()) {
+                case "visualizzazione":
+                    annuncio.setNumeroVisualizzazioni(annuncio.getNumeroVisualizzazioni() + 1);
+                    break;
+                case "offerta":
+                    annuncio.setNumeroOfferte(annuncio.getNumeroOfferte() + 1);
+                    break;
+                case "visita":
+                    annuncio.setNumeroVisitePrenotate(annuncio.getNumeroVisitePrenotate() + 1);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Tipo di aggiornamento non valido: " + updateAnnuncioDTO.getTipoAggiornamento());
+            }
+
+            Annuncio savedAnnuncio = annuncioRepository.save(annuncio);
+            logger.info("Aggiornate statistiche annuncio IdImmobile: {}, Tipo: {}", annuncio.getId(), updateAnnuncioDTO.getTipoAggiornamento());
+            return savedAnnuncio;
+        } else {
+            logger.warn("Annuncio non trovato con IdImmobile: {}", updateAnnuncioDTO.getIdImmobile());
+            throw new IllegalArgumentException("Annuncio non trovato con IdImmobile: " + updateAnnuncioDTO.getIdImmobile());
+        }
+    }
+
     public List<AnnuncioDTO> getAnnunciAgente(Long idAgente) {
         logger.debug("Ricerca annunci per agente");
         List<Annuncio> annunci = annuncioRepository.findByIdAgente(idAgente);
@@ -179,4 +210,5 @@ public class AnnuncioService {
                 .map(this::convertToDTO)
                 .toList();
     }
+
 }
