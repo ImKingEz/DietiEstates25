@@ -1,19 +1,14 @@
 package com.dietiestates25ui.controller;
 
-import com.dietiestates25ui.model.AgenteImmobiliare;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class AgenteDashboardController extends AbstractController implements Initializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(AgenteDashboardController.class);
 
     @FXML
     private Button caricaImmobileButton;

@@ -82,7 +82,9 @@
                 <groupId>com.itextpdf</groupId>
                 <artifactId>itext7-core</artifactId>
                 <version>9.1.0</version>
+                <type>pom</type>
             </dependency>
+
 
 
         </dependencies>

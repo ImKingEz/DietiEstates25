@@ -6,6 +6,12 @@ import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.service.AgenteService;
 import com.dietiestates25ui.service.AnnuncioService;
 import com.dietiestates25ui.service.ImmobileService;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +31,11 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,6 +51,8 @@ public class StatisticheInserzioniController extends AbstractController implemen
 
     @FXML
     private Button esportaStatisticheButton;
+    @FXML
+    private Button esportaStatistichePDFButton;
 
     @FXML
     private FlowPane listaAnnunciFlowPane;
@@ -62,11 +75,78 @@ public class StatisticheInserzioniController extends AbstractController implemen
         idAgente = findAgenteId();
         Platform.runLater(this::updateAnnunci);
 
-        esportaStatisticheButton.setOnAction(event -> esportaStatistiche());
+        esportaStatisticheButton.setOnAction(event -> esportaStatisticheCSV());
+        esportaStatistichePDFButton.setOnAction(event -> esportaStatistichePDF());
+    }
+
+    private void esportaStatistichePDF() {
+        if (annunci.isEmpty()) {
+            showPopup(POPUP_ERROR_TITLE, "Nessun immobile caricato.", ERROR_ICON);
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Salva statistiche annunci");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
+        File file = fileChooser.showSaveDialog(esportaStatisticheButton.getScene().getWindow());
+
+        if (file != null) {
+            try (PdfWriter writer = new PdfWriter(file);
+                 PdfDocument pdfDocument = new PdfDocument(writer);
+                 Document document = new Document(pdfDocument)) {
+
+                PdfFont font = PdfFontFactory.createFont();
+
+                Paragraph title = new Paragraph("Statistiche Annunci Immobiliari")
+                        .setFont(font)
+                        .setFontSize(16)
+                        .setTextAlignment(TextAlignment.CENTER);
+                document.add(title);
+
+                Table table = new Table(UnitValue.createPercentArray(new float[]{40, 20, 20, 20}));
+                table.setWidth(UnitValue.createPercentValue(100));
+
+                table.addHeaderCell(createHeaderCell("Titolo", font));
+                table.addHeaderCell(createHeaderCell("Visualizzazioni", font));
+                table.addHeaderCell(createHeaderCell("Offerte", font));
+                table.addHeaderCell(createHeaderCell("Visite Prenotate", font));
+
+                for (AnnuncioDTO annuncio : annunci) {
+                    table.addCell(createCell(annuncio.getTitolo(), font));
+                    table.addCell(createCell(String.valueOf(annuncio.getNumeroVisualizzazioni()), font));
+                    table.addCell(createCell(String.valueOf(annuncio.getNumeroOfferte()), font));
+                    table.addCell(createCell(String.valueOf(annuncio.getNumeroVisitePrenotate()), font));
+                }
+
+                document.add(table);
+
+                logger.info("Statistiche esportate in: {}", file.getAbsolutePath());
+                showPopup("Operazione completata.", "Statistiche esportate con successo.", SUCCESS_ICON);
+
+            } catch (IOException e) {
+                logger.error("Errore di I/O durante l'esportazione: {}", e.getMessage(), e);
+                showPopup(POPUP_ERROR_TITLE, "Si è verificato un errore durante l'esportazione: " + e.getMessage(), ERROR_ICON);
+            }
+
+        } else {
+            logger.info("Esportazione annullata dall'utente.");
+        }
+    }
+
+    private Cell createHeaderCell(String content, PdfFont font) {
+        return new Cell()
+                .add(new Paragraph(content).setFont(font))
+                .setTextAlignment(TextAlignment.CENTER);
+    }
+
+    private Cell createCell(String content, PdfFont font) {
+        return new Cell()
+                .add(new Paragraph(content).setFont(font))
+                .setTextAlignment(TextAlignment.CENTER);
     }
 
     @FXML
-    private void esportaStatistiche() {
+    private void esportaStatisticheCSV() {
         if (annunci.isEmpty()) {
             showPopup(POPUP_ERROR_TITLE, "Nessun immobile caricato.", ERROR_ICON);
             return;

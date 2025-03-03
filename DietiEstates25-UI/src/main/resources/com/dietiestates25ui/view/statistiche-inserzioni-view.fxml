@@ -35,9 +35,7 @@
                 <graphic>
                     <HBox alignment="CENTER">
                         <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
                                 <Image url="@../images/userIcon.png" />
-                            </image>
                         </ImageView>
                     </HBox>
                 </graphic>
@@ -48,18 +46,17 @@
         </HBox>
     </GridPane>
    <VBox alignment="CENTER" fillWidth="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
-      <children>
          <Label styleClass="primaryTitle" text="Statistiche immobili" />
              <ScrollPane fx:id="annunciScrollPane" fitToWidth="true" prefHeight="450.0" prefWidth="900.0">
             <VBox.margin>
                <Insets bottom="10.0" top="10.0" />
             </VBox.margin>
-            <content>
                <FlowPane fx:id="listaAnnunciFlowPane" alignment="CENTER" />
-            </content>
              </ScrollPane>
-         <Button fx:id="esportaStatisticheButton" mnemonicParsing="false" styleClass="generalButton" text="Esporta statistiche" />
-      </children>
+         <HBox spacing="20.0">
+               <Button fx:id="esportaStatistichePDFButton" mnemonicParsing="false" styleClass="generalButton" text="Esporta in PDF" />
+               <Button fx:id="esportaStatisticheButton" mnemonicParsing="false" styleClass="generalButton" text="Esporta in CSV" />
+         </HBox>
    </VBox>
        <Button fx:id="tornaIndietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />
 </AnchorPane>
