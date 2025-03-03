@@ -352,4 +352,12 @@ public abstract class AbstractController {
             primaryAnchorPane.getChildren().remove(loadingOverlay);
         }
     }
+
+    protected void openAgenteDashboardPage(Button button) {
+        loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
+                (fxmlLoader, stage) -> {
+                    AgenteDashboardController controller = fxmlLoader.getController();
+                    controller.setAgente(agente);
+                }, button, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
+    }
 }

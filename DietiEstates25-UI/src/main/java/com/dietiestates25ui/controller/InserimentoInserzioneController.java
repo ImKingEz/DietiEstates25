@@ -148,7 +148,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
         apriMappaButton.setOnAction(this::handleApriMappaButtonAction);
 
-        indietroButton.setOnAction(event -> openGestioneImmobiliPage());
+        indietroButton.setOnAction(event -> openAgenteDashboardPage(indietroButton));
 
         mapBackButton.setOnAction(event -> hideMapView());
 
@@ -807,13 +807,5 @@ public class InserimentoInserzioneController extends AbstractController implemen
         } else {
             return 2;
         }
-    }
-
-    private void openGestioneImmobiliPage() {
-        loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
-                (fxmlLoader, stage) -> {
-                    AgenteDashboardController controller = fxmlLoader.getController();
-                    controller.setAgente(agente);
-                }, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

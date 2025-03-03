@@ -89,4 +89,16 @@ public class AnnuncioController extends BaseController {
         }
     }
 
+    @PostMapping("/search/agente/{idAgente}")
+    @PreAuthorize("hasRole('ROLE_AGENTE')")
+    public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciAgente(@PathVariable Long idAgente) {
+        try {
+            List<AnnuncioDTO> annuncioDTOs = annuncioService.getAnnunciAgente(idAgente);
+            return successResponse(annuncioDTOs);
+        } catch (Exception e) {
+            logger.error("Errore durante il recupero degli annunci: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante il recupero degli annunci", "Annuncio");
+        }
+    }
+
 }

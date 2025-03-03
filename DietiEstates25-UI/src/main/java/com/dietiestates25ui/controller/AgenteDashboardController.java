@@ -19,12 +19,6 @@ public class AgenteDashboardController extends AbstractController implements Ini
     private Button caricaImmobileButton;
 
     @FXML
-    private Button offerteButton;
-
-    @FXML
-    private Button inserzioniButton;
-
-    @FXML
     private Button statisticheButton;
 
     @FXML
@@ -46,24 +40,20 @@ public class AgenteDashboardController extends AbstractController implements Ini
 
         tornaLoginButton.setOnAction(event -> openLoginPage());
 
-//        offerteButton.setOnAction(event -> {
-//            // Azione per "Offerte"
-//            System.out.println("Offerte cliccato!");
-//        });
-//
-//        inserzioniButton.setOnAction(event -> {
-//            // Azione per "Inserzioni caricate"
-//            System.out.println("Inserzioni caricate cliccato!");
-//        });
-//
-//        statisticheButton.setOnAction(event -> {
-//            // Azione per "Statistiche inserzioni"
-//            System.out.println("Statistiche inserzioni cliccato!");
-//        });
-//
+        statisticheButton.setOnAction(event -> openStatisticheInserzioniPage());
+
         homepageButton.setOnAction(event -> openHomepage(homepageButton));
 
         tornaLoginButton.setOnAction(event -> openLoginPage());
+    }
+
+    private void openStatisticheInserzioniPage() {
+        loadScene("/com/dietiestates25ui/view/statistiche-inserzioni-view.fxml",
+                (fxmlLoader, stage) -> {
+                    StatisticheInserzioniController controller = fxmlLoader.getController();
+                    controller.setStage(stage);
+                    controller.setAgente(agente);
+                }, statisticheButton, "/com/dietiestates25ui/styles/statistiche-inserzioni-style.css");
     }
 
     private void openInserimentoDatiInserzionePage() {

@@ -7,6 +7,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,9 @@ public class AnnuncioItemController extends AbstractController {
 
     @FXML
     private Button visitaButton;
+
+    @FXML
+    private FlowPane detailFlowPane;
 
     private AnnuncioDTO annuncio;
     private ImmobileDTO immobile;
@@ -121,5 +126,9 @@ public class AnnuncioItemController extends AbstractController {
 
     public Button getVisitaButton() {
         return visitaButton;
+    }
+
+    public FlowPane getDetailFlowPane() {
+        return detailFlowPane;
     }
 }

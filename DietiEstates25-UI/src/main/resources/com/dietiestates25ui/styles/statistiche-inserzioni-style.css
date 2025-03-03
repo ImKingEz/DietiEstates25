@@ -1,0 +1,18 @@
+@import "global-style.css";
+
+.navbarGridPane {
+    -fx-background-color: white;
+}
+
+#backgroundNavbarRow {
+    -fx-background-color: #c0dff3;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+#annunciScrollPane {
+    -fx-background-color: transparent;
+}
+
+#annunciScrollPane > .viewport {
+    -fx-background-color: transparent;
+}

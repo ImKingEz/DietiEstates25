@@ -21,7 +21,7 @@
             <children>
                 <Text fx:id="annuncioTitle" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Titolo" />
                 <Text fx:id="prezzoAnnuncio" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="Prezzo" />
-                <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
+                <FlowPane fx:id="detailFlowPane" prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
                     <children>
                         <HBox styleClass="detailWithIconHBox">
                             <children>
