@@ -18,9 +18,15 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -47,13 +53,59 @@ public class StatisticheInserzioniController extends AbstractController implemen
 
     private Long idAgente;
 
+    List<AnnuncioDTO> annunci = new ArrayList<>();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         tornaIndietroButton.setOnAction(event -> openAgenteDashboardPage(tornaIndietroButton));
 
         idAgente = findAgenteId();
-
         Platform.runLater(this::updateAnnunci);
+
+        esportaStatisticheButton.setOnAction(event -> esportaStatistiche());
+    }
+
+    @FXML
+    private void esportaStatistiche() {
+        if (annunci.isEmpty()) {
+            showPopup(POPUP_ERROR_TITLE, "Nessun immobile caricato.", ERROR_ICON);
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Salva statistiche annunci");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"));
+        File file = fileChooser.showSaveDialog(esportaStatisticheButton.getScene().getWindow());
+
+        if (file != null) {
+            CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+                    .setHeader("Titolo", "Visualizzazioni", "Offerte ricevute", "Visite prenotate")
+                    .build();
+
+            try (FileWriter fileWriter = new FileWriter(file);
+                 CSVPrinter csvPrinter = new CSVPrinter(fileWriter, csvFormat)) {
+
+                for (AnnuncioDTO annuncio : annunci) {
+                    csvPrinter.printRecord(
+                            annuncio.getTitolo(),
+                            annuncio.getNumeroVisualizzazioni(),
+                            annuncio.getNumeroOfferte(),
+                            annuncio.getNumeroVisitePrenotate()
+                    );
+                }
+
+                csvPrinter.flush();
+                logger.info("Statistiche esportate in: {}", file.getAbsolutePath());
+                showPopup("Operazione completata.", "Statistiche esportate con successo.", SUCCESS_ICON);
+
+            } catch (IOException e) {
+                logger.error("Errore di I/O durante l'esportazione: {}", e.getMessage(), e);
+                showPopup(POPUP_ERROR_TITLE, "Si è verificato un errore durante l'esportazione: " + e.getMessage(), ERROR_ICON);
+            }
+
+        } else {
+            logger.info("Esportazione annullata dall'utente.");
+        }
     }
 
     private Long findAgenteId() {
@@ -67,11 +119,14 @@ public class StatisticheInserzioniController extends AbstractController implemen
     }
 
     private void updateAnnunci() {
+        showLoadingIndicator();
         try {
-            List<AnnuncioDTO> annunci = annuncioService.getAnnunciAgente(token, idAgente);
+            annunci = annuncioService.getAnnunciAgente(token, idAgente);
             visualizzaAnnunciNellaLista(annunci);
         } catch (GenericServiceException e) {
             logger.error("Errore durante il recupero degli annunci: {}", e.getMessage(), e);
+        } finally {
+            hideLoadingIndicator();
         }
     }
 
