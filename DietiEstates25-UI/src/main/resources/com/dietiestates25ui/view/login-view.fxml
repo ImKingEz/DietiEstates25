@@ -59,13 +59,6 @@
                      </ImageView>
                   </graphic>
                </Button>
-               <Button fx:id="facebookButton" mnemonicParsing="false" styleClass="generalButton" text="Facebook">
-                  <graphic>
-                     <ImageView fitHeight="18.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../images/facebook.png" />
-                     </ImageView>
-                  </graphic>
-               </Button>
                <Button fx:id="githubButton" mnemonicParsing="false" styleClass="generalButton" text="GitHub">
                   <graphic>
                      <ImageView fitHeight="19.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
