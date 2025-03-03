@@ -36,7 +36,7 @@ public class StatisticheInserzioniController extends AbstractController implemen
     private Button esportaStatisticheButton;
 
     @FXML
-    private VBox listaAnnunciVBox;
+    private FlowPane listaAnnunciFlowPane;
 
     @FXML
     private Button tornaIndietroButton;
@@ -76,28 +76,29 @@ public class StatisticheInserzioniController extends AbstractController implemen
     }
 
     private void visualizzaAnnunciNellaLista(List<AnnuncioDTO> annunci) {
-        listaAnnunciVBox.getChildren().clear();
+        listaAnnunciFlowPane.getChildren().clear();
         for (AnnuncioDTO annuncio : annunci) {
             ImmobileDTO immobile = null;
             try {
                 immobile = immobileService.getImmobileDetails(annuncio.getIdImmobile(), token);
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dietiestates25ui/view/annuncio-item-view.fxml"));
                 HBox annuncioItem = loader.load();
+                annuncioItem.setStyle("");
 
                 AnnuncioItemController controller = loader.getController();
                 controller.setAnnuncio(annuncio, immobile);
 
-                controller.getVisitaButton().setVisible(false);
-                controller.getOffertaButton().setVisible(false);
+                VBox detailVBox = controller.getDetailVBox();
+                detailVBox.getChildren().remove(controller.getButtonHBox());
 
                 FlowPane detailFlowPane = controller.getDetailFlowPane();
                 detailFlowPane.getChildren().clear();
 
-                addStatsToFlowPane(annuncio, new HBox(), detailFlowPane, "Visualizzazioni: ", "/com/dietiestates25ui/images/eye_open.png");
+                addStatsToFlowPane(annuncio, new HBox(), detailFlowPane, "Visualizzazioni: ", "/com/dietiestates25ui/images/eye_open_black.png");
                 addStatsToFlowPane(annuncio, new HBox(), detailFlowPane, "Offerte ricevute: ", "/com/dietiestates25ui/images/euroIconBlack.png");
                 addStatsToFlowPane(annuncio, new HBox(), detailFlowPane, "Visite prenotate: ", "/com/dietiestates25ui/images/calendarIconBlack.png");
 
-                listaAnnunciVBox.getChildren().add(annuncioItem);
+                listaAnnunciFlowPane.getChildren().add(annuncioItem);
             } catch (IOException e) {
                 logger.error("Errore durante il caricamento del layout dell'annuncio:", e);
             } catch (GenericServiceException e) {

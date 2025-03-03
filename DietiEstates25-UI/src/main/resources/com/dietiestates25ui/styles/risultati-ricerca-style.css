@@ -97,7 +97,7 @@
     -fx-padding: 20 20 5 20;
 }
 
-#listaAnnunciVBox {
+#listaAnnunciFlowPane {
     -fx-spacing: 30;
 }
 
