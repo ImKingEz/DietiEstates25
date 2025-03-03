@@ -27,9 +27,6 @@ public class LoginController extends AbstractController implements Initializable
     private TextField emailTextField;
 
     @FXML
-    private Button facebookButton;
-
-    @FXML
     private Button githubButton;
 
     @FXML
@@ -108,7 +105,6 @@ public class LoginController extends AbstractController implements Initializable
 
     private void actionButtonProvider() {
         googleButton.setOnAction(event -> loginWithProvider("google"));
-        facebookButton.setOnAction(event -> loginWithProvider("facebook"));
         githubButton.setOnAction(event -> loginWithProvider("github"));
     }
 
@@ -138,7 +134,6 @@ public class LoginController extends AbstractController implements Initializable
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
 
                 googleButton.setDisable(true);
-                facebookButton.setDisable(true);
                 githubButton.setDisable(true);
                 registratiButton.setDisable(true);
                 loginButton.setDisable(true);

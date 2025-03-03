@@ -53,16 +53,6 @@
                                             
                                                           </HBox>
 
-                                                          <!--
-                                           <HBox fx:id="indirizzoHBox" alignment="CENTER" styleClass="HBoxField">
-                                                             
-                                                             <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
-                                                             <TextField fx:id="indirizzoTextField" prefWidth="200.0" promptText="Indirizzo" styleClass="registerField" />
-                                                             <Button fx:id="apriMappaButton" mnemonicParsing="false" onAction="#handleApriMappaButtonAction" text="Seleziona da mappa" />
-                                                             
-                                                             </HBox>
-                                                             -->
-
                                                           <HBox fx:id="indirizzoHBox" alignment="CENTER" spacing="5.0">
                                             <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="* " />
                                             <TextField fx:id="indirizzoTextField" editable="false" prefHeight="25.8" prefWidth="255.0" promptText="Indirizzo">
@@ -163,7 +153,7 @@
                   </VBox.margin>
                </HBox>
                <HBox alignment="CENTER" styleClass="HBoxField">
-                  <children>
+                  
                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                      <MenuButton fx:id="pianoMenuButton" mnemonicParsing="false" prefHeight="25.6" prefWidth="285.6" text="Piano">
                         <items>
@@ -172,7 +162,7 @@
                            <MenuItem fx:id="ultimoPianoMenuItem" mnemonicParsing="false" text="Ultimo piano" />
                         </items>
                      </MenuButton>
-                  </children>
+                  
                </HBox>
                                         <VBox alignment="CENTER_LEFT" spacing="3.0">
                                             
@@ -206,7 +196,7 @@
                                     
                                                   </VBox>
             <VBox spacing="15.0">
-               <children>
+               
                                            <VBox alignment="CENTER" prefWidth="100.0" spacing="3.0">
                                                
                                                                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textSecondari" text="Numero locali" />
@@ -256,7 +246,7 @@
                                                                         </HBox>
                                                
                                                                 </VBox>
-               </children>
+               
             </VBox>
             <padding>
                <Insets bottom="15.0" top="15.0" />
@@ -269,9 +259,9 @@
                             </VBox.margin>
                         </Button>
          <HBox>
-            <children>
+            
                <Button fx:id="indietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" />
-            </children>
+            
             <VBox.margin>
                <Insets left="10.0" />
             </VBox.margin>

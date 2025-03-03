@@ -24,29 +24,29 @@
        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
      </rowConstraints>
       <HBox fx:id="profileHBox" alignment="CENTER_RIGHT" GridPane.columnIndex="2">
-         <children>
+         
             <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
                <graphic>
                   <HBox alignment="CENTER">
-                     <children>
+                     
                         <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
+                           
                               <Image url="@../images/userIcon.png" />
-                           </image>
+                           
                         </ImageView>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
+                           
                               <Image url="@../images/arrowDown.png" />
-                           </image>
+                           
                         </ImageView>
-                     </children>
+                     
                   </HBox>
                </graphic>
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
             </Button>
-         </children>
+         
       </HBox>
             <ImageView fx:id="logo" fitHeight="80.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@../images/logo2-removebg.png" />
@@ -55,17 +55,17 @@
 
                <VBox alignment="CENTER" prefHeight="410.0" prefWidth="446.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <VBox alignment="BOTTOM_LEFT" prefWidth="1280.0" styleClass="secondaryBackground">
-         <children>
+         
             <VBox alignment="CENTER" spacing="30.0">
-               <children>
+               
                   <VBox alignment="CENTER" spacing="10.0">
-                     <children>
+                     
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="Area amministrativa" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Salve amministratore, cosa desidera fare?" />
-                     </children>
+                     
                   </VBox>
                   <VBox alignment="CENTER" spacing="15.0">
-                     <children>
+                     
                         <Button fx:id="creaAccountAmministratoreButton" mnemonicParsing="false" text="Creare account di supporto">
                            <styleClass>
                               <String fx:value="buttonGestione" />
@@ -76,14 +76,14 @@
                               <String fx:value="buttonGestione" />
                               <String fx:value="generalButton" />
                            </styleClass></Button>
-                     </children>
+                     
                   </VBox>
                   <VBox alignment="CENTER" spacing="15.0">
-                     <children>
+                     
                         <Button fx:id="homepageButton" mnemonicParsing="false" styleClass="generalButton" text="Vai alla Homepage" />
-                     </children>
+                     
                   </VBox>
-               </children>
+               
                <padding>
                   <Insets top="20.0" />
                </padding>
@@ -93,7 +93,7 @@
                   <Insets bottom="10.0" left="10.0" top="20.0" />
                </VBox.margin>
             </Button>
-         </children>
+         
       </VBox>
    </VBox>
 

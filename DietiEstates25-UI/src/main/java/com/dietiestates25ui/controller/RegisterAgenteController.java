@@ -1,9 +1,7 @@
 package com.dietiestates25ui.controller;
 
-import com.dietiestates25ui.controller.CustomDatePicker;
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenteImmobiliare;
-import com.dietiestates25ui.model.Amministratore;
 import com.dietiestates25ui.service.AgenteService;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -35,8 +33,6 @@ public class RegisterAgenteController extends AbstractController implements Init
     private Button registraButton;
     @FXML
     private Button togglePasswordButton;
-
-    // Utilizziamo il CustomDatePicker al posto del DatePicker standard
     @FXML
     private CustomDatePicker dataDatePicker;
 
@@ -67,9 +63,6 @@ public class RegisterAgenteController extends AbstractController implements Init
         maschioMenuItem.setOnAction(event -> impostaSesso("Maschio"));
         femminaMenuItem.setOnAction(event -> impostaSesso("Femmina"));
         nonBinarioMenuItem.setOnAction(event -> impostaSesso("Non binario"));
-
-        // Non serve più chiamare updateDatePicker() perché il controllo custom gestisce il dialogo e il formato
-        // updateDatePicker();
     }
 
     private void impostaSesso(String sesso) {
@@ -90,7 +83,7 @@ public class RegisterAgenteController extends AbstractController implements Init
     private void registraAgente() {
         String nome = nomeTextField.getText().trim();
         String cognome = cognomeTextField.getText().trim();
-        LocalDate dataNascita = dataDatePicker.getValue(); // Viene restituito in formato standard (es. yyyy-MM-dd)
+        LocalDate dataNascita = dataDatePicker.getValue();
         String sesso = sessoMenuButton.getText();
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();

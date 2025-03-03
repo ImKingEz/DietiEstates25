@@ -121,7 +121,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
             if (venditaSelezionato) {
                 homeController.venditaButton.setSelected(true);
                 homeController.affittoButton.setSelected(false);
-            } else {
+            } else if (affittoSelezionato) {
                 homeController.venditaButton.setSelected(false);
                 homeController.affittoButton.setSelected(true);
             }

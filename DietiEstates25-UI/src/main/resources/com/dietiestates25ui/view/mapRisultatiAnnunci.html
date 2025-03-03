@@ -50,13 +50,10 @@
 
     var styleCache = {};
 
-    // Funzione per formattare il prezzo
     function formatPrice(price) {
         if (price >= 1000000) {
-            // Prezzo in milioni, con una cifra decimale
             return (price / 1000000).toFixed(1) + "M";
         } else if (price >= 1000) {
-            // Prezzo in migliaia, arrotondato senza decimali
             return Math.round(price / 1000) + "K";
         } else {
             return price.toString();

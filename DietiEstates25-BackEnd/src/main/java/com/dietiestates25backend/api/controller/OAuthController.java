@@ -15,11 +15,6 @@ public class OAuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuthController.class);
 
-    @GetMapping("/login/oauth2/code/facebook")
-    public void facebookLogin(@AuthenticationPrincipal OAuth2User principal, HttpServletRequest request) {
-        logger.debug("facebookLogin() called");
-    }
-
     @GetMapping("/login/oauth2/code/github")
     public void githubLogin(@AuthenticationPrincipal OAuth2User principal, HttpServletRequest request) {
         logger.debug("githubLogin() called");

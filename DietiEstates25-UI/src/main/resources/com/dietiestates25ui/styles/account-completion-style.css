@@ -18,3 +18,8 @@ Label {
     -fx-min-width: 300;
     -fx-spacing: 5;
 }
+
+.textAsterisco {
+    -fx-font-size: 12;
+    -fx-fill:  #3A5F7D;
+}
