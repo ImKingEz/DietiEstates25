@@ -33,6 +33,15 @@ public class Annuncio {
     @Column(name = "descrizione", nullable = false)
     private String descrizione;
 
+    @Column(name = "numero_visualizzazioni", nullable = false)
+    private int numeroVisualizzazioni;
+
+    @Column(name = "numero_offerte", nullable = false)
+    private int numeroOfferte;
+
+    @Column(name = "numero_visite_prenotate", nullable = false)
+    private int numeroVisitePrenotate;
+
     public Annuncio(String titolo, String tipo, double prezzo, String descrizione, Long idAgente, Long idImmobile) {
         this.titolo = titolo;
         this.tipo = tipo;

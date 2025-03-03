@@ -807,7 +807,12 @@ public class RisultatiRicercaController extends AbstractController implements In
                 AnnuncioItemController controller = loader.getController();
                 controller.setAnnuncio(annuncio, immobile);
 
+                Button visitaButton = controller.getVisitaButton();
+                Button offertaButton = controller.getOffertaButton();
+
                 ImmobileDTO finalImmobile = immobile;
+                visitaButton.setOnMouseClicked(event -> mostraDettagliAnnuncio(annuncio, finalImmobile));
+                offertaButton.setOnMouseClicked(event -> mostraDettagliAnnuncio(annuncio, finalImmobile));
                 annuncioItem.setOnMouseClicked(event -> mostraDettagliAnnuncio(annuncio, finalImmobile));
 
                 listaAnnunciVBox.getChildren().add(annuncioItem);
@@ -817,6 +822,17 @@ public class RisultatiRicercaController extends AbstractController implements In
                 logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
             }
         }
+    }
+
+    private void mostraDettagliAnnuncio(AnnuncioDTO annuncio, ImmobileDTO immobile) {
+        loadScene("/com/dietiestates25ui/view/annuncio-detail-view.fxml",
+                (fxmlLoader, stage) -> {
+                    AnnuncioDetailController annuncioDetailController = fxmlLoader.getController();
+                    annuncioDetailController.setStage(stage);
+                    annuncioDetailController.setAnnuncio(annuncio, immobile);
+                    annuncioDetailController.setFiltroAnnunci(filtroAnnunci, cittaDiRicerca);
+                    annuncioDetailController.setMapSearchDTO(mapSearchDTO);
+                }, reimpostaFiltriButton, "/com/dietiestates25ui/styles/annuncio-detail-style.css");
     }
 
     private void mostraDettagliAnnuncioDaMappa(Long idImmobile) {
@@ -836,16 +852,7 @@ public class RisultatiRicercaController extends AbstractController implements In
         }
     }
 
-    private void mostraDettagliAnnuncio(AnnuncioDTO annuncio, ImmobileDTO immobile) {
-        loadScene("/com/dietiestates25ui/view/annuncio-detail-view.fxml",
-                (fxmlLoader, stage) -> {
-                    AnnuncioDetailController annuncioDetailController = fxmlLoader.getController();
-                    annuncioDetailController.setStage(stage);
-                    annuncioDetailController.setAnnuncio(annuncio, immobile);
-                    annuncioDetailController.setFiltroAnnunci(filtroAnnunci, cittaDiRicerca);
-                    annuncioDetailController.setMapSearchDTO(mapSearchDTO);
-                }, reimpostaFiltriButton, "/com/dietiestates25ui/styles/annuncio-detail-style.css");
-    }
+
 
     public void setMapSearchDTO(MapSearchDTO mapSearchDTO) {
         this.mapSearchDTO = mapSearchDTO;

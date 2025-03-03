@@ -4,6 +4,7 @@ import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.ImmobileDTO;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-public class AnnuncioItemController {
+public class AnnuncioItemController extends AbstractController {
 
     private static final Logger logger = LoggerFactory.getLogger(AnnuncioItemController.class);
 
@@ -39,6 +40,12 @@ public class AnnuncioItemController {
 
     @FXML
     private ImageView imageVicinanzaDetailAnnuncio;
+
+    @FXML
+    private Button offertaButton;
+
+    @FXML
+    private Button visitaButton;
 
     private AnnuncioDTO annuncio;
     private ImmobileDTO immobile;
@@ -106,5 +113,13 @@ public class AnnuncioItemController {
 
     public ImmobileDTO getImmobile() {
         return immobile;
+    }
+
+    public Button getOffertaButton() {
+        return offertaButton;
+    }
+
+    public Button getVisitaButton() {
+        return visitaButton;
     }
 }

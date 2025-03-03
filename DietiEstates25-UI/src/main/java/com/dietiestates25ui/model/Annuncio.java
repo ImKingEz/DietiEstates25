@@ -13,6 +13,33 @@ public class Annuncio {
     private List<String> immaginiUrls;
     private Long idImmobile;
     private Long idAgente;
+    private Integer numeroVisualizzazioni;
+    private Integer numeroOfferte;
+    private Integer numeroVisitePrenotate;
+
+    public Integer getNumeroVisualizzazioni() {
+        return numeroVisualizzazioni;
+    }
+
+    public void setNumeroVisualizzazioni(Integer numeroVisualizzazioni) {
+        this.numeroVisualizzazioni = numeroVisualizzazioni;
+    }
+
+    public Integer getNumeroOfferte() {
+        return numeroOfferte;
+    }
+
+    public void setNumeroOfferte(Integer numeroOfferte) {
+        this.numeroOfferte = numeroOfferte;
+    }
+
+    public Integer getNumeroVisitePrenotate() {
+        return numeroVisitePrenotate;
+    }
+
+    public void setNumeroVisitePrenotate(Integer numeroVisitePrenotate) {
+        this.numeroVisitePrenotate = numeroVisitePrenotate;
+    }
 
     public String getTitolo() {
         return titolo;

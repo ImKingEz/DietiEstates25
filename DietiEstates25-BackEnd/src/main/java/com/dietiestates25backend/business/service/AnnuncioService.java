@@ -139,7 +139,10 @@ public class AnnuncioService {
                 savedAnnuncio.getTipo(),
                 savedAnnuncio.getPrezzo(),
                 savedAnnuncio.getDescrizione(),
-                immaginiUrls
+                immaginiUrls,
+                savedAnnuncio.getNumeroVisualizzazioni(),
+                savedAnnuncio.getNumeroOfferte(),
+                savedAnnuncio.getNumeroVisitePrenotate()
         );
     }
 

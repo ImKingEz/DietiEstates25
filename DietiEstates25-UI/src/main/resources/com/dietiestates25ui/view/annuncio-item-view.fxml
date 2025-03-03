@@ -67,7 +67,7 @@
                 </FlowPane>
                 <HBox styleClass="annuncioButtonsHBox">
                     <children>
-                        <Button mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
+                        <Button fx:id="visitaButton" mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
                             <graphic>
                                 <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
                                     <image>
@@ -76,7 +76,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button mnemonicParsing="false" styleClass="generalButton" text="Fai un'offerta">
+                        <Button fx:id="offertaButton" mnemonicParsing="false" styleClass="generalButton" text="Fai un'offerta">
                             <graphic>
                                 <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="iconDetailAnnuncio">
                                     <image>
