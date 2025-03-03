@@ -33,11 +33,6 @@
                                         <Image url="@../images/userIcon.png" />
                                     
                                 </ImageView>
-                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                    
-                                        <Image url="@../images/arrowDown.png" />
-                                    
-                                </ImageView>
                             
                         </HBox>
                     </graphic>
@@ -59,8 +54,6 @@
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="primaryTitle" text="Gestione immobili" textAlignment="CENTER" />
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Salve agente cosa desidera fare oggi?" textAlignment="CENTER" wrappingWidth="353.33331298828125" />
                         <Button fx:id="caricaImmobileButton" mnemonicParsing="false" styleClass="generalButton" text="Carica un nuovo immobile" />
-                        <Button fx:id="offerteButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Offerte" />
-                        <Button fx:id="inserzioniButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Inserzioni caricate" />
                         <Button fx:id="statisticheButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Statistiche inserzioni" />
                         <Button fx:id="homepageButton" mnemonicParsing="false" prefWidth="208.0" styleClass="generalButton" text="Vai alla Homepage" />
                   <HBox alignment="CENTER_LEFT">

@@ -17,11 +17,11 @@
                 <ImageView fx:id="annuncioImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="annuncioImageView" />
             </children>
         </StackPane>
-        <VBox styleClass="annuncioDetailVBox">
+        <VBox fx:id="detailVBox" styleClass="annuncioDetailVBox">
             <children>
                 <Text fx:id="annuncioTitle" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="annuncioTitle" text="Titolo" />
                 <Text fx:id="prezzoAnnuncio" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="prezzoAnnuncio" text="Prezzo" />
-                <FlowPane prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
+                <FlowPane fx:id="detailFlowPane" prefWrapLength="350.0" styleClass="detailAnnuncioFlowPane">
                     <children>
                         <HBox styleClass="detailWithIconHBox">
                             <children>
@@ -65,7 +65,7 @@
                         </HBox>
                     </children>
                 </FlowPane>
-                <HBox styleClass="annuncioButtonsHBox">
+                <HBox fx:id="buttonHBox" styleClass="annuncioButtonsHBox">
                     <children>
                         <Button fx:id="visitaButton" mnemonicParsing="false" styleClass="generalButton" text="Prenota una visita">
                             <graphic>

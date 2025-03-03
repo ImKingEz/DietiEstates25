@@ -71,6 +71,20 @@
                 <version>2.18.2</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>1.13.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.itextpdf</groupId>
+                <artifactId>itext7-core</artifactId>
+                <version>9.1.0</version>
+                <type>pom</type>
+            </dependency>
+
+
+
         </dependencies>
     </dependencyManagement>
 
