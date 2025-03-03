@@ -1,8 +1,6 @@
 package com.dietiestates25backend.api.controller;
 
-import com.dietiestates25.dto.ApiResponse;
-import com.dietiestates25.dto.AnnuncioDTO;
-import com.dietiestates25.dto.FiltroAnnunciDTO;
+import com.dietiestates25.dto.*;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.Annuncio;
 import com.dietiestates25backend.business.service.AnnuncioService;
@@ -76,4 +74,19 @@ public class AnnuncioController extends BaseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @PostMapping("/search/radius")
+    @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciInRadius(
+            @RequestBody AnnunciRadiusSearchDTO searchDTO) {
+        try {
+            List<AnnuncioDTO> annuncioDTOs = annuncioService.findAnnunciInRadius(
+                    searchDTO.getMap(), searchDTO.getFiltro());
+            return successResponse(annuncioDTOs);
+        } catch (Exception e) {
+            logger.error("Errore durante la ricerca degli annunci in radius: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante la ricerca degli annunci in radius", "Annuncio");
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25ui.controller.CustomDatePicker;
 import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Amministratore;
@@ -24,43 +25,31 @@ public class RegisterAgenteController extends AbstractController implements Init
 
     @FXML
     private TextField cognomeTextField;
-
     @FXML
     private TextField emailTextField;
-
     @FXML
     private Button indietroButton;
-
     @FXML
     private TextField nomeTextField;
-
     @FXML
     private Button registraButton;
-
     @FXML
     private Button togglePasswordButton;
 
+    // Utilizziamo il CustomDatePicker al posto del DatePicker standard
     @FXML
-    private DatePicker dataDatePicker;
+    private CustomDatePicker dataDatePicker;
 
     @FXML
     private MenuButton sessoMenuButton;
-
     @FXML
     private MenuItem maschioMenuItem;
-
     @FXML
     private MenuItem femminaMenuItem;
-
     @FXML
     private MenuItem nonBinarioMenuItem;
 
     private boolean passwordVisible = false;
-
-    private String token;
-
-    private Amministratore amministratore;
-
     private final AgenteService agenteService = new AgenteService();
 
     @Override
@@ -71,9 +60,7 @@ public class RegisterAgenteController extends AbstractController implements Init
         updateRegistraButton();
 
         indietroButton.setOnAction(event -> openAreaAmministrativaPage());
-
         registraButton.setOnAction(event -> registraAgente());
-
         passwordTextFieldInitializer("registerField");
         togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
 
@@ -81,7 +68,8 @@ public class RegisterAgenteController extends AbstractController implements Init
         femminaMenuItem.setOnAction(event -> impostaSesso("Femmina"));
         nonBinarioMenuItem.setOnAction(event -> impostaSesso("Non binario"));
 
-        updateDatePicker();
+        // Non serve più chiamare updateDatePicker() perché il controllo custom gestisce il dialogo e il formato
+        // updateDatePicker();
     }
 
     private void impostaSesso(String sesso) {
@@ -94,41 +82,15 @@ public class RegisterAgenteController extends AbstractController implements Init
                 (fxmlLoader, stage) -> {
                     AreaAmministrativaController controller = fxmlLoader.getController();
                     controller.setStage(stage);
-                    controller.setToken(token);
                     controller.setAmministratore(amministratore);
                 }, registraButton, "/com/dietiestates25ui/styles/area-amministrativa-style.css");
-    }
-
-    private void updateDatePicker() {
-        dataDatePicker.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                LocalDate today = LocalDate.now();
-                LocalDate minBirthDate = today.minusYears(18);
-                setDisable(empty || date.isAfter(minBirthDate));
-            }
-        });
-
-        dataDatePicker.setShowWeekNumbers(false);
-    }
-
-    private void updateRegistraButton() {
-        nomeTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
-        cognomeTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
-        dataDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
-        sessoMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
-        emailTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
-        passwordPasswordField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
-
-        registraButton.setDisable(true);
     }
 
     @FXML
     private void registraAgente() {
         String nome = nomeTextField.getText().trim();
         String cognome = cognomeTextField.getText().trim();
-        LocalDate dataNascita = dataDatePicker.getValue();
+        LocalDate dataNascita = dataDatePicker.getValue(); // Viene restituito in formato standard (es. yyyy-MM-dd)
         String sesso = sessoMenuButton.getText();
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
@@ -152,6 +114,17 @@ public class RegisterAgenteController extends AbstractController implements Init
         }
     }
 
+    private void updateRegistraButton() {
+        nomeTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
+        cognomeTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
+        dataDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
+        sessoMenuButton.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
+        emailTextField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
+        passwordPasswordField.textProperty().addListener((observable, oldValue, newValue) -> checkFieldsForRegister());
+
+        registraButton.setDisable(true);
+    }
+
     private void checkFieldsForRegister() {
         String nome = nomeTextField.getText().trim();
         String cognome = cognomeTextField.getText().trim();
@@ -160,14 +133,7 @@ public class RegisterAgenteController extends AbstractController implements Init
         String email = emailTextField.getText().trim();
         String password = passwordPasswordField.getText().trim();
 
-        registraButton.setDisable(nome.isBlank() || cognome.isBlank() || dataNascita == null || sesso.equals("Sesso") || !FormValidator.isValidEmail(email) || !FormValidator.isValidPassword(password));
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public void setAmministratore(Amministratore admin) {
-        this.amministratore = admin;
+        registraButton.setDisable(nome.isBlank() || cognome.isBlank() || dataNascita == null ||
+                sesso.equals("Sesso") || !FormValidator.isValidEmail(email) || !FormValidator.isValidPassword(password));
     }
 }

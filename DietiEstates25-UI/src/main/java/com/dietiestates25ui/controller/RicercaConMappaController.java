@@ -45,8 +45,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     private String tipologiaSelezionata;
 
-    private String token;
-
     private double selectedLatitude;
     private double selectedLongitude;
 
@@ -61,26 +59,21 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         setupSlider();
 
-        tornaIndietroButton.setOnAction(event -> openHomePage());
+        tornaIndietroButton.setOnAction(event -> openHomePageWithUsedFilters());
         cercaButton.setOnAction(event -> handleCercaButtonAction());
 
         loadMap();
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     private void setupSlider() {
         DecimalFormat df = new DecimalFormat("#");
         radiusSlider.setMin(100);
-        radiusSlider.setMax(1000);
-        radiusSlider.setValue(100);
+        radiusSlider.setMax(5000);
+        radiusSlider.setValue(500);
 
         radiusSlider.valueProperty().addListener((ov, oldVal, newVal) -> {
             raggioRicercaLabel.setText("Raggio di ricerca: " + df.format(newVal) + "mt");
 
-            // Invia il nuovo valore del raggio alla mappa
             Platform.runLater(() -> {
                 WebEngine webEngine = mapWebView.getEngine();
                 String script = "updateRadius(" + newVal.doubleValue() + ");";
@@ -94,7 +87,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == javafx.concurrent.Worker.State.SUCCEEDED) {
-                // La pagina è stata caricata completamente, ora possiamo chiamare setInitialRadius()
                 Platform.runLater(() -> {
                     double initialRadius = radiusSlider.getValue();
                     String script = "setInitialRadius(" + initialRadius + ");";
@@ -122,10 +114,9 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
     }
 
-    private void openHomePage() {
-        loadScene("/com/dietiestates25ui/view/home-page-view.fxml", (fxmlLoader, stage) -> {
+    private void openHomePageWithUsedFilters() {
+        loadScene("/com/dietiestates25ui/view/homepage-view.fxml", (fxmlLoader, stage) -> {
             HomePageController homeController = fxmlLoader.getController();
-            homeController.setToken(token);
             homeController.setStage(currentStage);
             if (venditaSelezionato) {
                 homeController.venditaButton.setSelected(true);
@@ -135,7 +126,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
                 homeController.affittoButton.setSelected(true);
             }
             homeController.tipologiaMenuButton.setText(getTipologiaSelezionata());
-        }, tornaIndietroButton, "/com/dietiestates25ui/styles/home-page-style.css");
+        }, tornaIndietroButton, "/com/dietiestates25ui/styles/homepage-style.css");
     }
 
     private void handleCercaButtonAction() {
@@ -154,7 +145,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
 
         CompletableFuture.supplyAsync(() -> {
                     try {
-                        return annuncioService.searchAnnunciByMap(mapSearchDTO, filtro, token);
+                        return annuncioService.searchAnnunciInRadius(mapSearchDTO, filtro, token);
                     } catch (GenericServiceException e) {
                         logger.error("Errore durante la ricerca degli annunci con mappa: {}", e.getMessage(), e);
                         Platform.runLater(() -> showPopup("Errore", "Errore durante la ricerca: " + e.getMessage(), ERROR_ICON));
@@ -173,9 +164,7 @@ public class RicercaConMappaController extends AbstractController implements Ini
                             for (AnnuncioDTO annuncioDTO : annunciDTO) {
                                 logger.info("Immobile trovato: {}", annuncioDTO);
                             }
-                            // TODO
-                            //List<Annuncio> annunci = convertDTO(annunciDTO);
-                            //openRisultatiRicercaPage(annunci);
+                            openRisultatiRicercaPage(token, filtro, cercaButton, mapSearchDTO);
                         }
                     }))
                 .exceptionally(ex -> {
@@ -184,33 +173,6 @@ public class RicercaConMappaController extends AbstractController implements Ini
                     return null;
                 });
     }
-
-//    private List<Annuncio> convertDTO(List<AnnuncioDTO> annunciDTO) { TODO
-//        List<Annuncio> annunci = new ArrayList<>();
-//        for (AnnuncioDTO annuncioDTO : annunciDTO) {
-//            Annuncio annuncio = new Annuncio();
-//            annuncio.setTitolo(annuncioDTO.getTitolo());
-//            annuncio.setTipo(annuncioDTO.getTipo());
-//            annuncio.setPrezzo(annuncioDTO.getPrezzo());
-//            annuncio.setDescrizione(annuncioDTO.getDescrizione());
-//            annuncio.setIdImmobile(annuncioDTO.getIdImmobile());
-//            annuncio.setIdAgente(annuncioDTO.getIdAgente());
-//            annuncio.setImmaginiUrls(annuncioDTO.getImmaginiUrls());
-//
-//            annunci.add(annuncio);
-//        }
-//        return annunci;
-//    }
-
-//    private void openRisultatiRicercaPage(List<Annuncio> annunci) { TODO
-//        loadScene("/com/dietiestates25ui/view/risultati-ricerca-view.fxml",
-//                (fxmlLoader, stage) -> {
-//                    RisultatiRicercaController controller = fxmlLoader.getController();
-//                    controller.setAnnunci(annunci);
-//                    controller.setToken(token);
-//                    controller.setStage(currentStage);
-//                }, cercaButton, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
-//    }
 
     public void setVenditaSelezionato(boolean venditaSelezionato) {
         this.venditaSelezionato = venditaSelezionato;

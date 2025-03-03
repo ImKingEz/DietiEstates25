@@ -1,13 +1,12 @@
 package com.dietiestates25ui.service;
 
-import com.dietiestates25.dto.ApiResponse;
-import com.dietiestates25.dto.AnnuncioDTO;
-import com.dietiestates25.dto.MapSearchDTO;
+import com.dietiestates25.dto.*;
 import com.dietiestates25ui.exception.*;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.FiltroAnnunci;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,62 +141,41 @@ public class AnnuncioService extends ApiService {
     }
 
     public AnnuncioDTO getAnnuncioByIdImmobile(long idImmobile, String token) throws GenericServiceException {
-        return executeAndHandle("/immobile/" + idImmobile, "GET", null, token, AnnuncioDTO.class);
+        return executeAndHandle("/immobile/" + idImmobile,
+                "GET",
+                null,
+                token,
+                AnnuncioDTO.class);
     }
 
-    private List<AnnuncioDTO> getAnnuncioDTOList(HttpRequest request, ObjectMapper objectMapper) throws ServiceUnavailableException, ApiClientException, GenericServiceException {
-        HttpResponse<String> response = executeRequest(request);
-        int statusCode = response.statusCode();
-
-        if (statusCode == 200) {
-            TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference = new TypeReference<ApiResponse<List<AnnuncioDTO>>>() {};
-            ApiResponse<List<AnnuncioDTO>> apiResponse = null;
-            apiResponse = getListApiResponse(objectMapper, response, typeReference);
-            if (apiResponse != null && apiResponse.isSuccess() && apiResponse.getData() != null) {
-                return apiResponse.getData();
-            } else {
-                String errorMessage = (apiResponse != null && apiResponse.getMessage() != null) ? apiResponse.getMessage() : "Errore sconosciuto durante la ricerca.";
-                logger.warn("Ricerca annunci fallita: {}", errorMessage);
-                throw new GenericServiceException(errorMessage);
-            }
-        } else {
-            handleErrorResponse(statusCode, response);
-            throw new GenericServiceException("Operazione fallita con status code: " + statusCode);
-        }
-    }
-
-    public List<AnnuncioDTO> searchAnnunciByMap(MapSearchDTO mapSearchDTO, FiltroAnnunci filtro, String token) throws GenericServiceException {
+    public List<AnnuncioDTO> searchAnnunciInRadius(MapSearchDTO map, FiltroAnnunci filtro, String token) throws GenericServiceException {
         try {
-            fetchCsrfToken();
+            AnnunciRadiusSearchDTO searchDTO = getAnnunciRadiusSearchDTO(map, filtro);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            String mapSearchJson = objectMapper.writeValueAsString(mapSearchDTO);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(getBaseUrl() + "/search-map?tipoAnnuncio=" + URLEncoder.encode(filtro.getTipo(), StandardCharsets.UTF_8) +
-                            "&tipologiaImmobile=" + URLEncoder.encode(filtro.getTipologia(), StandardCharsets.UTF_8)))
-                    .header(CONTENT_TYPE, "application/json")
-                    .header(AUTHORIZATION, BEARER + token)
-                    .header(csrfTokenHeaderName, csrfTokenValue)
-                    .POST(HttpRequest.BodyPublishers.ofString(mapSearchJson))
-                    .build();
-
-            return getAnnuncioDTOList(request, objectMapper);
+            return executeAndHandleSearch(
+                    "/search/radius",
+                    "POST",
+                    searchDTO,
+                    token,
+                    new TypeReference<List<AnnuncioDTO>>() {}
+            );
         } catch (Exception e) {
-            throw handleGenericException("Errore durante la ricerca degli annunci con mappa: " + e.getMessage(), e);
+            throw handleGenericException("Errore durante la ricerca degli annunci in radius: " + e.getMessage(), e);
         }
     }
 
-    private static ApiResponse<List<AnnuncioDTO>> getListApiResponse(ObjectMapper objectMapper, HttpResponse<String> response, TypeReference<ApiResponse<List<AnnuncioDTO>>> typeReference) throws ApiClientException {
-        ApiResponse<List<AnnuncioDTO>> apiResponse;
-        try {
-            apiResponse = objectMapper.readValue(response.body(), typeReference);
-        } catch (IOException e) {
-            logger.error("Errore durante la deserializzazione della risposta JSON: {}", e.getMessage(), e);
-            throw new ApiClientException("Errore nella risposta del server. Impossibile leggere gli annunci.");
-        }
-        return apiResponse;
+    @NotNull
+    private static AnnunciRadiusSearchDTO getAnnunciRadiusSearchDTO(MapSearchDTO map, FiltroAnnunci filtro) {
+        FiltroAnnunciDTO filtroDTO = new FiltroAnnunciDTO(filtro.getTipo(), filtro.getTipologia(), filtro.getPrezzoMin(),
+                filtro.getPrezzoMax(), filtro.getSuperficieMin(), filtro.getSuperficieMax(), filtro.getLocali(), filtro.getBagni(),
+                filtro.getPiano(), filtro.getClasseEnergetica(), filtro.getAscensore(), filtro.getPortineria(), filtro.getClimatizzazione(),
+                filtro.getVicinoScuola(), filtro.getVicinoParco(), filtro.getVicinoTrasportoPubblico());
+        AnnunciRadiusSearchDTO searchDTO = new AnnunciRadiusSearchDTO();
+        searchDTO.setMap(map);
+        searchDTO.setFiltro(filtroDTO);
+        return searchDTO;
     }
+
 
     @Override
     protected void handleErrorResponse(int statusCode, HttpResponse<String> response) throws ApiClientException, ServiceUnavailableException {

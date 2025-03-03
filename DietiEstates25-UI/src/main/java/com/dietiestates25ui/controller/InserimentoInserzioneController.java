@@ -1,5 +1,4 @@
 package com.dietiestates25ui.controller;
-import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -31,10 +32,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+
+import static com.dietiestates25ui.handler.FormValidator.setupTextFormatter;
 
 public class InserimentoInserzioneController extends AbstractController implements Initializable {
 
@@ -141,10 +142,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private double longitudine;
     private String citta;
 
-    private String token;
-
-    private AgenteImmobiliare agente;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         logo.requestFocus();
@@ -172,10 +169,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         indirizzoTextField.textProperty().addListener((observable, oldValue, newValue) -> {});
 
         createAndPlaceBackButton();
-    }
-
-    public void setAgente(AgenteImmobiliare agente) {
-        this.agente = agente;
     }
 
     private void setupPianoMenuButton() {
@@ -326,12 +319,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
         this.vicinoTrasportoPubblicoCheckBox.setSelected(vicinoTrasportoPubblico);
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     @FXML
-    private void handleApriMappaButtonAction(javafx.event.ActionEvent event) {
+    private void handleApriMappaButtonAction(ActionEvent event) {
         try {
             mapView.setPrefWidth(primaryAnchorPane.getWidth());
             mapView.setPrefHeight(primaryAnchorPane.getHeight());
@@ -422,18 +411,21 @@ public class InserimentoInserzioneController extends AbstractController implemen
             showPopup(POPUP_ERROR_TITLE, address, ERROR_ICON);
             hideMapView();
         } else {
+            showLoadingIndicator();
+
             indirizzoTextField.setText(address);
             hideMapView();
             this.latitudine = lat;
             this.longitudine = lng;
 
-            getCityFromAddress(address, lat, lng);
-
-            findNearbyFeatures(lat, lng);
+            CompletableFuture<Void> cityFuture = CompletableFuture.runAsync(() -> getCityFromAddress(address, lat, lng));
+            CompletableFuture<Void> featuresFuture = CompletableFuture.runAsync(() -> findNearbyFeatures(lat, lng));
+            CompletableFuture.allOf(cityFuture, featuresFuture).thenRun(() -> Platform.runLater(this::hideLoadingIndicator));
 
             logo.requestFocus();
         }
     }
+
 
     private void setupSpinners() {
         camereSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
@@ -445,16 +437,23 @@ public class InserimentoInserzioneController extends AbstractController implemen
         fileChooser.setTitle("Seleziona Immagini");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
 
-        List<File> newFiles = fileChooser.showOpenMultipleDialog(currentStage);
+        List<File> originalFiles = fileChooser.showOpenMultipleDialog(currentStage);
 
-        if (newFiles != null && !newFiles.isEmpty()) {
+        if (originalFiles != null && !originalFiles.isEmpty()) {
+            List<File> newFiles = new ArrayList<>(originalFiles);
+
+            for (File file : originalFiles) {
+                if (!validateImage(file)) {
+                    newFiles.remove(file);
+                }
+            }
             selectedImageList.addAll(newFiles);
 
             if (selectedImageList.size() > 5) {
                 Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "Puoi selezionare al massimo 5 immagini.", ERROR_ICON));
 
                 while (selectedImageList.size() > 5) {
-                    selectedImageList.remove(selectedImageList.size() - 1);
+                    selectedImageList.removeLast();
                 }
             }
 
@@ -463,37 +462,49 @@ public class InserimentoInserzioneController extends AbstractController implemen
         checkFormValidity();
     }
 
+    private boolean validateImage(File file) {
+        if (file.length() > MAX_FILE_SIZE) {
+            Platform.runLater(() -> showPopup(POPUP_ERROR_TITLE, "La dimensione del file è troppo grande (max 2MB).", ERROR_ICON));
+            return false;
+        }
+        return true;
+    }
+
     private void updateImageThumbnails() {
         immaginiFlowPane.getChildren().clear();
 
         double fixedImageSize = 50;
 
         for (File file : selectedImageList) {
-            try {
-                Image image = new Image(file.toURI().toString());
-                ImageView imageView = new ImageView(image);
+            Image image = new Image(file.toURI().toString());
+            ImageView imageView = new ImageView(image);
 
-                imageView.setFitWidth(fixedImageSize);
-                imageView.setFitHeight(fixedImageSize);
-                imageView.setPreserveRatio(true);
+            imageView.setFitWidth(fixedImageSize);
+            imageView.setFitHeight(fixedImageSize);
+            imageView.setPreserveRatio(true);
 
-                Button deleteButton = new Button("X");
-                deleteButton.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-padding: 0px; -fx-font-size: 8px;");
+            Image closeIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/erroricon.png")));
+            ImageView closeIconView = new ImageView(closeIcon);
+            closeIconView.setFitWidth(20);
+            closeIconView.setFitHeight(20);
 
-                deleteButton.setOnAction(e -> {
-                    logo.requestFocus();
-                    selectedImageList.remove(file);
-                    immaginiFlowPane.getChildren().remove(imageView.getParent());
-                    checkFormValidity();
-                });
+            Button deleteButton = new Button();
+            deleteButton.setGraphic(closeIconView);
 
-                VBox imageContainer = new VBox(imageView, deleteButton);
-                imageContainer.setAlignment(Pos.CENTER);
+            deleteButton.setStyle("-fx-padding: 0px; -fx-background-color: transparent;");
+            deleteButton.setPrefSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 
-                immaginiFlowPane.getChildren().add(imageContainer);
-            } catch (Exception e) {
-                logger.error("Error loading image", e);
-            }
+            deleteButton.setOnAction(e -> {
+                logo.requestFocus();
+                selectedImageList.remove(file);
+                immaginiFlowPane.getChildren().remove(imageView.getParent());
+                checkFormValidity();
+            });
+
+            VBox imageContainer = new VBox(imageView, deleteButton);
+            imageContainer.setAlignment(Pos.CENTER);
+
+            immaginiFlowPane.getChildren().add(imageContainer);
         }
     }
 
@@ -516,18 +527,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
         selezionaImmaginiButton.disableProperty().bind(Bindings.size(selectedImageList).greaterThanOrEqualTo(5));
 
         avantiButton.setDisable(true);
-    }
-
-    private void setupTextFormatter(TextField textField) {
-        UnaryOperator<TextFormatter.Change> numberFilter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("\\d*(\\.\\d*)?")) {
-                return change;
-            }
-            return null;
-        };
-        TextFormatter<Object> textFormatter = new TextFormatter<>(numberFilter);
-        textField.setTextFormatter(textFormatter);
     }
 
     public void checkFormValidity() {
@@ -794,9 +793,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
                     ConfermaInserzioneController controller = fxmlLoader.getController();
                     controller.setImmobile(immobile);
                     controller.setAnnuncio(annuncio);
-                    controller.setSelectedImageList(selectedImageList);
-                    controller.setToken(token);
                     controller.setAgente(agente);
+                    controller.setSelectedImageList(selectedImageList);
                     controller.setStage(stage);
                 }, avantiButton, "/com/dietiestates25ui/styles/conferma-inserzione-style.css");
     }
@@ -816,7 +814,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
                 (fxmlLoader, stage) -> {
                     AgenteDashboardController controller = fxmlLoader.getController();
                     controller.setAgente(agente);
-                    controller.setToken(token);
                 }, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>OpenLayers Map - Select Point Only</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -13,30 +12,13 @@
             margin: 0;
             padding: 0;
         }
-
         #map {
             height: 100%;
             width: 100%;
         }
-
-        #confirmOverlay {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border: 1px solid #ccc;
-            z-index: 1000;
-        }
-
-        #confirmButton {
-            padding: 5px 10px;
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.1/dist/ol.js"></script>
 </head>
-
 <body>
 <div id="map"></div>
 <script>
@@ -46,10 +28,12 @@
     var marker;
     var selectedLongitude;
     var selectedLatitude;
-    var targetZoom = 15;
+    var targetZoom = 13;
     var circle;
     var circleLayer;
     var currentRadius;
+    // Variabile per gestire la concorrenza delle richieste di reverse geocoding
+    var lastRequestTimestamp = 0;
 
     var italyCenter = ol.proj.fromLonLat([12.5674, 41.8719]);
 
@@ -97,79 +81,53 @@
             selectedLatitude = coordinate[1];
             setMarker(selectedLongitude, selectedLatitude);
             zoomToLocation(selectedLongitude, selectedLatitude);
-            addConfirmationOverlay();
+            // Disegna immediatamente il cerchio nella nuova posizione
+            drawCircle(selectedLongitude, selectedLatitude, currentRadius);
+            // Imposta un timestamp per il click corrente
+            var currentRequestTimestamp = Date.now();
+            lastRequestTimestamp = currentRequestTimestamp;
+            // Passa il timestamp alla funzione reverseGeocode
+            reverseGeocode(selectedLongitude, selectedLatitude, currentRequestTimestamp);
         });
     }
 
     function setMarker(longitude, latitude) {
         var coordinate = ol.proj.fromLonLat([longitude, latitude]);
-
         marker.getSource().clear();
-
         var feature = new ol.Feature({
             geometry: new ol.geom.Point(coordinate)
         });
-
         marker.getSource().addFeature(feature);
     }
 
     function zoomToLocation(longitude, latitude) {
-        var currentZoom = map.getView().getZoom();
         var newZoom = targetZoom;
-
         map.getView().setCenter(ol.proj.fromLonLat([longitude, latitude]));
         map.getView().setZoom(newZoom);
-
     }
 
-    function addConfirmationOverlay() {
-        const existingOverlay = document.getElementById('confirmOverlay');
-        if (existingOverlay) {
-            existingOverlay.remove();
-        }
-
-        var element = document.createElement('div');
-        element.id = 'confirmOverlay';
-        element.style.position = 'absolute';
-        element.style.top = '10px';
-        element.style.left = '50%';
-        element.style.transform = 'translateX(-50%)';
-        element.style.backgroundColor = 'white';
-        element.style.padding = '10px';
-        element.style.border = '1px solid black';
-        element.style.zIndex = '1000';
-
-
-        var confirmButton = document.createElement('button');
-        confirmButton.id = 'confirmButton';
-        confirmButton.textContent = 'Conferma Posizione';
-
-        confirmButton.addEventListener('click', function() {
-            reverseGeocode(selectedLongitude, selectedLatitude);
-            removeConfirmationOverlay();
-        });
-
-        element.appendChild(confirmButton);
-        map.getTargetElement().appendChild(element);
-    }
-
-    function reverseGeocode(longitude, latitude) {
+    // Ora reverseGeocode accetta un ulteriore parametro: requestTimestamp
+    function reverseGeocode(longitude, latitude, requestTimestamp) {
         var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
-
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                // Se il timestamp della richiesta non corrisponde a quello dell'ultimo click, ignora la risposta
+                if(requestTimestamp !== lastRequestTimestamp) {
+                    return;
+                }
                 if (data && data.address) {
                     var address = data.display_name;
                     sendDataToJava(address, latitude, longitude);
-                    drawCircle(latitude, longitude, currentRadius);
                 } else {
                     sendDataToJava("Indirizzo non identificato per questo punto", latitude, longitude);
                 }
             })
             .catch(error => {
                 console.error("Errore nel reverse geocoding:", error);
-                sendDataToJava("Errore di connessione", latitude, longitude);
+                if(requestTimestamp === lastRequestTimestamp) {
+                    sendDataToJava("Errore di connessione", latitude, longitude);
+                }
             });
     }
 
@@ -177,17 +135,14 @@
         window.alert(address + "|" + latitude + "|" + longitude);
     }
 
-    function drawCircle(latitude, longitude, radius) {
+    // L'ordine dei parametri è (longitude, latitude, radius)
+    function drawCircle(longitude, latitude, radius) {
         var center = ol.proj.fromLonLat([longitude, latitude]);
-
         circleLayer.getSource().clear();
-
         circle = new ol.Feature({
             geometry: new ol.geom.Circle(center, radius)
         });
-
         circleLayer.getSource().addFeature(circle);
-
         circle.setStyle(new ol.style.Style({
             fill: new ol.style.Fill({
                 color: 'rgba(0, 0, 255, 0.1)'
@@ -205,16 +160,14 @@
 
     function updateRadius(radius) {
         currentRadius = radius;
-        if (selectedLatitude && selectedLongitude) {
-            drawCircle(selectedLatitude, selectedLongitude, currentRadius);
+        if (selectedLongitude && selectedLatitude) {
+            drawCircle(selectedLongitude, selectedLatitude, currentRadius);
         }
     }
-
 
     window.onload = function() {
         initMap();
     };
 </script>
 </body>
-
 </html>

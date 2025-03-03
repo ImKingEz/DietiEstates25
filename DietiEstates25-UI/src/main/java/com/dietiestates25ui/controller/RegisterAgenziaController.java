@@ -21,7 +21,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
+
+import static com.dietiestates25ui.handler.FormValidator.setupTextFormatter;
 
 public class RegisterAgenziaController extends AbstractController implements Initializable {
 
@@ -58,7 +61,6 @@ public class RegisterAgenziaController extends AbstractController implements Ini
 
     private File selectedLogoFile = null;
 
-    private static final int MAX_FILE_SIZE = 2 * 1024 * 1024;
     private static final int MAX_IMAGE_SIZE = 512;
 
     private AgenziaImmobiliare agenzia = null;
@@ -74,6 +76,9 @@ public class RegisterAgenziaController extends AbstractController implements Ini
         indietroButton.setOnAction(event -> openLoginAmmnistratorePage());
 
         selezionaImmaginiButton.setOnAction(event -> Platform.runLater(this::handleImageSelection));
+
+        setupTextFormatter(partitaIVATextField);
+        setupTextFormatter(telefonoTextField);
     }
 
     private void handleImageSelection() {
@@ -140,7 +145,7 @@ public class RegisterAgenziaController extends AbstractController implements Ini
             imageView.setFitHeight(fixedImageSize);
             imageView.setPreserveRatio(true);
 
-            Image closeIcon = new Image(getClass().getResourceAsStream("/com/dietiestates25ui/images/erroricon.png"));
+            Image closeIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/dietiestates25ui/images/erroricon.png")));
             ImageView closeIconView = new ImageView(closeIcon);
             closeIconView.setFitWidth(20);
             closeIconView.setFitHeight(20);

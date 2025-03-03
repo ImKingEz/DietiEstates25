@@ -60,6 +60,8 @@ public class LoginAmministratoreController extends AbstractController implements
 
         passwordTextFieldInitializer("loginField");
         togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
+        emailTextField.setText("a@a.com");
+        passwordPasswordField.setText("Aaaaaaa1");
     }
 
     private void openRegisterAgenziaPage() {
@@ -92,6 +94,8 @@ public class LoginAmministratoreController extends AbstractController implements
         try {
             String token = amministratoreService.loginAmministratore(admin);
             if (token != null) {
+                TokenManager.getInstance().setToken(token);
+
                 showPopup("Login effettuato con successo", "Reindirizzamento alla dashboard...", SUCCESS_ICON);
                 logger.info("Login effettuato con successo. Token JWT: {}", token);
 
@@ -105,7 +109,8 @@ public class LoginAmministratoreController extends AbstractController implements
                     try {
                         adminDTO = amministratoreService.getAmministratoreDetails(token);
                         admin.setIdAgenzia(adminDTO.getIdAgenzia());
-                        openAreaAmministrativaPage(token, admin);
+                        TokenManager.getInstance().setLoggedInUser(admin);
+                        openAreaAmministrativaPage(admin);
                     } catch (GenericServiceException e) {
                         logger.error("Errore durante il recupero dei dati dell'amministratore: {}", e.getMessage());
                         showPopup("Errore durante il login", e.getMessage(), ERROR_ICON);
@@ -119,12 +124,11 @@ public class LoginAmministratoreController extends AbstractController implements
         }
     }
 
-    private void openAreaAmministrativaPage(String token, Amministratore admin) {
+    private void openAreaAmministrativaPage(Amministratore admin) {
         loadScene("/com/dietiestates25ui/view/area-amministrativa-view.fxml",
                 (fxmlLoader, stage) -> {
                     AreaAmministrativaController controller = fxmlLoader.getController();
                     controller.setStage(stage);
-                    controller.setToken(token);
                     controller.setAmministratore(admin);
                 }, loginButton, "/com/dietiestates25ui/styles/area-amministrativa-style.css");
     }

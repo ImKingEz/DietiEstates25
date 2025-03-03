@@ -33,20 +33,14 @@ public class AgenteDashboardController extends AbstractController implements Ini
     @FXML
     private Button tornaLoginButton;
 
-    private String token;
-
-    private AgenteImmobiliare agente;
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> {
             logo.requestFocus();
             currentStage = (Stage) primaryAnchorPane.getScene().getWindow();
         });
+
+        Platform.runLater(this::searchUserNameAndUpdateProfileHBox);
 
         caricaImmobileButton.setOnAction(event -> openInserimentoDatiInserzionePage());
 
@@ -67,19 +61,9 @@ public class AgenteDashboardController extends AbstractController implements Ini
 //            System.out.println("Statistiche inserzioni cliccato!");
 //        });
 //
-//        homepageButton.setOnAction(event -> {
-//            // Azione per "Vai alla Homepage"
-//            System.out.println("Vai alla Homepage cliccato!");
-//        });
-//
-//        tornaLoginButton.setOnAction(event -> {
-//            // Azione per "Torna all'area login"
-//            System.out.println("Torna all'area login cliccato!");
-//        });
-    }
+        homepageButton.setOnAction(event -> openHomepage(homepageButton));
 
-    public void setAgente(AgenteImmobiliare agente) {
-        this.agente = agente;
+        tornaLoginButton.setOnAction(event -> openLoginPage());
     }
 
     private void openInserimentoDatiInserzionePage() {
@@ -87,7 +71,6 @@ public class AgenteDashboardController extends AbstractController implements Ini
                 (fxmlLoader, stage) -> {
                     InserimentoInserzioneController controller = fxmlLoader.getController();
                     controller.setStage(stage);
-                    controller.setToken(token);
                     controller.setAgente(agente);
                 }, caricaImmobileButton, "/com/dietiestates25ui/styles/inserimento-inserzione-style.css");
     }

@@ -133,9 +133,7 @@ public abstract class ApiService {
             RequestConfigurer requestConfigurer
     ) throws GenericServiceException {
         try {
-            if (!method.equalsIgnoreCase("GET")) {
-                fetchCsrfToken();
-            }
+            fetchCsrfToken();
 
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(getBaseUrl() + path))

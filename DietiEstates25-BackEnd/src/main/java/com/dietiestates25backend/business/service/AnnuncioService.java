@@ -2,6 +2,7 @@ package com.dietiestates25backend.business.service;
 
 import com.dietiestates25.dto.AnnuncioDTO;
 import com.dietiestates25.dto.FiltroAnnunciDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25backend.api.dto.RegisterAnnuncioDTO;
 import com.dietiestates25backend.business.entity.FotoImmobile;
 import com.dietiestates25backend.business.entity.Annuncio;
@@ -159,4 +160,13 @@ public class AnnuncioService {
 
         return convertToDTO(annuncio);
     }
+
+    public List<AnnuncioDTO> findAnnunciInRadius(MapSearchDTO map, FiltroAnnunciDTO filtro) {
+        logger.debug("Ricerca annunci in raggio: {}, filtro: {}", map, filtro);
+        List<Annuncio> annunci = annuncioRepository.findAnnunciInRadius(map, filtro);
+        return annunci.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
 }

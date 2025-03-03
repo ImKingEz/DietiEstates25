@@ -1,6 +1,14 @@
 package com.dietiestates25ui.controller;
 
+import com.dietiestates25.dto.AgenziaDTO;
+import com.dietiestates25.dto.MapSearchDTO;
 import com.dietiestates25ui.MainApplication;
+import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.AgenteImmobiliare;
+import com.dietiestates25ui.model.Amministratore;
+import com.dietiestates25ui.model.FiltroAnnunci;
+import com.dietiestates25ui.model.Utente;
+import com.dietiestates25ui.service.AgenziaService;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -10,11 +18,13 @@ import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -44,11 +54,14 @@ public abstract class AbstractController {
     protected static final String PIANO_TERRA = "Piano terra";
     protected static final String PIANO_INTERMEDIO = "Piano intermedio";
     protected static final String ULTIMO_PIANO = "Ultimo piano";
+    protected static final int MAX_FILE_SIZE = 2 * 1024 * 1024;
 
     @FXML
     protected AnchorPane primaryAnchorPane;
 
     protected Stage currentStage;
+
+    private AnchorPane loadingOverlay;
 
     @FXML
     protected ImageView logo;
@@ -72,6 +85,17 @@ public abstract class AbstractController {
 
     @FXML
     protected ImageView eyeImageView;
+
+    @FXML
+    protected HBox profileHBox;
+    
+    protected Utente utente;
+    
+    protected Amministratore amministratore;
+    
+    protected AgenteImmobiliare agente;
+
+    protected String token = TokenManager.getInstance().getToken();
 
     public Stage getCurrentStage() {
         return currentStage;
@@ -146,13 +170,7 @@ public abstract class AbstractController {
             double popupX = centerX - (popupWidth / 2);
 
             double popupY;
-            if (logo != null) {  // **Aggiunto controllo null**
-                Bounds logoBounds = logo.localToScene(logo.getBoundsInLocal());
-                double logoBottomY = logoBounds.getMinY();
-                popupY = logoBottomY - 10;
-            } else {
-                popupY = currentStage.getY() + 10;
-            }
+            popupY = currentStage.getY() + 40;
 
             popup.hide();
             popup.show(currentStage, popupX, popupY);
@@ -161,17 +179,22 @@ public abstract class AbstractController {
         });
     }
 
-    public void openDashboard(String token) {
-        openDashboard(token, null);
+    protected void openRisultatiRicercaPage(String citta, FiltroAnnunci filtro, Button button, MapSearchDTO mapSearchDTO) {
+        loadScene("/com/dietiestates25ui/view/risultati-ricerca-view.fxml",
+                (fxmlLoader, stage) -> {
+                    RisultatiRicercaController controller = fxmlLoader.getController();
+                    controller.setFiltroAnnunci(filtro, citta);
+                    controller.setStage(currentStage);
+                    controller.setMapSearchDTO(mapSearchDTO);
+                }, button, "/com/dietiestates25ui/styles/risultati-ricerca-style.css");
     }
 
-    public void openDashboard(String token, Button button) {
-        loadScene("/com/dietiestates25ui/view/dashboard-view.fxml",
+    public void openHomepage(Button button) {
+        loadScene("/com/dietiestates25ui/view/homepage-view.fxml",
                 (fxmlLoader, stage) -> {
-                    DashboardController dashboardController = fxmlLoader.getController();
-                    dashboardController.setStage(stage); // Chiama setStage anziché modificare currentStage
-                    dashboardController.setToken(token);
-                }, button, "/com/dietiestates25ui/styles/dashboard-style.css");
+                    HomePageController homePageController = fxmlLoader.getController();
+                    homePageController.setStage(stage);
+                }, button, "/com/dietiestates25ui/styles/homepage-style.css");
     }
 
     protected void loadScene(String fxmlPath, SceneConfigurator sceneConfigurator, Button sourceButton, String stylesheetPath) {
@@ -246,5 +269,87 @@ public abstract class AbstractController {
             passwordTextField.setVisible(false);
         }
         return passwordVisible;
+    }
+
+    protected void searchUserNameAndUpdateProfileHBox() {
+        if (TokenManager.getInstance().getLoggedInUser() instanceof Utente) {
+            updateProfileHBox(((Utente) TokenManager.getInstance().getLoggedInUser()).getNome());
+        } else if (TokenManager.getInstance().getLoggedInUser() instanceof Amministratore) {
+            AgenziaService agenziaService = new AgenziaService();
+            try {
+                AgenziaDTO agenzia = agenziaService.getAgenziaDetails(((Amministratore) TokenManager.getInstance().getLoggedInUser()).getIdAgenzia(), token);
+                updateProfileHBox(agenzia.getNome());
+            } catch (GenericServiceException e) {
+                logger.error("Errore durante il recupero dei dati dell'agenzia: {}", e.getMessage());
+            }
+        } else if (TokenManager.getInstance().getLoggedInUser() instanceof AgenteImmobiliare) {
+            updateProfileHBox(((AgenteImmobiliare) TokenManager.getInstance().getLoggedInUser()).getNome());
+        } else {
+            showPopup(POPUP_ERROR_TITLE, "Utente non valido.", ERROR_ICON);
+            throw new IllegalStateException("Utente non valido.");
+        }
+    }
+
+    protected void updateProfileHBox(String nome) {
+        Text ciaoNome = new Text();
+        ciaoNome.getStyleClass().add("profileName");
+        ciaoNome.setText("Ciao " + nome);
+        profileHBox.getChildren().addFirst(ciaoNome);
+    }
+
+    protected void setAmministratore(Amministratore user) {
+        this.amministratore = user;
+        this.agente = null;
+        this.utente = null;
+    }
+
+    protected void setAgente(AgenteImmobiliare user) {
+        this.agente = user;
+        this.amministratore = null;
+        this.utente = null;
+    }
+
+    protected void setUtente(Utente user) {
+        this.utente = user;
+        this.amministratore = null;
+        this.agente = null;
+    }
+    protected void showLoadingIndicator() {
+        if (loadingOverlay == null) {
+            loadingOverlay = new AnchorPane();
+            // Sfondo semitrasparente
+            loadingOverlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+            loadingOverlay.prefWidthProperty().bind(primaryAnchorPane.widthProperty());
+            loadingOverlay.prefHeightProperty().bind(primaryAnchorPane.heightProperty());
+
+            // Creiamo un ProgressIndicator
+            ProgressIndicator progressIndicator = new ProgressIndicator();
+            progressIndicator.setMaxSize(100, 100);
+
+            // Usare uno StackPane per centrare l'indicatore
+            StackPane stack = new StackPane();
+            stack.prefWidthProperty().bind(loadingOverlay.widthProperty());
+            stack.prefHeightProperty().bind(loadingOverlay.heightProperty());
+            stack.getChildren().add(progressIndicator);
+
+            // Posizioniamo lo StackPane all'interno dell'AnchorPane
+            AnchorPane.setTopAnchor(stack, 0.0);
+            AnchorPane.setBottomAnchor(stack, 0.0);
+            AnchorPane.setLeftAnchor(stack, 0.0);
+            AnchorPane.setRightAnchor(stack, 0.0);
+
+            loadingOverlay.getChildren().add(stack);
+        }
+        if (!primaryAnchorPane.getChildren().contains(loadingOverlay)) {
+            primaryAnchorPane.getChildren().add(loadingOverlay);
+        }
+        loadingOverlay.setVisible(true);
+    }
+
+    protected void hideLoadingIndicator() {
+        if (loadingOverlay != null) {
+            loadingOverlay.setVisible(false);
+            primaryAnchorPane.getChildren().remove(loadingOverlay);
+        }
     }
 }

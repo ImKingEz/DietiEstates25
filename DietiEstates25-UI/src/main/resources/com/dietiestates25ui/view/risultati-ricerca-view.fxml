@@ -20,7 +20,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.DashboardController">
+<AnchorPane fx:id="primaryAnchorPane" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.RisultatiRicercaController">
     <GridPane prefHeight="80.0" prefWidth="1280.0" styleClass="navbarGridPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="520" minWidth="10.0" prefWidth="520" />
@@ -39,8 +39,8 @@
         </ImageView>
         <HBox alignment="CENTER" GridPane.columnIndex="1">
             <children>
-                <TextField promptText="Città - Stato" styleClass="searchTextField" />
-                <Button mnemonicParsing="false">
+                <TextField fx:id="ricercaTextField" promptText="Città - Stato" styleClass="searchTextField" />
+                <Button fx:id="cercaButton" mnemonicParsing="false">
                     <graphic>
                         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                             <image>
@@ -387,7 +387,7 @@
         </HBox>
         <AnchorPane fx:id="listaAnnunciAnchorPane" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
             <children>
-                <ScrollPane fx:id="annunciScrollPane" prefWidth="700.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <ScrollPane fx:id="annunciScrollPane" prefWidth="700.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <content>
                         <VBox fx:id="listaAnnunciVBox">
                             <children>
@@ -400,6 +400,7 @@
                     <children>
                         <WebView fx:id="map" prefHeight="450.0" prefWidth="-1.0" />
                     </children></VBox>
+            <Button fx:id="tornaIndietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="0.0" />
             </children>
         </AnchorPane>
     </GridPane>

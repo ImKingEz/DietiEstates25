@@ -22,7 +22,7 @@
                         
                             <Label fx:id="titoloLabel" styleClass="primaryTitle" text="Seleziona un punto sulla mappa" wrapText="true" />
                             <HBox alignment="CENTER" />
-                            <Label fx:id="raggioRicercaLabel" text="Raggio di ricerca: 100mt" />
+                            <Label fx:id="raggioRicercaLabel" text="Raggio di ricerca: 500mt" />
                             <Slider fx:id="radiusSlider" max="500.0" min="50.0" value="100.0" />
                             <Button fx:id="cercaButton" alignment="TOP_LEFT" contentDisplay="CENTER" mnemonicParsing="false" styleClass="generalButton" text="Cerca" />
                         
