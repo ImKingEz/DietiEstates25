@@ -59,4 +59,6 @@ public interface AnnuncioRepository extends JpaRepository<Annuncio, Long> {
             @Param("map") MapSearchDTO map,
             @Param("filtro") FiltroAnnunciDTO filtro
     );
+
+    List<Annuncio> findByIdAgente(Long idAgente);
 }

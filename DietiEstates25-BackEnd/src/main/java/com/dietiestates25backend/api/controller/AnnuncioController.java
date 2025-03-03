@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/annunci")
 public class AnnuncioController extends BaseController {
 
+    public static final String ENTITY_TYPE = "Annuncio";
     private final AnnuncioService annuncioService;
 
     @Autowired
@@ -53,7 +54,7 @@ public class AnnuncioController extends BaseController {
             return successResponse(annuncioDTOs);
         } catch (Exception e) {
             logger.error("Errore durante la ricerca degli annunci: {}", e.getMessage(), e);
-            return handleGenericException(e, "Errore durante la ricerca degli annunci", "Annuncio");
+            return handleGenericException(e, "Errore durante la ricerca degli annunci", ENTITY_TYPE);
         }
     }
 
@@ -85,11 +86,12 @@ public class AnnuncioController extends BaseController {
             return successResponse(annuncioDTOs);
         } catch (Exception e) {
             logger.error("Errore durante la ricerca degli annunci in radius: {}", e.getMessage(), e);
-            return handleGenericException(e, "Errore durante la ricerca degli annunci in radius", "Annuncio");
+            return handleGenericException(e, "Errore durante la ricerca degli annunci in radius", ENTITY_TYPE);
         }
     }
 
     @PutMapping("/updateStats")
+    @PreAuthorize("hasRole('ROLE_UTENTE') or hasRole('ROLE_AGENTE') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<AnnuncioDTO>> updateAnnuncioStats(@RequestBody UpdateAnnuncioDTO updateAnnuncioDTO) {
         try {
             Annuncio annuncioAggiornato = annuncioService.updateAnnuncioStats(updateAnnuncioDTO);
@@ -97,8 +99,19 @@ public class AnnuncioController extends BaseController {
             return successResponse(annuncioDTO);
         } catch (Exception e) {
             logger.error("Errore durante l'aggiornamento delle statistiche dell'annuncio: {}", e.getMessage(), e);
-            return handleGenericException(e, "Errore durante l'aggiornamento delle statistiche dell'annuncio", "Annuncio");
+            return handleGenericException(e, "Errore durante l'aggiornamento delle statistiche dell'annuncio", ENTITY_TYPE);
         }
     }
 
+    @PostMapping("/search/agente/{idAgente}")
+    @PreAuthorize("hasRole('ROLE_AGENTE')")
+    public ResponseEntity<ApiResponse<List<AnnuncioDTO>>> searchAnnunciAgente(@PathVariable Long idAgente) {
+        try {
+            List<AnnuncioDTO> annuncioDTOs = annuncioService.getAnnunciAgente(idAgente);
+            return successResponse(annuncioDTOs);
+        } catch (Exception e) {
+            logger.error("Errore durante il recupero degli annunci: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante il recupero degli annunci", ENTITY_TYPE);
+        }
+    }
 }

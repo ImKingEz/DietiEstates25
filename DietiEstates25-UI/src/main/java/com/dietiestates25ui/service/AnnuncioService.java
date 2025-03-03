@@ -195,5 +195,17 @@ public class AnnuncioService extends ApiService {
         }
     }
 
+    public List<AnnuncioDTO> getAnnunciAgente(String token, Long idAgente) throws GenericServiceException {
+        try {
+            return executeAndHandleSearch("/search/agente/" + idAgente,
+                    "POST",
+                    null,
+                    token,
+                    new TypeReference<List<AnnuncioDTO>>() {}
+            );
+        } catch (Exception e) {
+            throw new GenericServiceException("Errore durante il recupero degli annunci dell'agente: " + e.getMessage(), e);
+        }
+    }
 
 }

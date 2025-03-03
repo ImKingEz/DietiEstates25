@@ -203,4 +203,12 @@ public class AnnuncioService {
         }
     }
 
+    public List<AnnuncioDTO> getAnnunciAgente(Long idAgente) {
+        logger.debug("Ricerca annunci per agente");
+        List<Annuncio> annunci = annuncioRepository.findByIdAgente(idAgente);
+        return annunci.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
 }

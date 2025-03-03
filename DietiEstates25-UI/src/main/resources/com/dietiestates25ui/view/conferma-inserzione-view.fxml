@@ -14,7 +14,7 @@
 
 <AnchorPane fx:id="primaryAnchorPane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dietiestates25ui.controller.ConfermaInserzioneController">
    <VBox alignment="CENTER" prefHeight="720.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <children>
+      
       
           <VBox alignment="CENTER" prefWidth="1280.0" spacing="20.0" styleClass="secondaryBackground">
               <padding>
@@ -123,7 +123,7 @@
                   </VBox.margin>
               </HBox>
           </VBox>
-      </children>
+      
    </VBox>
 
 </AnchorPane>

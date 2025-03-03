@@ -7,7 +7,6 @@ import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.FiltroAnnunci;
 import com.dietiestates25ui.service.AnnuncioService;
 import com.dietiestates25ui.service.ImmobileService;
-import com.dietiestates25ui.service.UtenteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
@@ -154,8 +153,6 @@ public class RisultatiRicercaController extends AbstractController implements In
     private List<AnnuncioDTO> annunci;
 
     private MapSearchDTO mapSearchDTO;
-
-    private UtenteService utenteService = new UtenteService();
 
     private AnnuncioService annuncioService = new AnnuncioService();
 

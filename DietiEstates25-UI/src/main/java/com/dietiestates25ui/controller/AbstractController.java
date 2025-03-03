@@ -14,7 +14,6 @@ import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -272,18 +271,18 @@ public abstract class AbstractController {
     }
 
     protected void searchUserNameAndUpdateProfileHBox() {
-        if (TokenManager.getInstance().getLoggedInUser() instanceof Utente) {
-            updateProfileHBox(((Utente) TokenManager.getInstance().getLoggedInUser()).getNome());
-        } else if (TokenManager.getInstance().getLoggedInUser() instanceof Amministratore) {
+        if (TokenManager.getInstance().getLoggedInUser() instanceof Utente u) {
+            updateProfileHBox(u.getNome());
+        } else if (TokenManager.getInstance().getLoggedInUser() instanceof Amministratore adm) {
             AgenziaService agenziaService = new AgenziaService();
             try {
-                AgenziaDTO agenzia = agenziaService.getAgenziaDetails(((Amministratore) TokenManager.getInstance().getLoggedInUser()).getIdAgenzia(), token);
+                AgenziaDTO agenzia = agenziaService.getAgenziaDetails(adm.getIdAgenzia(), token);
                 updateProfileHBox(agenzia.getNome());
             } catch (GenericServiceException e) {
                 logger.error("Errore durante il recupero dei dati dell'agenzia: {}", e.getMessage());
             }
-        } else if (TokenManager.getInstance().getLoggedInUser() instanceof AgenteImmobiliare) {
-            updateProfileHBox(((AgenteImmobiliare) TokenManager.getInstance().getLoggedInUser()).getNome());
+        } else if (TokenManager.getInstance().getLoggedInUser() instanceof AgenteImmobiliare age) {
+            updateProfileHBox(age.getNome());
         } else {
             showPopup(POPUP_ERROR_TITLE, "Utente non valido.", ERROR_ICON);
             throw new IllegalStateException("Utente non valido.");
@@ -317,22 +316,18 @@ public abstract class AbstractController {
     protected void showLoadingIndicator() {
         if (loadingOverlay == null) {
             loadingOverlay = new AnchorPane();
-            // Sfondo semitrasparente
             loadingOverlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
             loadingOverlay.prefWidthProperty().bind(primaryAnchorPane.widthProperty());
             loadingOverlay.prefHeightProperty().bind(primaryAnchorPane.heightProperty());
 
-            // Creiamo un ProgressIndicator
             ProgressIndicator progressIndicator = new ProgressIndicator();
             progressIndicator.setMaxSize(100, 100);
 
-            // Usare uno StackPane per centrare l'indicatore
             StackPane stack = new StackPane();
             stack.prefWidthProperty().bind(loadingOverlay.widthProperty());
             stack.prefHeightProperty().bind(loadingOverlay.heightProperty());
             stack.getChildren().add(progressIndicator);
 
-            // Posizioniamo lo StackPane all'interno dell'AnchorPane
             AnchorPane.setTopAnchor(stack, 0.0);
             AnchorPane.setBottomAnchor(stack, 0.0);
             AnchorPane.setLeftAnchor(stack, 0.0);

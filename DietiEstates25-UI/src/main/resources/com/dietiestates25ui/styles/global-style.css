@@ -2,8 +2,6 @@
     -fx-font-family: "Verdana";
 }
 
-/* -- Buttons -- */
-
 .generalButton {
     -fx-background-color: #6c93c4;
     -fx-text-fill: white;
@@ -22,14 +20,10 @@
     -fx-background-color: #3f648f;
 }
 
-/* -- Backgrounds -- */
-
 .secondaryBackground {
     -fx-background-color: #EAF3FA;
     -fx-effect: dropshadow( gaussian , rgba(0, 0, 0, 0.2) , 15 , 0 , 0 , 0 );
 }
-
-/* -- Password -- */
 
 #passwordHBox {
     -fx-max-width: 285;
@@ -54,8 +48,6 @@
     -fx-border-radius: 0px 3px 3px 0px;
     -fx-background-radius: 0px 3px 3px 0px;
 }
-
-/* -- Fields -- */
 
 .text-field-error {
     -fx-border-color: red;
@@ -83,8 +75,6 @@
     -fx-min-height: 25;
 }
 
-/* -- Text (Title) -- */
-
 .primaryTitle {
     -fx-font-size: 22;
     -fx-font-weight: bold;
@@ -94,14 +84,10 @@
     -fx-font-size: 18;
 }
 
-/* -- NavBar -- */
-
 .navbarGridPane {
     -fx-background-color: #c0dff3;
     -fx-effect: dropshadow( gaussian , rgba(0, 0, 0, 0.1) , 5 , 0 , 0 , 2 );
 }
-
-/* -- DatePicker -- */
 
 CustomDatePicker > .arrow-button > .arrow {
     -fx-opacity: 0;
@@ -114,8 +100,6 @@ CustomDatePicker > .arrow-button {
     -fx-background-position: center;
     -fx-background-size: 20px 20px;
 }
-
-/* -- SplitMenuButton -- */
 
 MenuButton {
     -fx-background-color: white;

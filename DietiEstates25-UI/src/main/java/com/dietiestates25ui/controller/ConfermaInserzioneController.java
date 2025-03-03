@@ -2,7 +2,6 @@ package com.dietiestates25ui.controller;
 
 import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25.dto.ImmobileDTO;
-import com.dietiestates25ui.model.AgenteImmobiliare;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
 import com.dietiestates25ui.service.AgenteService;
@@ -242,6 +241,8 @@ public class ConfermaInserzioneController extends AbstractController implements 
         loadScene("/com/dietiestates25ui/view/agente-dashboard-view.fxml",
                 (fxmlLoader, stage) -> {
                     AgenteDashboardController controller = fxmlLoader.getController();
+                    controller.setAgente(agente);
+                    controller.setStage(stage);
                 }, indietroButton, "/com/dietiestates25ui/styles/agente-dashboard-style.css");
     }
 }

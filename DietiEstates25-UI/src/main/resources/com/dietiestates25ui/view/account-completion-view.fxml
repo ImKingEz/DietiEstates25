@@ -24,10 +24,10 @@
 
             </ImageView>
          <VBox alignment="CENTER">
-            <children>
+            
                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="secondaryTitle" text="Inserisci o modifica i campi:" />
                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="(I campi che contengono * vanno compilati necessariamente)" />
-            </children>
+            
          </VBox>
             <VBox styleClass="detailVBox">
 
@@ -40,10 +40,10 @@
                </VBox.margin>
                 </Label>
             <HBox alignment="CENTER" spacing="5.0">
-               <children>
+               
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                       <TextField fx:id="nomeTextField" prefHeight="26.0" prefWidth="266.0" styleClass="detailField" />
-               </children>
+               
             </HBox>
 
             </VBox>
@@ -58,10 +58,10 @@
                </VBox.margin>
                 </Label>
             <HBox alignment="CENTER" spacing="5.0">
-               <children>
+               
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*" />
                       <TextField fx:id="cognomeTextField" prefHeight="26.0" prefWidth="266.0" styleClass="detailField" />
-               </children>
+               
             </HBox>
 
             </VBox>

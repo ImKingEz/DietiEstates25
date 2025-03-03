@@ -1,15 +1,9 @@
 package com.dietiestates25ui.controller;
 
-import com.dietiestates25.dto.AgenziaDTO;
-import com.dietiestates25ui.exception.GenericServiceException;
-import com.dietiestates25ui.model.Amministratore;
-import com.dietiestates25ui.service.AgenziaService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,13 +22,10 @@ public class AreaAmministrativaController extends AbstractController implements 
     @FXML
     private Button tornaLoginButton;
 
-    private AgenziaService agenziaService;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Platform.runLater(() -> logo.requestFocus());
 
-        agenziaService = new AgenziaService();
         Platform.runLater(this::searchUserNameAndUpdateProfileHBox);
 
         tornaLoginButton.setOnAction(event -> openLoginAmministratorePage());

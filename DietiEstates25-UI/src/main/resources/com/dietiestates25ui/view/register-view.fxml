@@ -65,7 +65,7 @@
          </VBox>
          <VBox fx:id="backgroundVBox" alignment="CENTER" prefWidth="100.0" spacing="3.0">
             <HBox alignment="CENTER" styleClass="HBoxField">
-               <children>
+               
    
                      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="textAsterisco" text="*">
                      <HBox.margin>
@@ -90,7 +90,7 @@
                      </Button>
       
                   </HBox>
-               </children>
+               
             </HBox>
             <VBox alignment="CENTER_LEFT" maxWidth="240.0" styleClass="tipsVBox">
 
