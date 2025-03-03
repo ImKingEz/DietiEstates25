@@ -60,50 +60,67 @@ public class RisultatiRicercaController extends AbstractController implements In
 
     @FXML
     private TextField ricercaTextField;
+
     @FXML
     private Button cercaButton;
 
     @FXML
     private TextField minPriceTextField;
+
     @FXML
     private TextField maxPriceTextField;
+
     @FXML
     private Button confermaPrezzoButton;
+
     @FXML
     private TextField minSuperficieTextField;
+
     @FXML
     private TextField maxSuperficieTextField;
+
     @FXML
     private Button confermaSuperficieButton;
 
     @FXML
     private MenuButton tipoMenuButton;
+
     @FXML
     private MenuButton tipologiaMenuButton;
+
     @FXML
     private MenuButton localiMenuButton;
+
     @FXML
     private MenuButton bagniMenuButton;
+
     @FXML
     private MenuButton pianoMenuButton;
+
     @FXML
     private MenuButton classeEnergeticaMenuButton;
 
     @FXML
     private CheckBox ascensoreCheckBox;
+
     @FXML
     private CheckBox portineriaCheckBox;
+
     @FXML
     private CheckBox climatizzazioneCheckBox;
+
     @FXML
     private CheckBox scuolaCheckBox;
+
     @FXML
     private CheckBox parcoCheckBox;
+
     @FXML
     private CheckBox trasportoPubblicoCheckBox;
 
     @FXML
     private MenuButton prezzoMenuButton;
+
     @FXML
     private MenuButton superficieMenuButton;
 
@@ -115,11 +132,13 @@ public class RisultatiRicercaController extends AbstractController implements In
 
     @FXML
     private VBox mappaImmobiliVBox;
+
     @FXML
     private WebView map;
 
     @FXML
     private VBox listaAnnunciVBox;
+
     @FXML
     private Text numeroAnnunciText;
 
@@ -811,9 +830,18 @@ public class RisultatiRicercaController extends AbstractController implements In
                 Button offertaButton = controller.getOffertaButton();
 
                 ImmobileDTO finalImmobile = immobile;
-                visitaButton.setOnMouseClicked(event -> mostraDettagliAnnuncio(annuncio, finalImmobile));
-                offertaButton.setOnMouseClicked(event -> mostraDettagliAnnuncio(annuncio, finalImmobile));
-                annuncioItem.setOnMouseClicked(event -> mostraDettagliAnnuncio(annuncio, finalImmobile));
+                visitaButton.setOnMouseClicked(event -> {
+                    mostraDettagliAnnuncio(annuncio, finalImmobile);
+                    updateAnnuncioStats(annuncio.getIdImmobile(), "visita");
+                });
+                offertaButton.setOnMouseClicked(event -> {
+                    mostraDettagliAnnuncio(annuncio, finalImmobile);
+                    updateAnnuncioStats(annuncio.getIdImmobile(), "offerta");
+                });
+                annuncioItem.setOnMouseClicked(event -> {
+                    mostraDettagliAnnuncio(annuncio, finalImmobile);
+                    updateAnnuncioStats(annuncio.getIdImmobile(), "visualizzazione");
+                });
 
                 listaAnnunciVBox.getChildren().add(annuncioItem);
             } catch (IOException e) {
@@ -821,6 +849,16 @@ public class RisultatiRicercaController extends AbstractController implements In
             } catch (GenericServiceException e) {
                 logger.error("Errore durante il recupero dei dettagli dell'immobile: {}", e.getMessage(), e);
             }
+        }
+    }
+
+    private void updateAnnuncioStats(Long idImmobile, String tipoAggiornamento) {
+        try {
+            AnnuncioDTO annuncioAggiornato = annuncioService.updateAnnuncioStats(idImmobile, tipoAggiornamento, token);
+            logger.info("Annuncio aggiornato: {}", annuncioAggiornato);
+        } catch (GenericServiceException e) {
+            logger.error("Errore durante l'aggiornamento delle statistiche dell'annuncio: {}", e.getMessage(), e);
+            showPopup(POPUP_ERROR_TITLE, "Impossibile aggiornare le statistiche dell'annuncio.", ERROR_ICON);
         }
     }
 
@@ -844,11 +882,11 @@ public class RisultatiRicercaController extends AbstractController implements In
                 Platform.runLater(() -> mostraDettagliAnnuncio(annuncio, immobile));
             } else {
                 logger.error("Annuncio o Immobile non trovato per idImmobile: {}", idImmobile);
-                showPopup("Errore", "Annuncio o immobile non trovato.", ERROR_ICON);
+                showPopup(POPUP_ERROR_TITLE, "Annuncio o immobile non trovato.", ERROR_ICON);
             }
         } catch (GenericServiceException e) {
             logger.error("Errore durante il recupero dell'annuncio o dell'immobile: {}", e.getMessage(), e);
-            showPopup("Errore", "Impossibile recuperare i dettagli dell'annuncio.", ERROR_ICON);
+            showPopup(POPUP_ERROR_TITLE, "Impossibile recuperare i dettagli dell'annuncio.", ERROR_ICON);
         }
     }
 

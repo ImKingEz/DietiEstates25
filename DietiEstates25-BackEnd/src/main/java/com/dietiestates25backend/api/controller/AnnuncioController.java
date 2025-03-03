@@ -89,4 +89,16 @@ public class AnnuncioController extends BaseController {
         }
     }
 
+    @PutMapping("/updateStats")
+    public ResponseEntity<ApiResponse<AnnuncioDTO>> updateAnnuncioStats(@RequestBody UpdateAnnuncioDTO updateAnnuncioDTO) {
+        try {
+            Annuncio annuncioAggiornato = annuncioService.updateAnnuncioStats(updateAnnuncioDTO);
+            AnnuncioDTO annuncioDTO = annuncioService.convertToDTO(annuncioAggiornato);
+            return successResponse(annuncioDTO);
+        } catch (Exception e) {
+            logger.error("Errore durante l'aggiornamento delle statistiche dell'annuncio: {}", e.getMessage(), e);
+            return handleGenericException(e, "Errore durante l'aggiornamento delle statistiche dell'annuncio", "Annuncio");
+        }
+    }
+
 }
