@@ -1,9 +1,13 @@
 package com.dietiestates25ui.handler;
 
+import com.dietiestates25.dto.UtenteDTO;
 import com.dietiestates25ui.MainApplication;
 import com.dietiestates25ui.controller.AbstractController;
 import com.dietiestates25ui.controller.AccountCompletionController;
 import com.dietiestates25ui.controller.TokenManager;
+import com.dietiestates25ui.exception.GenericServiceException;
+import com.dietiestates25ui.model.Utente;
+import com.dietiestates25ui.service.UtenteService;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -45,8 +49,41 @@ public class OAuth2Handler {
     private void handleOAuthSuccess(String url, Button button) {
         String token = parseTokenFromURL(url);
         if (isValidToken(token)) {
+            TokenManager.getInstance().setToken(token);
+
+            Utente utente = findAndSetUtente(token);
+
+            TokenManager.getInstance().setLoggedInUser(utente);
             controller.openHomepage(button);
         }
+    }
+
+    private Utente findAndSetUtente(String token) {
+        UtenteService utenteService = new UtenteService();
+        UtenteDTO utenteDTO = null;
+        try {
+            utenteDTO = utenteService.getUtenteDetails(token);
+        } catch (GenericServiceException e) {
+            logger.error("Errore durante il recupero dei dettagli dell'utente", e);
+            controller.showPopup(AbstractController.POPUP_ERROR_TITLE, "Errore durante il recupero dei dettagli dell'utente", AbstractController.ERROR_ICON);
+        }
+        if (utenteDTO == null) {
+            Utente utente = new Utente();
+            utente.setNome("");
+            utente.setCognome("");
+            utente.setEmail("");
+            return utente;
+        } else {
+            return convertUtenteDTO(utenteDTO);
+        }
+    }
+
+    private static Utente convertUtenteDTO(UtenteDTO utenteDTO) {
+        Utente utente = new Utente();
+        utente.setNome(utenteDTO.getNome());
+        utente.setCognome(utenteDTO.getCognome());
+        utente.setEmail(utenteDTO.getEmail());
+        return utente;
     }
 
     private void handleOAuthFirstLogin(String url) {

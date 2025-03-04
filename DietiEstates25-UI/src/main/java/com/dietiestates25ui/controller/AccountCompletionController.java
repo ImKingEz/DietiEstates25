@@ -127,13 +127,13 @@ public class AccountCompletionController extends AbstractController implements I
 
     public void loadUserDetails(){
         try {
-            UtenteDTO utente = utenteService.getUtenteDetails(token);
-            if(utente != null){
+            UtenteDTO utenteDTO = utenteService.getUtenteDetails(token);
+            if(utenteDTO != null){
                 Platform.runLater(() ->{
-                    nomeTextField.setText(utente.getNome());
-                    cognomeTextField.setText(utente.getCognome());
-                    if(utente.getCitta() != null)
-                        cittaTextField.setText(utente.getCitta());
+                    nomeTextField.setText(utenteDTO.getNome());
+                    cognomeTextField.setText(utenteDTO.getCognome());
+                    if(utenteDTO.getCitta() != null)
+                        cittaTextField.setText(utenteDTO.getCitta());
                 });
             }
         } catch (Exception e){
