@@ -3,11 +3,13 @@ package com.dietiestates25ui.service;
 import com.dietiestates25.dto.AgenteDTO;
 import com.dietiestates25.dto.LoginResponse;
 import com.dietiestates25ui.exception.*;
+import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenteImmobiliare;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.Map;
 
 public class AgenteService extends ApiService {
@@ -21,10 +23,43 @@ public class AgenteService extends ApiService {
     }
 
     public void registraAgente(AgenteImmobiliare agente, String token) throws GenericServiceException {
+        validateAgente(agente);
         AgenteDTO agenteDTO = executeAndHandle("/register", "POST", agente, token, AgenteDTO.class);
         if(agenteDTO != null){
             logger.info("Agente registrato con successo: {}", agente.getEmail());
         }
+    }
+
+    private void validateAgente(AgenteImmobiliare agente) {
+        if (!registerFieldAreNull(agente) && !registerFieldAreEmpty(agente)) {
+            throw new IllegalArgumentException("I campi obbligatori non possono essere vuoti.");
+        }
+        if (!agente.getNome().matches("^[a-zA-Z ]+$") || !agente.getCognome().matches("^[a-zA-Z ]+$")) {
+            throw new IllegalArgumentException("Il nome e il cognome possono contenere solo lettere e spazi.");
+        }
+        if (!agente.getDataDiNascita().isEqual(LocalDate.now().minusYears(18)) && agente.getDataDiNascita().isAfter(LocalDate.now().minusYears(18))) {
+            throw new IllegalArgumentException("Deve avere almeno 18 anni per registrarlo.");
+        }
+        if (!agente.getSesso().equalsIgnoreCase("Maschio") || !agente.getSesso().equalsIgnoreCase("Femmina") || !agente.getSesso().equalsIgnoreCase("Non Binario")) {
+            throw new IllegalArgumentException("Il sesso può essere solo Maschio, Femmina o Non Binario.");
+        }
+        if (!FormValidator.isValidEmail(agente.getEmail())) {
+            throw new IllegalArgumentException("Email non valida.");
+        }
+        if (!FormValidator.isValidPassword(agente.getPassword())) {
+            throw new IllegalArgumentException("La password deve contenere almeno 8 caratteri, una lettera maiuscola e un numero.");
+        }
+        if (agente.getIdAgenzia() <= 0) {
+            throw new IllegalArgumentException("L'agente deve essere associato a un'agenzia.");
+        }
+    }
+
+    private boolean registerFieldAreEmpty(AgenteImmobiliare agente) {
+        return agente.getNome().isEmpty() || agente.getCognome().isEmpty() || agente.getEmail().isEmpty() || agente.getPassword().isEmpty() || agente.getDataDiNascita().toString().isEmpty() || agente.getSesso().isEmpty();
+    }
+
+    private static boolean registerFieldAreNull(AgenteImmobiliare agente) {
+        return agente.getNome() == null || agente.getCognome() == null || agente.getEmail() == null || agente.getPassword() == null || agente.getDataDiNascita() == null || agente.getSesso() == null;
     }
 
     public void updateAgente(AgenteImmobiliare agente, String token) throws GenericServiceException {
