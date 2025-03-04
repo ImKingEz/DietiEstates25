@@ -1,13 +1,14 @@
 package com.dietiestates25backend.business.service;
 
+import org.apache.commons.io.FilenameUtils;
 import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25backend.api.dto.RegisterAgenziaDTO;
 import com.dietiestates25backend.business.entity.AgenziaImmobiliare;
 import com.dietiestates25backend.business.entity.Amministratore;
 import com.dietiestates25backend.data.repository.AgenziaRepository;
 import com.dietiestates25backend.data.repository.AmministratoreRepository;
-import com.dietiestates25backend.data.repository.UtenteRepository; //Import
-import com.dietiestates25backend.data.repository.AgenteRepository; //Import
+import com.dietiestates25backend.data.repository.UtenteRepository;
+import com.dietiestates25backend.data.repository.AgenteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,8 +33,8 @@ public class AgenziaService {
     private final AgenziaRepository agenziaRepository;
     private final AmministratoreRepository amministratoreRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UtenteRepository utenteRepository; //Inject
-    private final AgenteRepository agenteRepository; //Inject
+    private final UtenteRepository utenteRepository;
+    private final AgenteRepository agenteRepository;
 
     @Autowired
     public AgenziaService(AgenziaRepository agenziaRepository, AmministratoreRepository amministratoreRepository, PasswordEncoder passwordEncoder, UtenteRepository utenteRepository, AgenteRepository agenteRepository) {
@@ -112,26 +112,26 @@ public class AgenziaService {
             return "";
         }
 
-        String originalFileName = null;
-        String logoFileName = logo.getOriginalFilename();
-        if (logoFileName != null) {
-            originalFileName = StringUtils.cleanPath(logoFileName);
-        } else {
+        String originalFileName = logo.getOriginalFilename();
+        if (originalFileName == null || originalFileName.isEmpty()) {
             return "";
         }
-        String fileExtension = "";
-        int dotIndex = originalFileName.lastIndexOf('.');
-        if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
-            fileExtension = originalFileName.substring(dotIndex);
-        }
-        String fileName = "logo_" + agenziaId + fileExtension;
-        Path uploadDir = Paths.get("uploads/logos");
 
+        String fileExtension = FilenameUtils.getExtension(originalFileName);
+        String fileName = "logo_" + agenziaId + "." + fileExtension;
+        Path uploadDir = Paths.get("uploads/logos").toAbsolutePath().normalize();
         try {
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
-            Path targetLocation = uploadDir.resolve(fileName);
+
+            Path targetLocation = uploadDir.resolve(fileName).normalize();
+
+            if (!targetLocation.startsWith(uploadDir)) {
+                logger.error("Invalid file path detected.  Possible path traversal attempt.");
+                return "";
+            }
+
             Files.copy(logo.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return "/uploads/logos/" + fileName;
         } catch (IOException e) {
@@ -145,7 +145,7 @@ public class AgenziaService {
 
         if (agenziaOptional.isEmpty()) {
             logger.warn("Agenzia non trovata con ID: {}", agenziaId);
-            throw new IllegalArgumentException("Agenzia non trovata con ID: " + agenziaId); // Oppure una custom exception
+            throw new IllegalArgumentException("Agenzia non trovata con ID: " + agenziaId);
         }
 
         AgenziaImmobiliare agenzia = agenziaOptional.get();
