@@ -175,8 +175,21 @@ public class AnnuncioService extends ApiService {
     }
 
     public AnnuncioDTO updateAnnuncioStats(Long idImmobile, String tipoAggiornamento, String token) throws GenericServiceException {
+        validateStatsData(idImmobile, tipoAggiornamento);
         UpdateAnnuncioDTO updateAnnuncioDTO = new UpdateAnnuncioDTO(idImmobile, tipoAggiornamento);
         return executeAndHandle("/updateStats", "PUT", updateAnnuncioDTO, token, AnnuncioDTO.class);
+    }
+
+    private static void validateStatsData(Long idImmobile, String tipoAggiornamento) {
+        if (idImmobile == null || tipoAggiornamento == null || tipoAggiornamento.isEmpty()) {
+            throw new IllegalArgumentException("ID immobile e tipo di aggiornamento non possono essere null o vuoti.");
+        }
+        if (idImmobile <= 0) {
+            throw new IllegalArgumentException("ID immobile non valido: " + idImmobile);
+        }
+        if (!tipoAggiornamento.equals("visualizzazione") && !tipoAggiornamento.equals("offerta") && !tipoAggiornamento.equals("visita")) {
+            throw new IllegalArgumentException("Tipo di aggiornamento non valido: " + tipoAggiornamento);
+        }
     }
 
     @Override
