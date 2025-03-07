@@ -84,7 +84,7 @@
                             </HBox>
             
                             <HBox spacing="5.0">
-                                <Label styleClass="caratteristicheImmobileText" text="Numero camere: " />
+                                <Label styleClass="caratteristicheImmobileText" text="Numero locali: " />
                                 <Label fx:id="numeroCamereLabel" styleClass="valoriCaratteristicheImmobileText" text="" wrapText="true" />
                             </HBox>
             
