@@ -2,7 +2,10 @@ package com.dietiestates25ui.service;
 
 import com.dietiestates25.dto.AgenziaDTO;
 import com.dietiestates25ui.exception.*;
+import com.dietiestates25ui.handler.FormValidator;
 import com.dietiestates25ui.model.AgenziaImmobiliare;
+import javafx.application.Platform;
+import javafx.scene.image.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +36,30 @@ public class AgenziaService extends ApiService {
 
     public void registerAgenzia(AgenziaImmobiliare agenzia, File logoFile, String password) throws GenericServiceException {
         try {
+            if (agenzia.getNome() == null || agenzia.getEmail() == null || agenzia.getPartitaIva() == null || agenzia.getIndirizzo() == null || agenzia.getTelefono() == null || agenzia.getLogo() == null || password == null || logoFile == null) {
+                throw new IllegalArgumentException("Tutti i campi sono obbligatori.");
+            }
+            if (agenzia.getNome().isBlank() || agenzia.getEmail().isBlank() || agenzia.getPartitaIva().isBlank() || agenzia.getIndirizzo().isBlank() || agenzia.getTelefono().isBlank() || agenzia.getLogo().isBlank() || password.isBlank()) {
+                throw new IllegalArgumentException("Tutti i campi sono obbligatori.");
+            }
+            if (agenzia.getNome().matches("^[a-zA-Z0-9 ]+$")) {
+                throw new IllegalArgumentException("Il nome dell'agenzia non può contenere caratteri speciali");
+            }
+            if (FormValidator.isValidEmail(agenzia.getEmail())) {
+                throw new IllegalArgumentException("Email non valida.");
+            }
+            if (FormValidator.isValidPassword(password)) {
+                throw new IllegalArgumentException("La password deve contenere almeno 8 caratteri, una lettera maiuscola e un numero.");
+            }
+            if (FormValidator.isValidPartitaIVA(agenzia.getPartitaIva())) {
+                throw new IllegalArgumentException("Partita IVA non valida.");
+            }
+            if (FormValidator.isValidTelefono(agenzia.getTelefono())) {
+                throw new IllegalArgumentException("Telefono non valido.");
+            }
+            if (!validateImage(logoFile)) {
+                throw new IllegalArgumentException("Il file del logo non rispetta le caratteristiche necessarie.");
+            }
             logger.info("Registrazione dell'agenzia: {}", agenzia.getNome());
             MultipartBodyPublisher publisher = new MultipartBodyPublisher();
             addFormDataPartAndFilePartForPublisher(agenzia, logoFile, password, publisher);
@@ -45,6 +72,34 @@ public class AgenziaService extends ApiService {
         } catch (Exception e) {
             throw handleGenericException(e.getMessage(), e);
         }
+    }
+
+    private boolean validateImage(File file) {
+        final int MAX_IMAGE_SIZE = 512;
+        final int MAX_FILE_SIZE = 2048;
+
+        if (file.length() > MAX_FILE_SIZE) {
+            return false;
+        }
+
+        try {
+            Image image = new Image(file.toURI().toString());
+            double width = image.getWidth();
+            double height = image.getHeight();
+
+            if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
+                return false;
+            }
+
+            if (width != height) {
+                return false;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     private static void addFormDataPartAndFilePartForPublisher(AgenziaImmobiliare agenzia, File logoFile, String password, MultipartBodyPublisher publisher) throws IOException {
