@@ -36,8 +36,8 @@ public abstract class ApiService {
     public static final String COMUNICATION_ERROR = "Errore durante la comunicazione con il server. Riprova più tardi.";
     public static final String INTERRUPT_OPERATION_ERROR = "Operazione interrotta. Riprova.";
 
-    protected static String csrfTokenValue;
-    protected static String csrfTokenHeaderName;
+    protected String csrfTokenValue;
+    protected String csrfTokenHeaderName;
 
     private static final CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
 
@@ -53,7 +53,7 @@ public abstract class ApiService {
 
     protected abstract String getBaseUrl();
 
-    public static void fetchCsrfToken() throws ServiceUnavailableException {
+    public void fetchCsrfToken() throws ServiceUnavailableException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://localhost:8080/api/csrf"))
