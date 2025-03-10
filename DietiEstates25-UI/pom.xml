@@ -148,7 +148,7 @@
                         <groupId>net.bytebuddy</groupId>
                         <artifactId>byte-buddy-agent</artifactId>
                         <version>${byte.buddy.version}</version>
-                        <scope>test</scope>
+                        <scope>compile</scope>
                     </dependency>
                 </dependencies>
             </plugin>
