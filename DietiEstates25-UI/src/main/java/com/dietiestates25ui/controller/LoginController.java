@@ -161,7 +161,7 @@ public class LoginController extends AbstractController implements Initializable
         try {
             webView.setVisible(true);
             providerBackButton.setVisible(true);
-            webEngine.load("http://localhost:8080/oauth2/authorization/" + provider);
+            webEngine.load("http://35.180.252.202:8080/oauth2/authorization/" + provider);
         } catch (Exception e) {
             logger.error("Errore durante il login con provider: {}", e.getMessage());
             showPopup("Errore durante il login con provider", e.getMessage(), ERROR_ICON);
