@@ -13,14 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.File;
 import java.util.stream.Stream;
 
+import static com.dietiestates25ui.helper.ImageHelper.createImageWithSpecificFileSize;
+import static com.dietiestates25ui.helper.ImageHelper.createImageWithSpecificSize;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -115,48 +112,6 @@ public class AgenziaServiceTest {
     private static final File LOGO_FILE_TOO_LARGE_FILE_SIZE = createImageWithSpecificFileSize("image8.png", MAX_FILE_SIZE + 1);
     private static final File LOGO_FILE_TOO_LARGE_IMAGE_SIZE = createImageWithSpecificSize("image9.png", 513, 513);
 
-
-
-
-
-    public static File createImageWithSpecificFileSize(String fileName, long fileSizeInBytes) {
-        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-        File imageFile = new File(fileName);
-        try {
-            ImageIO.write(image, "png", imageFile);
-            long currentSize = imageFile.length();
-            if (currentSize < fileSizeInBytes) {
-                long paddingSize = fileSizeInBytes - currentSize;
-                try (FileOutputStream fos = new FileOutputStream(imageFile, true)) {
-                    byte[] padding = new byte[1024];
-                    while (paddingSize > 0) {
-                        int bytesToWrite = (int) Math.min(padding.length, paddingSize);
-                        fos.write(padding, 0, bytesToWrite);
-                        paddingSize -= bytesToWrite;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            return null;
-        }
-        return imageFile;
-    }
-
-
-    public static File createImageWithSpecificSize(String fileName, int width, int height) {
-        File imageFile = new File(fileName);
-
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        try {
-            ImageIO.write(image, "png", imageFile);
-        } catch (IOException e) {
-            return null;
-        }
-
-        return imageFile;
-    }
-
     @Nested
     @DisplayName("Casi di registrazione agenzia non validi")
     class RegisterAgencyFailureTests {
@@ -226,7 +181,7 @@ public class AgenziaServiceTest {
 
         @ParameterizedTest
         @MethodSource("successCases")
-        void testRegisterAgency_success(String nome, String partitaIva, String indirizzo, String email, String telefono, String logo, String password, File logoFile) throws GenericServiceException, IOException {
+        void testRegisterAgency_success(String nome, String partitaIva, String indirizzo, String email, String telefono, String logo, String password, File logoFile) throws GenericServiceException {
             mockExecuteAndHandleMultipart();
 
             AgenziaImmobiliare agenzia = new AgenziaImmobiliare(nome, partitaIva, indirizzo, email, telefono, logo);
@@ -240,7 +195,7 @@ public class AgenziaServiceTest {
             doReturn(null).when(agenziaService).executeAndHandleMultipart(
                     eq("/register"),
                     eq("POST"),
-                    any(),
+                    any(byte[].class),
                     anyString(),
                     eq(null),
                     eq(null)
@@ -260,21 +215,34 @@ public class AgenziaServiceTest {
                     eq(null)
             );
 
-//            String body = new String(bodyCaptor.getValue());
-//
-//            assertAll(
-//                    () -> assertTrue(body.contains("nome=" + agenzia.getNome())),
-//                    () -> assertTrue(body.contains("partitaIva=" + agenzia.getPartitaIva())),
-//                    () -> assertTrue(body.contains("indirizzo=" + agenzia.getIndirizzo())),
-//                    () -> assertTrue(body.contains("email=" + agenzia.getEmail())),
-//                    () -> assertTrue(body.contains("telefono=" + agenzia.getTelefono())),
-//                    () -> assertTrue(body.contains("logo=" + agenzia.getLogo())),
-//                    () -> assertTrue(body.contains("password=" + password)),
-//                    () -> assertTrue(body.contains("Content-Disposition: form-data; name=\"logo\"; filename=\"" + logoFile.getName() + "\"")),
-//                    () -> assertTrue(body.contains("Content-Type: image/png")),
-//                    () -> assertTrue(body.contains("Content-Length: " + logoFile.length())),
-//                    () -> assertTrue(contentTypeCaptor.getValue().startsWith("multipart/form-data"))
-//            );
+            byte[] capturedBody = bodyCaptor.getValue();
+            String capturedContentType = contentTypeCaptor.getValue();
+
+            String bodyAsString = new String(capturedBody);
+
+            assertTrue(bodyAsString.contains("name=\"nome\""));
+            assertTrue(bodyAsString.contains(agenzia.getNome()));
+
+            assertTrue(bodyAsString.contains("name=\"partitaIva\""));
+            assertTrue(bodyAsString.contains(agenzia.getPartitaIva()));
+
+            assertTrue(bodyAsString.contains("name=\"indirizzo\""));
+            assertTrue(bodyAsString.contains(agenzia.getIndirizzo()));
+
+            assertTrue(bodyAsString.contains("name=\"email\""));
+            assertTrue(bodyAsString.contains(agenzia.getEmail()));
+
+            assertTrue(bodyAsString.contains("name=\"telefono\""));
+            assertTrue(bodyAsString.contains(agenzia.getTelefono()));
+
+            assertTrue(bodyAsString.contains("name=\"password\""));
+            assertTrue(bodyAsString.contains(password));
+
+            assertNotNull(capturedContentType);
+            assertTrue(capturedContentType.startsWith("multipart/form-data; boundary="));
+
+            assertTrue(bodyAsString.contains("name=\"logo\""));
+            assertTrue(bodyAsString.contains(logoFile.getName()));
         }
     }
 }
