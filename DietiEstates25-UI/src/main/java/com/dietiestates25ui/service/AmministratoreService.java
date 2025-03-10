@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 public class AmministratoreService extends ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(AmministratoreService.class);
-    private static final String BASE_URL = "http://localhost:8080/api/admin";
+    private static final String BASE_URL = "http://" + BACKEND_IP + ":8080/api/admin";
 
     @Override
     protected String getBaseUrl() {

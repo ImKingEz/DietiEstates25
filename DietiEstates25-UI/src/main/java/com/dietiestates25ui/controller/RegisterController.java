@@ -44,9 +44,6 @@ public class RegisterController extends AbstractController implements Initializa
     private Button googleButton;
 
     @FXML
-    private Button facebookButton;
-
-    @FXML
     private Button githubButton;
 
     @FXML
@@ -97,7 +94,6 @@ public class RegisterController extends AbstractController implements Initializa
 
     private void actionButtonProvider() {
         googleButton.setOnAction(event -> registerWithProvider("google"));
-        facebookButton.setOnAction(event -> registerWithProvider("facebook"));
         githubButton.setOnAction(event -> registerWithProvider("github"));
     }
 
@@ -143,7 +139,6 @@ public class RegisterController extends AbstractController implements Initializa
             registratiButton.setDisable(true);
             indietroButton.setDisable(true);
             googleButton.setDisable(true);
-            facebookButton.setDisable(true);
             githubButton.setDisable(true);
             showPopup("Registrazione completata!", "Reindirizzamento al login...", SUCCESS_ICON);
             PauseTransition delay = new PauseTransition(Duration.millis(POPUP_PAUSE));

@@ -13,7 +13,7 @@ import java.util.Map;
 public class UtenteService extends ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(UtenteService.class);
-    private static final String BASE_URL = "http://localhost:8080/api/users";
+    private static final String BASE_URL = "http://" + BACKEND_IP + ":8080/api/users";
 
     @Override
     protected String getBaseUrl() {

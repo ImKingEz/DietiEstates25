@@ -39,6 +39,8 @@ public abstract class ApiService {
     protected String csrfTokenValue;
     protected String csrfTokenHeaderName;
 
+    protected static final String BACKEND_IP = "35.180.252.202";
+
     private static final CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
 
     protected static final ObjectMapper objectMapper = new ObjectMapper();
@@ -56,7 +58,7 @@ public abstract class ApiService {
     public void fetchCsrfToken() throws ServiceUnavailableException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/api/csrf"))
+                    .uri(URI.create("http://" + BACKEND_IP + ":8080/api/csrf"))
                     .GET()
                     .build();
 

@@ -24,7 +24,7 @@ import java.awt.image.BufferedImage;
 public class AgenziaService extends ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(AgenziaService.class);
-    private static final String BASE_URL = "http://localhost:8080/api/agenzie";
+    private static final String BASE_URL = "http://" + BACKEND_IP + ":8080/api/agenzie";
 
     @Override
     protected String getBaseUrl() {

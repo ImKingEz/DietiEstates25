@@ -11,7 +11,7 @@ public class ImmobileService extends ApiService {
 
     private static final Logger logger = LoggerFactory.getLogger(ImmobileService.class);
 
-    private static final String BASE_URL = "http://localhost:8080/api/immobili";
+    private static final String BASE_URL = "http://" + BACKEND_IP + ":8080/api/immobili";
 
     @Override
     protected String getBaseUrl() {

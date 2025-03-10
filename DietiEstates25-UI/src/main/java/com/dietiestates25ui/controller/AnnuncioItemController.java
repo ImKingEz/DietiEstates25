@@ -102,9 +102,9 @@ public class AnnuncioItemController extends AbstractController {
     }
 
     private void setAnnuncioImageView(String imageUrl) {
-        logger.debug("Setting image: http://localhost:8080{}", imageUrl);
+        logger.debug("Setting image: http://35.180.252.202:8080{}", imageUrl);
         if (annuncioImageView != null) {
-            Image image = new Image("http://localhost:8080" + imageUrl);
+            Image image = new Image("http://35.180.252.202:8080" + imageUrl);
             annuncioImageView.setImage(image);
 
             double imageWidth = image.getWidth();

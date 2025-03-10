@@ -60,7 +60,7 @@ public class AnnuncioService extends ApiService {
 
     @Override
     protected String getBaseUrl() {
-        return "http://localhost:8080/api/annunci";
+        return "http://" + BACKEND_IP + ":8080/api/annunci";
     }
 
     public List<AnnuncioDTO> searchAnnunciByCittaAndFiltro(String citta, FiltroAnnunci filtro, String token) throws GenericServiceException {
