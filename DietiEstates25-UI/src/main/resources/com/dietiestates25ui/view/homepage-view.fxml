@@ -116,7 +116,7 @@
                     </VBox>
                     <HBox alignment="BOTTOM_LEFT">
                         
-                            <Button fx:id="tornaIndietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" />
+                            <Button fx:id="tornaIndietroButton" mnemonicParsing="false" styleClass="generalButton" text="Effettua Logout" />
                         
                   <VBox.margin>
                      <Insets bottom="10.0" left="10.0" />

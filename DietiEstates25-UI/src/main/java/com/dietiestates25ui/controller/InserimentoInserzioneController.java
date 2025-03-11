@@ -144,7 +144,7 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        logo.requestFocus();
+        Platform.runLater(() -> logo.requestFocus());
 
         apriMappaButton.setOnAction(this::handleApriMappaButtonAction);
 

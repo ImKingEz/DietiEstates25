@@ -70,6 +70,8 @@ public class StatisticheInserzioniController extends AbstractController implemen
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Platform.runLater(this::searchUserNameAndUpdateProfileHBox);
+
         tornaIndietroButton.setOnAction(event -> openAgenteDashboardPage(tornaIndietroButton));
 
         idAgente = findAgenteId();
