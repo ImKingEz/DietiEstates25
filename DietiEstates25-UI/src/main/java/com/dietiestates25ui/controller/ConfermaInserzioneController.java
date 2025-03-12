@@ -232,7 +232,7 @@ public class ConfermaInserzioneController extends AbstractController implements 
             delay.play();
 
         } catch (Exception e) {
-            showPopup("Errore", "Errore durante il salvataggio dell'immobile", ERROR_ICON);
+            showPopup(POPUP_ERROR_TITLE, e.getMessage(), ERROR_ICON);
             logger.error("Errore durante il salvataggio dell'immobile: {}", e.getMessage());
         }
     }

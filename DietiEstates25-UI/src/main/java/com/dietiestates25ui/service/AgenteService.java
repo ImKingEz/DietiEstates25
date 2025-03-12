@@ -70,7 +70,7 @@ public class AgenteService extends ApiService {
                     throw new ServiceUnavailableException("Errore del server.");
                 } else {
                     logGenericException(statusCode, response.body());
-                    throw new ApiClientException(response.body());
+                    throw new ApiClientException("Errore generico: " + statusCode);
                 }
         }
     }
