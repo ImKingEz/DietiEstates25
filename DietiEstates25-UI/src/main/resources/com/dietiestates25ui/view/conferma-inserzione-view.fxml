@@ -117,7 +117,7 @@
       
               <HBox alignment="CENTER_LEFT">
       
-                  <Button fx:id="indietroButton" mnemonicParsing="false" styleClass="generalButton" text="Torna indietro" />
+                  <Button fx:id="indietroButton" mnemonicParsing="false" styleClass="generalButton" text="Modifica dati" />
                   <VBox.margin>
                       <Insets left="10.0" />
                   </VBox.margin>
