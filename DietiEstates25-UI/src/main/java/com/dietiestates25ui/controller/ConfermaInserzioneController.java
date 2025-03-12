@@ -221,6 +221,8 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
     private void salvaImmobile() {
         try {
+            confermaButton.setDisable(true);
+            indietroButton.setDisable(true);
             ImmobileDTO immobileDTO = immobileService.salvaImmobile(immobile, token);
             annuncio.setIdImmobile(immobileDTO.getId());
             AgenteDTO agenteDTO = agenteService.getAgenteDetails(token);
@@ -233,6 +235,8 @@ public class ConfermaInserzioneController extends AbstractController implements 
 
         } catch (Exception e) {
             showPopup(POPUP_ERROR_TITLE, e.getMessage(), ERROR_ICON);
+            confermaButton.setDisable(false);
+            indietroButton.setDisable(false);
             logger.error("Errore durante il salvataggio dell'immobile: {}", e.getMessage());
         }
     }
