@@ -252,7 +252,7 @@
                                         <MenuButton fx:id="pianoMenuButton" mnemonicParsing="false" text="Piano">
                                             <items>
                                                 <MenuItem mnemonicParsing="false" text="Piano terra" />
-                                                <MenuItem mnemonicParsing="false" text="Piani intermedi" />
+                                                <MenuItem mnemonicParsing="false" text="Piano intermedio" />
                                                 <MenuItem mnemonicParsing="false" text="Ultimo piano" />
                                             </items>
                                             <graphic>
