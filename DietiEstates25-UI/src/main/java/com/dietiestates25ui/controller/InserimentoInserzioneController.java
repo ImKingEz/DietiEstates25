@@ -1,6 +1,8 @@
 package com.dietiestates25ui.controller;
+import com.dietiestates25ui.exception.GenericServiceException;
 import com.dietiestates25ui.model.Annuncio;
 import com.dietiestates25ui.model.Immobile;
+import com.dietiestates25ui.service.GeoapifyService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
@@ -47,7 +49,6 @@ public class InserimentoInserzioneController extends AbstractController implemen
     public static final String PIANO_INTERMEDIO_ITEM = "Piano intermedio";
     public static final String ULTIMO_PIANO_ITEM = "Ultimo piano";
     public static final String FX_TEXT_FILL_MENU_BUTTON = "-fx-text-fill: black;";
-    private static final String GEOAPIFY_API_KEY = System.getenv("GEOAPIFY_API_KEY");
 
     @FXML
     private TextField titoloTextField;
@@ -141,6 +142,8 @@ public class InserimentoInserzioneController extends AbstractController implemen
     private double latitudine;
     private double longitudine;
     private String citta;
+
+    private GeoapifyService geoapifyService = new GeoapifyService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -581,7 +584,15 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        String apiKey = GEOAPIFY_API_KEY;
+        String apiKey;
+        try {
+            apiKey = geoapifyService.getKey(token);
+        } catch (GenericServiceException e) {
+            logger.error("Errore durante il recupero della chiave API Geoapify: {}", e.getMessage());
+            showPopup(POPUP_ERROR_TITLE, "Errore durante il recupero della chiave API Geoapify: " + e.getMessage(), ERROR_ICON);
+            return;
+        }
+
         if (apiKey == null || apiKey.isEmpty()) {
             logger.error("La variabile d'ambiente GEOAPIFY_API_KEY non è impostata!");
             throw new IllegalStateException("Chiave API Geoapify non configurata.");
@@ -673,11 +684,15 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        String apiKey = GEOAPIFY_API_KEY;
-        if (apiKey == null || apiKey.isEmpty()) {
-            logger.error("La variabile d'ambiente GEOAPIFY_API_KEY non è impostata!");
-            throw new IllegalStateException("Chiave API Geoapify non configurata.");
+        String apiKey;
+        try {
+            apiKey = geoapifyService.getKey(token);
+        } catch (GenericServiceException e) {
+            logger.error("Errore durante il recupero della chiave API Geoapify: {}", e.getMessage());
+            showPopup(POPUP_ERROR_TITLE, "Errore durante il recupero della chiave API Geoapify: " + e.getMessage(), ERROR_ICON);
+            return;
         }
+
         String baseUrl = "https://api.geoapify.com/v2/places?";
         int radius = GEOAPIFY_RADIUS;
 
