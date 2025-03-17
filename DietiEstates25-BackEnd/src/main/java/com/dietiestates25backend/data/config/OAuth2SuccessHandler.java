@@ -35,7 +35,7 @@ import java.util.Optional;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     public static final String OAUTH_EMAIL_FIELD = "email";
-    private static final String FRONTEND_REDIRECT_BASE_URL = "http://35.180.252.202:8000/oauth2/";
+    private static final String FRONTEND_REDIRECT_BASE_URL = "http://dietiestates25.ddns.net:8000/oauth2/";
     private static final Logger logger = LoggerFactory.getLogger(OAuth2SuccessHandler.class);
     private final JwtService jwtService;
     private final UtenteRepository userRepository;

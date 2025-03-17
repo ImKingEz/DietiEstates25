@@ -119,7 +119,7 @@ public class AnnuncioDetailController extends AbstractController implements Init
         if (annuncio != null && annuncio.getImmaginiUrls() != null && !annuncio.getImmaginiUrls().isEmpty()) {
             images = new ArrayList<>();
             for (String imageUrl : annuncio.getImmaginiUrls()) {
-                String fullImageUrl = "http://35.180.252.202:8080" + imageUrl;
+                String fullImageUrl = "http://dietiestates25.ddns.net:8080" + imageUrl;
                 logger.debug("Loading image: {}", fullImageUrl);
                 Image image = new Image(fullImageUrl);
                 images.add(image);

@@ -43,11 +43,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
 
     private static final int GEOAPIFY_RADIUS = 500;
     public static final String FEATURES_GEOAPIFY = "features";
-    public static final String CATEGORIES_GEOAPIFY = "categories";
     public static final String PIANO_TERRA_ITEM = "Piano terra";
     public static final String PIANO_INTERMEDIO_ITEM = "Piano intermedio";
     public static final String ULTIMO_PIANO_ITEM = "Ultimo piano";
     public static final String FX_TEXT_FILL_MENU_BUTTON = "-fx-text-fill: black;";
+    private static final String GEOAPIFY_API_KEY = System.getenv("GEOAPIFY_API_KEY");
 
     @FXML
     private TextField titoloTextField;
@@ -581,7 +581,12 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac";
+        String apiKey = GEOAPIFY_API_KEY;
+        if (apiKey == null || apiKey.isEmpty()) {
+            logger.error("La variabile d'ambiente GEOAPIFY_API_KEY non è impostata!");
+            throw new IllegalStateException("Chiave API Geoapify non configurata.");
+        }
+
         String url = buildGeoapifyUrl(latitude, longitude, apiKey);
 
         logger.info("URL chiamata API Geoapify: {}", url);
@@ -668,7 +673,11 @@ public class InserimentoInserzioneController extends AbstractController implemen
             return;
         }
 
-        String apiKey = "7c2573a1f65d4a23b59a0382d7f623ac";
+        String apiKey = GEOAPIFY_API_KEY;
+        if (apiKey == null || apiKey.isEmpty()) {
+            logger.error("La variabile d'ambiente GEOAPIFY_API_KEY non è impostata!");
+            throw new IllegalStateException("Chiave API Geoapify non configurata.");
+        }
         String baseUrl = "https://api.geoapify.com/v2/places?";
         int radius = GEOAPIFY_RADIUS;
 

@@ -39,7 +39,7 @@ public abstract class ApiService {
     protected String csrfTokenValue;
     protected String csrfTokenHeaderName;
 
-    protected static final String BACKEND_IP = "35.180.252.202";
+    protected static final String BACKEND_IP = "dietiestates25.ddns.net";
 
     private static final CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
 
