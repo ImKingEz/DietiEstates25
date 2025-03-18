@@ -60,8 +60,6 @@ public class LoginAmministratoreController extends AbstractController implements
 
         passwordTextFieldInitializer("loginField");
         togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
-        emailTextField.setText("a@a.com");
-        passwordPasswordField.setText("Aaaaaaa1");
     }
 
     private void openRegisterAgenziaPage() {

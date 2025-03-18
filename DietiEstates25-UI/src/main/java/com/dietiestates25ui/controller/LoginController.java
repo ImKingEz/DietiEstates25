@@ -74,9 +74,6 @@ public class LoginController extends AbstractController implements Initializable
         togglePasswordButton.setOnAction(event -> passwordVisible = togglePasswordVisibility(passwordVisible));
 
         agenziaImmobiliareButton.setOnAction(event -> openSelectRolePage());
-
-        emailTextField.setText("c@c.com");
-        passwordPasswordField.setText("Aaaaaaa1");
     }
 
     private void openSelectRolePage() {
