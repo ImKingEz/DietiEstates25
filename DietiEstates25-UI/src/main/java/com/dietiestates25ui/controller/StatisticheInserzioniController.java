@@ -221,6 +221,7 @@ public class StatisticheInserzioniController extends AbstractController implemen
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/dietiestates25ui/view/annuncio-item-view.fxml"));
                 HBox annuncioItem = loader.load();
                 annuncioItem.setStyle("");
+                annuncioItem.setPrefWidth(listaAnnunciFlowPane.getWidth()/2);
 
                 AnnuncioItemController controller = loader.getController();
                 controller.setAnnuncio(annuncio, immobile);
