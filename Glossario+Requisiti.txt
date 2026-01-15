@@ -1,0 +1,136 @@
+**Requisiti non-funzionali**
+
+- Architettura del sistema:
+Deve essere un sistema distribuito con due componenti principali:
+- Back-end: Gestisce la logica di business e i dati, accessibile tramite API REST. Deve essere indipendente dal front-end e supportare tecnologie di containerizzazione come Docker.
+- Front-end: Interfaccia utente che comunica con il back-end esclusivamente tramite API e deve essere sostituibile senza modifiche al back-end.
+
+- Sicurezza e gestione delle credenziali:
+Le credenziali degli utenti devono essere salvate in modo sicuro.
+
+- Performance ed efficienza:
+Le funzionalità di ricerca devono essere efficienti e performanti.
+
+- Portabilità e modularità:
+Il sistema deve favorire il riutilizzo del codice e supportare l'astrazione per l'integrazione futura di nuove funzionalità.
+Tecnologie suggerite: Docker per containerizzazione, servizi cloud (Azure, AWS) per il deployment.
+
+- Compatibilità tecnologica:
+È obbligatorio l’uso di linguaggi di programmazione Object-Oriented. Esempi per il front-end: Java (Swing/JavaFX), Angular, React, o applicazioni mobili (Android/iOS).
+
+- Indipendenza dai provider esterni:
+La logica applicativa e la persistenza dei dati non devono dipendere esclusivamente da servizi esterni come Firebase o Supabase.
+
+- Usabilità e accessibilità:
+Valutazione dell’usabilità tramite review sistematiche e coinvolgimento di utenti reali.
+Le interfacce devono essere intuitive, rapide e piacevoli da usare.
+
+**Requisiti di dominio**
+
+- Contesto applicativo:
+La piattaforma DietiEstates25 deve gestire i servizi immobiliari permettendo a più agenzie di pubblicare annunci e agli utenti di visualizzarli, prenotare visite e fare offerte.
+
+- Vincoli specifici del dominio:
+Supporto per categorie di annunci come vendita e affitto.
+
+- Integrazione di API esterne per:
+- Caricare mappe interattive (es. per visualizzare le case sulla mappa tramite Google Maps).
+- Verifica automatica di servizi nelle vicinanze di un immobile (es. scuole, parchi, trasporti tramite Geoapify).
+- Esportazione file PDF (es. per la visualizzazione delle statistiche da parte degli agenti immobiliari, tramite (TODO))
+- Autenticazione e registrazione (es. per gli utenti, tramite Google,Facebook e GitHub) 
+
+- Caratteristiche degli utenti e ruoli:
+- Amministratori: creazione account e visualizzazione di annunci.
+- Agenti immobiliari: caricamento e visualizzazione di annunci.
+- Utenti finali: registrazione e autenticazione, ricerca immobili (*anche avanzata*), prenotazione visite, e creazione offerte.
+
+- Processi operativi per:
+- Gestione di offerte per immobili (accettazione/rifiuto/controproposta).
+- (TODO) Notifiche per eventi rilevanti (es. nuovi annunci, conferme/rifiuti visite).
+- Monitoraggio e reportistica tramite dashboard per agenti (con un documento PDF).
+
+- Normative e requisiti locali:
+Aderenza a standard specifici di sicurezza e performance per applicazioni distribuite.
+
+
+*****************************************************************************************************************************************************************************************
+
+
+Glossario
+
+API (Application Programming Interface)
+Interfaccia che consente a componenti software di comunicare tra loro attraverso un set definito di regole. Nel progetto, è usata per far interagire il front-end con il back-end.
+
+Back-end
+Parte del sistema che si occupa della logica di business, della gestione dei dati e delle operazioni sul server. È indipendente dal front-end.
+
+Front-end
+Interfaccia utente che consente agli utenti di interagire con il sistema. Comunica con il back-end tramite API REST.
+
+REST (Representational State Transfer)
+Stile architetturale per la comunicazione tra sistemi distribuiti. Usa metodi standard del protocollo HTTP, come GET, POST, PUT e DELETE.
+
+Containerizzazione
+Tecnologia che consente di eseguire applicazioni e i loro ambienti in unità isolate chiamate container. Un esempio è Docker.
+
+Docker
+Strumento per la creazione e la gestione di container, che garantisce portabilità e coerenza tra ambienti di sviluppo e produzione.
+
+Cloud Computing
+Modello di erogazione di risorse IT (come server e storage) tramite Internet. Esempi: Azure e AWS (Amazon Web Services).
+
+Object-Oriented Programming (OOP)
+Paradigma di programmazione basato su oggetti, che combinano dati e metodi per operare su di essi. Linguaggi come Java, Python e C# supportano OOP.
+
+UML (Unified Modeling Language)
+Linguaggio standard per la modellazione di sistemi software tramite diagrammi, come use case, diagrammi di classe e di sequenza.
+
+Diagrammi di sequenza
+Diagrammi UML che descrivono il flusso di messaggi tra oggetti in un sistema nel tempo.
+
+Diagrammi di classe
+Diagrammi UML che rappresentano le classi del sistema, le loro proprietà, metodi e relazioni.
+
+Mock-up
+Modello grafico o prototipo statico che mostra il design di un’interfaccia utente.
+
+Testing
+Processo di verifica per garantire che il software funzioni correttamente e soddisfi i requisiti. Include:
+Unit testing: Verifica di singole unità o componenti del software.
+Usability testing: Test per valutare la facilità d’uso del sistema.
+
+Persistenza dei dati
+Meccanismo per conservare i dati su dispositivi di archiviazione (es. database) in modo che possano essere recuperati in futuro.
+
+Scalabilità
+Capacità di un sistema di gestire un aumento del carico (utenti, dati, richieste) senza degradare le performance.
+
+Usabilità
+Facilità con cui un utente può interagire con un sistema per raggiungere i propri obiettivi.
+
+Dashboard
+Pannello di controllo interattivo che visualizza dati e statistiche in tempo reale.
+
+SQL (Structured Query Language)
+Linguaggio standard per la gestione di database relazionali, utilizzato per interrogare e modificare i dati.
+
+Public Cloud
+Ambiente cloud offerto da fornitori esterni, accessibile tramite Internet. Permette di scalare le risorse on-demand.
+
+
+(TODO) :
+
+xUnit
+Famiglia di framework per il testing automatico del software, ad esempio JUnit per Java o Pytest per Python.
+
+Servizi MBaaS (Mobile Backend as a Service)
+Soluzioni cloud che offrono funzionalità pronte all'uso per il back-end di applicazioni mobili, come Firebase e Supabase.
+
+Survey
+Strumento per raccogliere feedback dagli utenti tramite domande mirate.
+
+Check-list di usabilità
+Elenco strutturato di criteri da verificare per valutare la qualità dell’interazione utente-sistema.
+
+Deployment
+Processo di rilascio e messa in opera di un sistema software in un ambiente operativo.
